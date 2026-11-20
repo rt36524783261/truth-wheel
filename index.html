@@ -1191,6 +1191,307 @@
             margin-right: 6px;
             font-size: 12px;
         }
+        /* ================= 9. 羊皮紙主題、5 款外框、金光掃過與應援氣泡 (V8) ================= */
+        /* 頂部 A / B / C 題庫一鍵快速切換 */
+        .mini-slot-group {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(18, 8, 12, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .mini-slot-btn {
+            background: transparent;
+            border: none;
+            color: #9e8c84;
+            font-size: 12px;
+            padding: 3px 9px;
+            border-radius: 14px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+        .mini-slot-btn:hover { color: var(--gold-primary); }
+        .mini-slot-btn.active {
+            background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
+            color: var(--gold-primary);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 5 款全新轉盤外框樣式（透過 body[data-rim] 切換，完全無鐘錶感） */
+        .frame-beads-svg,
+        .frame-stars-decor {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+            color: var(--gold-accent);
+        }
+        .frame-beads-svg {
+            inset: -14px;
+            width: calc(100% + 28px);
+            height: calc(100% + 28px);
+        }
+        .frame-stars-decor {
+            inset: -26px;
+            width: calc(100% + 52px);
+            height: calc(100% + 52px);
+        }
+        .frame-star-pt {
+            position: absolute;
+            font-size: 13px;
+            color: var(--gold-accent);
+            text-shadow: 0 0 10px var(--bg-glow);
+            opacity: 0.78;
+        }
+        .frame-star-pt.tl { top: 11%; left: 11%; }
+        .frame-star-pt.tr { top: 11%; right: 11%; }
+        .frame-star-pt.bl { bottom: 11%; left: 11%; }
+        .frame-star-pt.br { bottom: 11%; right: 11%; }
+
+        /* 樣式 1：極簡雙細金框 (預設) */
+        body[data-rim="double_gold"] .antique-bronze-rim {
+            inset: -11px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 22px 65px rgba(0, 0, 0, 0.92), 0 0 28px var(--bg-glow);
+        }
+        body[data-rim="double_gold"] .antique-bronze-inner {
+            position: absolute;
+            inset: 5px;
+            width: auto;
+            height: auto;
+            background: rgba(8, 4, 5, 0.65);
+            border: 1px solid var(--gold-accent);
+            opacity: 0.78;
+        }
+
+        /* 樣式 2：絲絨浮雕光暈框 */
+        body[data-rim="velvet"] .antique-bronze-rim {
+            inset: -14px;
+            padding: 6px;
+            background: radial-gradient(circle at 30% 25%, rgba(255, 240, 215, 0.14), rgba(14, 7, 10, 0.96) 65%);
+            border: 1px solid rgba(255, 240, 215, 0.12);
+            box-shadow: 0 24px 68px rgba(0, 0, 0, 0.95), 0 0 38px var(--bg-glow), inset 0 2px 10px rgba(255, 242, 220, 0.14);
+        }
+        body[data-rim="velvet"] .antique-bronze-inner {
+            background: rgba(6, 3, 5, 0.85);
+            border: 1px solid rgba(255, 240, 215, 0.08);
+        }
+
+        /* 樣式 3：星點珠飾框（古董珠寶微光金珠環） */
+        body[data-rim="beaded"] .antique-bronze-rim {
+            inset: -10px;
+            padding: 0;
+            background: rgba(12, 6, 8, 0.75);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.94), 0 0 25px var(--bg-glow);
+        }
+        body[data-rim="beaded"] .antique-bronze-inner {
+            background: transparent;
+            border: none;
+        }
+        body[data-rim="beaded"] .frame-beads-svg { display: block; }
+
+        /* 樣式 4：四角星芒極簡框 */
+        body[data-rim="starlight"] .antique-bronze-rim {
+            inset: -9px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid var(--gold-accent);
+            opacity: 0.75;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.92), 0 0 32px var(--bg-glow);
+        }
+        body[data-rim="starlight"] .antique-bronze-inner {
+            background: transparent;
+            border: none;
+        }
+        body[data-rim="starlight"] .frame-stars-decor { display: block; }
+
+        /* 樣式 5：極致純淨無邊框 */
+        body[data-rim="rimless"] .antique-bronze-rim {
+            background: transparent;
+            border: none;
+            box-shadow: 0 22px 65px rgba(0, 0, 0, 0.92);
+        }
+        body[data-rim="rimless"] .antique-bronze-inner {
+            background: transparent;
+            border: none;
+        }
+
+        /* 開獎卡片燙金流光掃過特效 (Gold Shimmer Sweep) */
+        .card-shimmer-wrap {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .card-shimmer-beam {
+            position: absolute;
+            top: -30%;
+            left: -75%;
+            width: 48%;
+            height: 160%;
+            background: linear-gradient(105deg, transparent 0%, rgba(255, 245, 215, 0.04) 35%, rgba(255, 242, 200, 0.24) 50%, rgba(255, 245, 215, 0.04) 65%, transparent 100%);
+            transform: skewX(-18deg);
+        }
+        .modal-backdrop.show .card-shimmer-beam {
+            animation: shimmerSweep 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.15s 1 forwards;
+        }
+        @keyframes shimmerSweep {
+            0% { left: -75%; opacity: 0; }
+            15% { opacity: 1; }
+            100% { left: 135%; opacity: 0; }
+        }
+
+        /* 復古羊皮魔典主題（風格 A：暗夜書桌背景 × 溫潤羊皮紙卷軸與轉盤） */
+        body[data-theme="parchment"] .wheel-vignette {
+            background: radial-gradient(circle at 50% 50%, transparent 66%, rgba(58, 34, 14, 0.28) 100%);
+            border-color: rgba(140, 96, 48, 0.55);
+        }
+        body[data-theme="parchment"] .result-card {
+            background: radial-gradient(circle at 50% 20%, #f7edd6 0%, #ead8b2 65%, #d6bc8d 100%);
+            border-color: #9e743c;
+            box-shadow: inset 0 0 36px rgba(105, 68, 28, 0.24), 0 32px 96px rgba(0, 0, 0, 0.94), 0 0 55px rgba(214, 166, 98, 0.28);
+        }
+        body[data-theme="parchment"] .result-card::before {
+            border-color: rgba(122, 82, 36, 0.38);
+        }
+        body[data-theme="parchment"] .result-card::after {
+            color: #8c2d2d;
+        }
+        body[data-theme="parchment"] .result-subtitle {
+            color: #7a2323;
+            border-bottom-color: rgba(122, 82, 36, 0.38);
+        }
+        body[data-theme="parchment"] .result-main-text {
+            color: #24160c;
+            text-shadow: 0 1px 0 rgba(255, 250, 238, 0.75);
+        }
+        body[data-theme="parchment"] .result-card .skip-btn {
+            background: rgba(74, 46, 20, 0.08);
+            color: #4a311a;
+            border-color: rgba(122, 82, 36, 0.42);
+        }
+        body[data-theme="parchment"] .result-card .skip-btn:hover {
+            background: rgba(74, 46, 20, 0.16);
+        }
+        body[data-theme="parchment"] #remoteResultCard {
+            background: linear-gradient(180deg, #f3e5c6 0%, #e1cb9e 100%);
+            border-color: #a67c46;
+            box-shadow: inset 0 0 18px rgba(110, 72, 30, 0.18), 0 12px 28px rgba(0, 0, 0, 0.72);
+        }
+        body[data-theme="parchment"] #remoteResultCard .remote-card-label {
+            color: #7a2323;
+        }
+        body[data-theme="parchment"] #remoteResultCard .remote-result-text {
+            color: #24160c;
+        }
+        body[data-theme="parchment"] #remoteResultCard .q-action-btn {
+            background: rgba(122, 35, 35, 0.1);
+            border-color: rgba(122, 35, 35, 0.38);
+            color: #6b1d1d;
+        }
+
+        /* 手機端極細晚會進度條 ＋ 低調應援按鈕列 */
+        .remote-progress-wrap {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 240, 215, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .remote-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-accent), var(--gold-primary));
+            border-radius: 4px;
+            transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .remote-react-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .react-btn {
+            background: rgba(255, 245, 230, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-primary);
+            padding: 8px 4px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+        }
+        .react-btn:active { transform: scale(0.93); background: rgba(222, 176, 104, 0.2); }
+        .react-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* 主畫面角落低調應援氣泡飄浮層（絕不遮擋中央題目） */
+        .reaction-stage {
+            position: fixed;
+            bottom: 24px;
+            right: 26px;
+            width: 260px;
+            height: 56vh;
+            pointer-events: none;
+            z-index: 125;
+            overflow: visible;
+        }
+        .reaction-bubble {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: rgba(20, 8, 13, 0.78);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-primary);
+            padding: 6px 15px;
+            border-radius: 22px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            animation: floatReaction 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes floatReaction {
+            0% { opacity: 0; transform: translate(var(--rx, 0px), 16px) scale(0.85); }
+            14% { opacity: 0.92; transform: translate(var(--rx, 0px), -26px) scale(1); }
+            80% { opacity: 0.85; transform: translate(calc(var(--rx, 0px) + var(--sway, 12px)), -260px) scale(1); }
+            100% { opacity: 0; transform: translate(calc(var(--rx, 0px) - var(--sway, 10px)), -330px) scale(0.95); }
+        }
+        /* ================= 10. 3 款全新精品纖細指針（自動隨主題配色同步） ================= */
+        .top-pointer-assembly {
+            top: -22px;
+            width: 40px;
+            height: 76px;
+            margin-left: -20px;
+            transform-origin: 20px 14px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 10px var(--bg-glow));
+        }
+        .ptr-svg {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        body[data-pointer="spear"] .ptr-spear,
+        body[data-pointer="prism"] .ptr-prism,
+        body[data-pointer="star"] .ptr-star {
+            display: block;
+        }
+        .ptr-light { fill: var(--gold-primary); }
+        .ptr-mid { fill: var(--gold-accent); }
+        .ptr-gem { fill: var(--hub-top, #851328); }
+        .ptr-dark { fill: var(--bg-deep, #080205); }
+        .ptr-stroke {
+            stroke: var(--gold-primary);
+            stroke-width: 1.2;
+            stroke-linejoin: round;
+        }
     </style>
 </head>
 <body>
@@ -1211,6 +1512,11 @@
             </div>
             <span class="remain-badge" id="statusInfo">載入中</span>
             <span class="remain-badge host-remote-badge" id="remoteHostBadge">◈ 遠端待命</span>
+            <div class="mini-slot-group" id="headerSlotGroup" title="快速切換題庫槽 A / B / C">
+                <button class="mini-slot-btn active" data-slot="A">A</button>
+                <button class="mini-slot-btn" data-slot="B">B</button>
+                <button class="mini-slot-btn" data-slot="C">C</button>
+            </div>
         </div>
 
         <div class="corner-dock">
@@ -1257,12 +1563,13 @@
         <div class="wheel-wrapper" id="wheelTouchArea">
             <div class="blood-moon-glow"></div>
 
-            <!-- 古天文鐘樓星盤微光細刻度環 -->
-            <svg class="astrolabe-halo" viewBox="0 0 400 400" aria-hidden="true">
-                <circle cx="200" cy="200" r="194" fill="none" stroke="currentColor" stroke-width="0.7" stroke-dasharray="3 6"></circle>
-                <circle cx="200" cy="200" r="184" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"></circle>
-                <path d="M200 2v12M200 386v12M2 200h12M386 200h12M60 60l8 8M332 332l8 8M340 60l-8 8M68 332l-8 8" stroke="currentColor" stroke-width="1.2"></path>
-            </svg>
+            
+            <div class="frame-stars-decor" aria-hidden="true">
+                <span class="frame-star-pt tl">✦</span>
+                <span class="frame-star-pt tr">✦</span>
+                <span class="frame-star-pt bl">✦</span>
+                <span class="frame-star-pt br">✦</span>
+            </div>
 
             <div class="antique-bronze-rim">
                 <div class="antique-bronze-inner"></div>
@@ -1276,20 +1583,31 @@
 
             <div class="wheel-vignette"></div>
 
-            <!-- 正上方 12 點鐘固定古銅金指針 (往下指) -->
+            <!-- 正上方 12 點鐘固定精品指針（3 款可即時切換） -->
             <div class="top-pointer-assembly" id="pointerEl">
-                <svg viewBox="0 0 54 84" width="100%" height="100%">
-                    <defs>
-                        <linearGradient id="antiqueGoldV" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#f6eac2"/>
-                            <stop offset="50%" stop-color="#d4a359"/>
-                            <stop offset="100%" stop-color="#6e481f"/>
-                        </linearGradient>
-                    </defs>
-                    <path d="M27,81 L11,16 L27,27 L43,16 Z" fill="url(#antiqueGoldV)" stroke="#1a090d" stroke-width="2" stroke-linejoin="round"/>
-                    <polygon points="27,71 19,40 27,46 35,40" fill="#6e0d1f"/>
-                    <circle cx="27" cy="16" r="12" fill="#1a080d" stroke="url(#antiqueGoldV)" stroke-width="3"/>
-                    <circle cx="27" cy="16" r="4.5" fill="#9e162e"/>
+                <!-- A. 纖細金矛針 -->
+                <svg class="ptr-svg ptr-spear" viewBox="0 0 44 84">
+                    <polygon points="22,82 14,22 22,14" class="ptr-light"/>
+                    <polygon points="22,82 30,22 22,14" class="ptr-mid"/>
+                    <polygon points="22,46 18.5,25 22,20 25.5,25" class="ptr-gem"/>
+                    <circle cx="22" cy="14" r="7.5" class="ptr-dark ptr-stroke"/>
+                    <circle cx="22" cy="14" r="3" class="ptr-light"/>
+                </svg>
+                <!-- B. 稜鏡菱形針 -->
+                <svg class="ptr-svg ptr-prism" viewBox="0 0 44 84">
+                    <polygon points="22,6 10,22 22,22" class="ptr-light"/>
+                    <polygon points="22,6 34,22 22,22" class="ptr-mid"/>
+                    <polygon points="22,82 10,22 22,22" class="ptr-light" opacity="0.9"/>
+                    <polygon points="22,82 34,22 22,22" class="ptr-mid" opacity="0.88"/>
+                    <polygon points="22,42 17.5,22 22,14 26.5,22" class="ptr-dark" opacity="0.55"/>
+                    <polygon points="22,6 34,22 22,82 10,22" fill="none" class="ptr-stroke"/>
+                </svg>
+                <!-- C. 星芒垂墜針 -->
+                <svg class="ptr-svg ptr-star" viewBox="0 0 44 84">
+                    <polygon points="22,82 17.5,25 22,21" class="ptr-light"/>
+                    <polygon points="22,82 26.5,25 22,21" class="ptr-mid"/>
+                    <path d="M22,2 L25.5,12.5 L36,16 L25.5,19.5 L22,30 L18.5,19.5 L8,16 L18.5,12.5 Z" class="ptr-light"/>
+                    <polygon points="22,11 25,16 22,21 19,16" class="ptr-gem"/>
                 </svg>
             </div>
 
@@ -1304,6 +1622,7 @@
     <!-- 4. 抽中結果巨幅視窗 -->
     <div class="modal-backdrop" id="resultModal">
         <div class="result-card">
+            <div class="card-shimmer-wrap" aria-hidden="true"><div class="card-shimmer-beam"></div></div>
             <div class="result-subtitle" id="resultBadge">🕯️ 夜晚真心話大拷問 🕯️</div>
             <div class="result-main-text" id="modalQuestionText">問題內容</div>
             <div class="result-actions">
@@ -1343,19 +1662,29 @@
                     </select>
                 </div>
                 <div class="setting-row">
-                    <span>暗黑精品主題 (4款)</span>
+                    <span>暗黑精品主題 (6款)</span>
                     <select class="ui-select" id="paletteSelect">
                         <option value="opera">✦ 血月絲絨・黑紅香檳</option>
                         <option value="prussian">✦ 午夜星象・深藍冷銀</option>
                         <option value="emerald">✦ 翡翠莊園・墨綠古銅</option>
                         <option value="obsidian">✦ 曜石玫瑰・炭黑鎏金</option>
+                        <option value="amethyst">✦ 暮夜紫晶・神秘月銀</option>
+                        <option value="amber">✦ 煙燻黑金・暖琥珀金</option>
                     </select>
                 </div>
                 <div class="setting-row">
-                    <span>轉盤外框風格</span>
+                    <span>轉盤外框風格 (2款)</span>
                     <select class="ui-select" id="rimSelect">
-                        <option value="bronze">🏛️ 古銅暗金外框</option>
-                        <option value="rimless">🌑 無邊框星盤光暈</option>
+                        <option value="double_gold">✨ 極簡雙細金框</option>
+                        <option value="starlight">🌙 四角星芒極簡框</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>轉盤指針風格 (3款)</span>
+                    <select class="ui-select" id="pointerSelect">
+                        <option value="spear">🗡️ 纖細金矛針</option>
+                        <option value="prism">💎 稜鏡菱形針</option>
+                        <option value="star">✦ 星芒垂墜針</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -1439,6 +1768,10 @@
                 <div class="setting-row">
                     <span>手機匿名加碼出題</span>
                     <button class="ui-btn" id="remoteAllowAddToggleBtn">✍️ 加碼：允許</button>
+                </div>
+                <div class="setting-row">
+                    <span>手機低調應援氣泡</span>
+                    <button class="ui-btn" id="remoteAllowReactToggleBtn">✨ 應援：開啟</button>
                 </div>
                 <div class="setting-row">
                     <span>換下一位冷卻防誤觸</span>
@@ -1570,6 +1903,9 @@
         </div>
     </div>
 
+    <!-- 主畫面右下角低調應援氣泡飄浮層 -->
+    <div class="reaction-stage" id="reactionStage" aria-hidden="true"></div>
+
     <!-- 手機玩家自助遙控專屬介面（網址帶 ?room= 時自動切換顯示） -->
     <section id="remoteView">
         <div class="remote-header">
@@ -1577,6 +1913,9 @@
             <div class="remote-badges">
                 <span class="remain-badge" id="remoteConnBadge">◈ 連線中...</span>
                 <span class="remain-badge" id="remoteRemainBadge">載入題庫中</span>
+            </div>
+            <div class="remote-progress-wrap" title="本場抽題進度">
+                <div class="remote-progress-bar" id="remoteProgressBar"></div>
             </div>
         </div>
 
@@ -1606,7 +1945,18 @@
             </div>
             <div class="remote-result-text" id="remoteResultText">尚未開始抽題，輪到你時請長按上方寶石！</div>
         </div>
-
+<!-- 低調應援氣泡（飄過大螢幕角落，不擋題目） -->
+        <div class="remote-card-box" id="remoteReactSection">
+            <div class="remote-card-label">
+                <span>◈ 現場低調應援（飄過大螢幕角落）</span>
+            </div>
+            <div class="remote-react-grid">
+                <button class="react-btn" data-react="✦ 太神啦">✦ 太神啦</button>
+                <button class="react-btn" data-react="🔥 好辣">🔥 好辣</button>
+                <button class="react-btn" data-react="👏 掌聲">👏 掌聲</button>
+                <button class="react-btn" data-react="😱 勁爆">😱 勁爆</button>
+            </div>
+        </div>
         <!-- 匿名加碼出題區 -->
         <div class="remote-card-box" id="remoteAddSection">
             <div class="remote-card-label">
@@ -1641,6 +1991,7 @@
                 ['#470919', '#6e0e26'],
                 ['#200d17', '#361526']
             ],
+            highlightRgb: '255, 222, 130',
             textColor: '#f5e8c4',
             accentColor: '#d6a760',
             panelBorder: 'rgba(214, 167, 96, 0.34)',
@@ -1659,6 +2010,7 @@
                 ['#122340', '#1f3a66'],
                 ['#14182a', '#232a47']
             ],
+            highlightRgb: '186, 214, 255',
             textColor: '#edf2fa',
             accentColor: '#a8bedb',
             panelBorder: 'rgba(168, 190, 219, 0.32)',
@@ -1677,6 +2029,7 @@
                 ['#103022', '#1c5039'],
                 ['#141b16', '#232f26']
             ],
+            highlightRgb: '225, 202, 130',
             textColor: '#f0e4c6',
             accentColor: '#caa562',
             panelBorder: 'rgba(202, 165, 98, 0.33)',
@@ -1690,11 +2043,12 @@
         },
         obsidian: {
             slices: [
-                ['#191516', '#2e2528'],
-                ['#0c0b0c', '#191618'],
-                ['#241b1e', '#3c2c31'],
-                ['#131112', '#221d1f']
+                ['#181416', '#2c2427'],
+                ['#0c0b0c', '#181517'],
+                ['#231b1e', '#3a2b30'],
+                ['#131112', '#211c1e']
             ],
+            highlightRgb: '235, 185, 170',
             textColor: '#f5e0d9',
             accentColor: '#d49a89',
             panelBorder: 'rgba(212, 154, 137, 0.34)',
@@ -1703,8 +2057,46 @@
             bgDeep: '#060506',
             bgMid: '#181315',
             bgGlow: 'rgba(212, 140, 125, 0.25)',
-            hubTop: '#5e2f36',
-            hubMid: '#291317'
+            hubTop: '#632e38',
+            hubMid: '#2b1217'
+        },
+        amethyst: {
+            slices: [
+                ['#200a30', '#3a1456'],
+                ['#0e0a16', '#1b1429'],
+                ['#2d0e3f', '#4b1968'],
+                ['#160f24', '#271b3d']
+            ],
+            highlightRgb: '214, 186, 255',
+            textColor: '#f2eaff',
+            accentColor: '#c5a8f0',
+            panelBorder: 'rgba(197, 168, 240, 0.32)',
+            lineColor: 'rgba(197, 168, 240, 0.3)',
+            pegColor: '#d4bdf5',
+            bgDeep: '#07040d',
+            bgMid: '#190a29',
+            bgGlow: 'rgba(148, 82, 230, 0.3)',
+            hubTop: '#541e78',
+            hubMid: '#240b38'
+        },
+        amber: {
+            slices: [
+                ['#24160b', '#3f2713'],
+                ['#100c08', '#1e160f'],
+                ['#2e1c0e', '#4d2f17'],
+                ['#18120c', '#2a1f14']
+            ],
+            highlightRgb: '248, 204, 118',
+            textColor: '#fae8be',
+            accentColor: '#deaa54',
+            panelBorder: 'rgba(222, 170, 84, 0.35)',
+            lineColor: 'rgba(222, 170, 84, 0.34)',
+            pegColor: '#e8ba68',
+            bgDeep: '#090603',
+            bgMid: '#1f140a',
+            bgGlow: 'rgba(216, 146, 48, 0.28)',
+            hubTop: '#734416',
+            hubMid: '#331c08'
         }
     };
 
@@ -1749,7 +2141,8 @@
     let currentPaletteKey = 'opera';
     let currentFontKey = 'mincho';
     let sliceLabelMode = 'text';
-    let rimStyle = 'bronze';
+    let rimStyle = 'double_gold';
+    let pointerStyle = 'spear';
     let wheelScale = 74;
     let spinDuration = 7200;
     let soundEnabled = true;
@@ -1767,6 +2160,7 @@
     // 遠端自助遙控設定 (Firebase)
     let remoteEnabled = true;
     let remoteAllowAdd = true;
+    let remoteAllowReact = true;
     let remoteCooldownSec = 10;
     let roomCode = 'botc01';
     let showCornerQr = true;
@@ -1829,8 +2223,13 @@
         }
     }
 
+    const VALID_RIMS = ['double_gold', 'starlight'];
+    const VALID_POINTERS = ['spear', 'prism', 'star'];
+
     function applyPaletteCSS(key) {
-        const p = PALETTES[key] || PALETTES.opera;
+        const safeKey = PALETTES[key] ? key : 'opera';
+        const p = PALETTES[safeKey];
+        document.body.dataset.theme = safeKey;
         const root = document.documentElement.style;
         root.setProperty('--gold-primary', p.textColor);
         root.setProperty('--gold-accent', p.accentColor);
@@ -1840,6 +2239,19 @@
         root.setProperty('--bg-glow', p.bgGlow);
         root.setProperty('--hub-top', p.hubTop);
         root.setProperty('--hub-mid', p.hubMid);
+    }
+
+    function applyRimStyle(style) {
+        const safe = VALID_RIMS.includes(style) ? style : 'double_gold';
+        rimStyle = safe;
+        document.body.dataset.rim = safe;
+        document.body.classList.remove('rimless-mode');
+    }
+
+    function applyPointerStyle(style) {
+        const safe = VALID_POINTERS.includes(style) ? style : 'spear';
+        pointerStyle = safe;
+        document.body.dataset.pointer = safe;
     }
 
     // ================= 2. 自動記憶與初始化 =================
@@ -1855,6 +2267,7 @@
                 currentFontKey,
                 sliceLabelMode,
                 rimStyle,
+                pointerStyle,
                 wheelScale,
                 spinDuration,
                 soundEnabled,
@@ -1865,6 +2278,7 @@
                 ttsPitchMode,
                 remoteEnabled,
                 remoteAllowAdd,
+                remoteAllowReact,
                 remoteCooldownSec,
                 roomCode,
                 showCornerQr,
@@ -1891,6 +2305,7 @@
                 if (data.currentFontKey && FONTS[data.currentFontKey]) currentFontKey = data.currentFontKey;
                 if (data.sliceLabelMode) sliceLabelMode = data.sliceLabelMode;
                 if (data.rimStyle) rimStyle = data.rimStyle;
+                if (data.pointerStyle) pointerStyle = data.pointerStyle;
                 if (data.wheelScale) wheelScale = Number(data.wheelScale);
                 if (data.spinDuration) spinDuration = Number(data.spinDuration);
                 if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
@@ -1901,6 +2316,7 @@
                 if (data.ttsPitchMode) ttsPitchMode = data.ttsPitchMode;
                 if (typeof data.remoteEnabled === 'boolean') remoteEnabled = data.remoteEnabled;
                 if (typeof data.remoteAllowAdd === 'boolean') remoteAllowAdd = data.remoteAllowAdd;
+                if (typeof data.remoteAllowReact === 'boolean') remoteAllowReact = data.remoteAllowReact;
                 if (data.remoteCooldownSec) remoteCooldownSec = Number(data.remoteCooldownSec);
                 if (data.roomCode) roomCode = sanitizeRoomCode(data.roomCode);
                 if (typeof data.showCornerQr === 'boolean') showCornerQr = data.showCornerQr;
@@ -1932,8 +2348,10 @@
         document.getElementById('paletteSelect').value = currentPaletteKey;
         document.getElementById('fontSelect').value = currentFontKey;
         document.getElementById('sliceLabelModeSelect').value = sliceLabelMode;
+        applyRimStyle(rimStyle);
         document.getElementById('rimSelect').value = rimStyle;
-        document.body.classList.toggle('rimless-mode', rimStyle === 'rimless');
+        applyPointerStyle(pointerStyle);
+        document.getElementById('pointerSelect').value = pointerStyle;
         document.getElementById('wheelScaleRange').value = String(wheelScale);
         document.documentElement.style.setProperty('--wheel-scale', `${wheelScale}vmin`);
 
@@ -1948,12 +2366,13 @@
 
         document.getElementById('remoteModeToggleBtn').textContent = remoteEnabled ? '📡 遠端：開啟' : '🔒 遠端：暫停';
         document.getElementById('remoteAllowAddToggleBtn').textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
+        document.getElementById('remoteAllowReactToggleBtn').textContent = remoteAllowReact ? '✨ 應援：開啟' : '🚫 應援：關閉';
         document.getElementById('remoteCooldownSelect').value = String(remoteCooldownSec);
         document.getElementById('roomCodeInput').value = roomCode;
         document.getElementById('toggleCornerQrBtn').textContent = showCornerQr ? '📌 角落掃碼：開' : '📌 角落掃碼：關';
         document.getElementById('firebaseDbUrlInput').value = firebaseDbUrl || '';
 
-        document.querySelectorAll('.slot-pill').forEach(btn => {
+        document.querySelectorAll('.slot-pill, .mini-slot-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.slot === currentSlot);
         });
 
@@ -2102,18 +2521,32 @@
         if (!soundEnabled || IS_REMOTE_MODE) return;
         initAudio();
         const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        const startFreq = 320 + speedFactor * 340;
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(85, now + 0.032);
-        gain.gain.setValueAtTime(0.16, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.035);
+
+        // 1. 實木盤身共鳴（低沉厚實的木質「喀咚」底韻）
+        const woodOsc = audioCtx.createOscillator();
+        const woodGain = audioCtx.createGain();
+        woodOsc.type = 'triangle';
+        woodOsc.frequency.setValueAtTime(195 + speedFactor * 110, now);
+        woodOsc.frequency.exponentialRampToValueAtTime(62, now + 0.034);
+        woodGain.gain.setValueAtTime(0.20, now);
+        woodGain.gain.exponentialRampToValueAtTime(0.001, now + 0.036);
+        woodOsc.connect(woodGain);
+        woodGain.connect(audioCtx.destination);
+        woodOsc.start(now);
+        woodOsc.stop(now + 0.04);
+
+        // 2. 黃銅指針敲擊瞬態（極短高頻金屬撥片清脆感）
+        const brassOsc = audioCtx.createOscillator();
+        const brassGain = audioCtx.createGain();
+        brassOsc.type = 'sine';
+        brassOsc.frequency.setValueAtTime(1450 + speedFactor * 850, now);
+        brassOsc.frequency.exponentialRampToValueAtTime(420, now + 0.013);
+        brassGain.gain.setValueAtTime(0.085, now);
+        brassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.014);
+        brassOsc.connect(brassGain);
+        brassGain.connect(audioCtx.destination);
+        brassOsc.start(now);
+        brassOsc.stop(now + 0.016);
     }
 
     function triggerBronzeBellStrike(baseFreq, startTime, duration, volume = 1.0) {
@@ -2416,8 +2849,8 @@
         if (questions.length === 0) {
             hlCtx.clearRect(0, 0, hlCanvas.width, hlCanvas.height);
             const grad = ctx.createRadialGradient(centerX, centerY, 40, centerX, centerY, radius);
-            grad.addColorStop(0, palette.slices[0][1]);
-            grad.addColorStop(1, '#080205');
+            grad.addColorStop(0, palette.bgMid || '#1f0710');
+            grad.addColorStop(1, palette.bgDeep || '#080205');
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
             ctx.fillStyle = grad;
@@ -2456,8 +2889,9 @@
 
             const grad = ctx.createRadialGradient(centerX, centerY, 90, centerX, centerY, radius);
             if (q.drawn) {
-                grad.addColorStop(0, '#070305');
-                grad.addColorStop(1, '#0e0609');
+                const dPair = palette.drawnSlices || ['#070305', '#0e0609'];
+                grad.addColorStop(0, dPair[0]);
+                grad.addColorStop(1, dPair[1]);
             } else {
                 const pair = palette.slices[q.colorIndex];
                 grad.addColorStop(0, pair[0]);
@@ -2468,7 +2902,7 @@
             ctx.fill();
 
             ctx.lineWidth = total > 60 ? 1.2 : 1.8;
-            ctx.strokeStyle = q.drawn ? 'rgba(255, 255, 255, 0.04)' : palette.lineColor;
+            ctx.strokeStyle = q.drawn ? 'rgba(255, 255, 255, 0.05)' : palette.lineColor;
             ctx.stroke();
 
             ctx.save();
@@ -2484,9 +2918,9 @@
             }
 
             if (q.drawn) {
-                ctx.fillStyle = '#3a272c';
+                ctx.fillStyle = palette.drawnTextColor || '#3a272c';
             } else {
-                ctx.fillStyle = palette.textColor;
+                ctx.fillStyle = palette.wheelTextColor || palette.textColor;
             }
 
             ctx.fillText(displayText, radius - 30, 0);
@@ -2532,16 +2966,18 @@
         hlCtx.arc(centerX, centerY, radius, startRad, endRad);
         hlCtx.closePath();
 
+        const palette = PALETTES[currentPaletteKey] || PALETTES.opera;
+        const hlRgb = palette.highlightRgb || '255, 222, 130';
         const hlGrad = hlCtx.createRadialGradient(centerX, centerY, 90, centerX, centerY, radius);
-        hlGrad.addColorStop(0, `rgba(246, 234, 194, ${0.06 * intensity})`);
-        hlGrad.addColorStop(0.6, `rgba(255, 215, 110, ${0.26 * intensity})`);
-        hlGrad.addColorStop(1, `rgba(255, 230, 150, ${0.42 * intensity})`);
+        hlGrad.addColorStop(0, `rgba(${hlRgb}, ${0.05 * intensity})`);
+        hlGrad.addColorStop(0.6, `rgba(${hlRgb}, ${0.22 * intensity})`);
+        hlGrad.addColorStop(1, `rgba(${hlRgb}, ${0.38 * intensity})`);
 
         hlCtx.fillStyle = hlGrad;
         hlCtx.fill();
 
         hlCtx.lineWidth = 2.5;
-        hlCtx.strokeStyle = `rgba(255, 235, 160, ${0.8 * intensity})`;
+        hlCtx.strokeStyle = `rgba(${hlRgb}, ${0.82 * intensity})`;
         hlCtx.stroke();
         hlCtx.restore();
     }
@@ -2871,11 +3307,16 @@
     document.getElementById('closeSettingsBtn').addEventListener('click', closeAllDrawers);
     document.getElementById('closeHistoryBtn').addEventListener('click', closeAllDrawers);
 
-    document.querySelectorAll('.slot-pill').forEach(btn => {
+    document.querySelectorAll('.slot-pill, .mini-slot-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (isSpinning) return;
+            if (isSpinning) { showToast('⏳ 轉盤轉動中，請待停止後再切換題庫'); return; }
+            if (currentSlot === btn.dataset.slot) return;
             currentSlot = btn.dataset.slot;
-            document.querySelectorAll('.slot-pill').forEach(b => b.classList.toggle('active', b.dataset.slot === currentSlot));
+            document.querySelectorAll('.slot-pill, .mini-slot-btn').forEach(b => b.classList.toggle('active', b.dataset.slot === currentSlot));
+            lastDrawnText = '';
+            lastDrawnNum = 0;
+            remoteCooldownUntil = 0;
+            document.getElementById('reopenLastBtn').classList.remove('show');
             saveState();
             updateStatusUI();
             renderStaticWheel();
@@ -3105,8 +3546,11 @@
     });
 
     document.getElementById('rimSelect').addEventListener('change', (e) => {
-        rimStyle = e.target.value;
-        document.body.classList.toggle('rimless-mode', rimStyle === 'rimless');
+        applyRimStyle(e.target.value);
+        saveState();
+    });
+    document.getElementById('pointerSelect').addEventListener('change', (e) => {
+        applyPointerStyle(e.target.value);
         saveState();
     });
 
@@ -3354,10 +3798,10 @@
             currentSlot,
             slotsData,
             settings: {
-                currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, wheelScale,
+                currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, pointerStyle, wheelScale,
                 spinDuration, soundEnabled, ttsEnabled, ttsVoiceURI, ttsRate, ttsPrefixMode,
-                ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteCooldownSec, roomCode,
-                showCornerQr, firebaseDbUrl
+                ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteAllowReact, remoteCooldownSec,
+                roomCode, showCornerQr, firebaseDbUrl
             }
         };
         const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8;' });
@@ -3400,6 +3844,7 @@
                         if (s.currentFontKey && FONTS[s.currentFontKey]) currentFontKey = s.currentFontKey;
                         if (s.sliceLabelMode) sliceLabelMode = s.sliceLabelMode;
                         if (s.rimStyle) rimStyle = s.rimStyle;
+                        if (s.pointerStyle) pointerStyle = s.pointerStyle;
                         if (s.wheelScale) wheelScale = Number(s.wheelScale);
                         if (s.spinDuration) spinDuration = Number(s.spinDuration);
                         if (typeof s.soundEnabled === 'boolean') soundEnabled = s.soundEnabled;
@@ -3410,6 +3855,7 @@
                         if (s.ttsPitchMode) ttsPitchMode = s.ttsPitchMode;
                         if (typeof s.remoteEnabled === 'boolean') remoteEnabled = s.remoteEnabled;
                         if (typeof s.remoteAllowAdd === 'boolean') remoteAllowAdd = s.remoteAllowAdd;
+                        if (typeof s.remoteAllowReact === 'boolean') remoteAllowReact = s.remoteAllowReact;
                         if (s.remoteCooldownSec) remoteCooldownSec = Number(s.remoteCooldownSec);
                         if (s.roomCode) roomCode = sanitizeRoomCode(s.roomCode);
                         if (typeof s.showCornerQr === 'boolean') showCornerQr = s.showCornerQr;
@@ -3574,6 +4020,7 @@
     let hostSubRef = null;
     let hostConnRef = null;
     let hostOffsetRef = null;
+    let hostReactRef = null;
     let lastPublishedStatus = 'idle';
     let hostSessionStartMs = 0;
 
@@ -3590,9 +4037,10 @@
     function detachHostFirebaseListeners() {
         try { if (hostCmdRef) hostCmdRef.off(); } catch (e) {}
         try { if (hostSubRef) hostSubRef.off(); } catch (e) {}
+        try { if (hostReactRef) hostReactRef.off(); } catch (e) {}
         try { if (hostConnRef) hostConnRef.off(); } catch (e) {}
         try { if (hostOffsetRef) hostOffsetRef.off(); } catch (e) {}
-        hostRoomRef = hostCmdRef = hostSubRef = hostConnRef = hostOffsetRef = null;
+        hostRoomRef = hostCmdRef = hostSubRef = hostReactRef = hostConnRef = hostOffsetRef = null;
         fbConnected = false;
     }
 
@@ -3703,6 +4151,7 @@
             spinSeq: lastSpinSeq,
             remoteEnabled: remoteEnabled,
             allowAdd: remoteAllowAdd,
+            allowReact: remoteAllowReact,
             remaining: remaining,
             total: questions.length,
             slot: currentSlot,
@@ -3768,6 +4217,28 @@
         }
     }
 
+    // 在主畫面右下角優雅飄出手機低調應援氣泡（最多同屏 12 顆防洗版）
+    function spawnReactionBubble(rawText) {
+        if (IS_REMOTE_MODE) return;
+        const stage = document.getElementById('reactionStage');
+        if (!stage) return;
+        const clean = String(rawText || '').trim().slice(0, 14);
+        if (!clean) return;
+
+        while (stage.children.length >= 12) {
+            stage.firstElementChild.remove();
+        }
+        const el = document.createElement('div');
+        el.className = 'reaction-bubble';
+        el.textContent = clean;
+        const rx = -Math.floor(Math.random() * 95);
+        const sway = (Math.random() > 0.5 ? 1 : -1) * (8 + Math.floor(Math.random() * 10));
+        el.style.setProperty('--rx', `${rx}px`);
+        el.style.setProperty('--sway', `${sway}px`);
+        stage.appendChild(el);
+        setTimeout(() => el.remove(), 3300);
+    }
+
     function initHostRemote() {
         if (IS_REMOTE_MODE) return;
         detachHostFirebaseListeners();
@@ -3792,6 +4263,7 @@
         hostRoomRef = db.ref(`rooms/${roomCode}`);
         hostCmdRef = hostRoomRef.child('commands');
         hostSubRef = hostRoomRef.child('submissions');
+        hostReactRef = hostRoomRef.child('reactions');
         hostOffsetRef = db.ref('.info/serverTimeOffset');
         hostConnRef = db.ref('.info/connected');
 
@@ -3806,6 +4278,7 @@
                 hostSessionStartMs = Date.now() + serverTimeOffset;
                 hostRoomRef.child('state/hostOnline').onDisconnect().set(false);
                 hostCmdRef.remove().catch(() => {});
+                hostReactRef.remove().catch(() => {});
                 hostRoomRef.child('receipts').remove().catch(() => {});
                 publishHostState();
             }
@@ -3848,6 +4321,15 @@
             }
         });
 
+        // 監聽手機現場低調應援氣泡
+        hostReactRef.on('child_added', (snap) => {
+            const react = snap.val();
+            snap.ref.remove().catch(() => {});
+            if (!react || !remoteAllowReact) return;
+            if (react.ts && react.ts < hostSessionStartMs - 2500) return;
+            spawnReactionBubble(react.text);
+        });
+
         updateHostRemoteBadge();
     }
 
@@ -3864,6 +4346,13 @@
     document.getElementById('remoteAllowAddToggleBtn').addEventListener('click', (e) => {
         remoteAllowAdd = !remoteAllowAdd;
         e.currentTarget.textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
+        saveState();
+        publishHostState();
+    });
+
+    document.getElementById('remoteAllowReactToggleBtn').addEventListener('click', (e) => {
+        remoteAllowReact = !remoteAllowReact;
+        e.currentTarget.textContent = remoteAllowReact ? '✨ 應援：開啟' : '🚫 應援：關閉';
         saveState();
         publishHostState();
     });
@@ -3935,6 +4424,9 @@
 
         const connBadge = document.getElementById('remoteConnBadge');
         const remainBadge = document.getElementById('remoteRemainBadge');
+        const progressBar = document.getElementById('remoteProgressBar');
+        const reactSection = document.getElementById('remoteReactSection');
+        const reactBtns = document.querySelectorAll('.react-btn');
         const holdStage = document.getElementById('remoteHoldStage');
         const holdBtn = document.getElementById('remoteHoldBtn');
         const holdRing = document.getElementById('holdRingProgress');
@@ -3953,7 +4445,7 @@
         const historyListEl = document.getElementById('remoteHistoryList');
 
         const RING_CIRCUMFERENCE = 603;
-        const HOLD_DURATION_MS = 1000;
+        const HOLD_DURATION_MS = 750;
 
         let remoteConnected = false;
         let hostState = null;
@@ -3991,6 +4483,7 @@
         const stateRef = roomRef.child('state');
         const cmdRef = roomRef.child('commands');
         const subRef = roomRef.child('submissions');
+        const reactRef = roomRef.child('reactions');
 
         db.ref('.info/serverTimeOffset').on('value', (snap) => {
             serverTimeOffset = snap.val() || 0;
@@ -4064,7 +4557,7 @@
             }
             holdRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE);
             if (showHint && !holdBtn.disabled) {
-                statusMsg.textContent = '💡 請按住寶石滿 1 秒才會啟動（防誤觸）';
+                statusMsg.textContent = '💡 請按住寶石滿 0.75 秒才會啟動（防誤觸）';
             }
         }
 
@@ -4101,6 +4594,8 @@
                 btnSub.textContent = '等待開啟';
                 statusMsg.textContent = '請確認投影主畫面已開啟相同房間代碼';
                 addSection.style.display = 'none';
+                reactSection.style.display = 'none';
+                progressBar.style.width = '0%';
                 return;
             }
 
@@ -4124,6 +4619,9 @@
             renderRemoteHistory(hostState.recentDrawn);
 
             addSection.style.display = hostState.allowAdd ? 'flex' : 'none';
+            reactSection.style.display = (hostState.allowReact !== false) ? 'flex' : 'none';
+            const drawnCount = Math.max(0, tot - rem);
+            progressBar.style.width = `${tot > 0 ? Math.round((drawnCount / tot) * 100) : 0}%`;
 
             // 計算按鈕可用狀態
             const serverNow = Date.now() + serverTimeOffset;
@@ -4162,7 +4660,7 @@
                 holdBtn.disabled = false;
                 if (!isHolding) {
                     btnMain.textContent = '長按啟動';
-                    btnSub.textContent = '按住 1 秒開轉';
+                    btnSub.textContent = '按住 0.75 秒開轉';
                     statusMsg.textContent = hostState.status === 'result'
                         ? '✦ 上一題回答完後，下一位長按寶石即可開轉'
                         : '✦ 輪到你時，長按上方寶石 1 秒啟動轉盤';
@@ -4315,6 +4813,25 @@
         addSubmitBtn.addEventListener('click', submitAnonymousQuestion);
         addInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') submitAnonymousQuestion();
+        });
+        // 低調應援按鈕事件（2 秒防刷屏）
+        let localReactLockUntil = 0;
+        reactBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!remoteConnected || !hostState || hostState.allowReact === false) return;
+                if (Date.now() < localReactLockUntil) return;
+                localReactLockUntil = Date.now() + 2000;
+                const label = btn.dataset.react || btn.textContent;
+                if (navigator.vibrate) navigator.vibrate(12);
+                reactBtns.forEach(b => { b.disabled = true; });
+                reactRef.push({
+                    text: label,
+                    ts: firebase.database.ServerValue.TIMESTAMP
+                }).catch(() => {});
+                setTimeout(() => {
+                    reactBtns.forEach(b => { b.disabled = false; });
+                }, 2000);
+            });
         });
     }
 </script>
