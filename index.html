@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🗝️ 血染戰鬥營 — 夜晚真心話命運轉盤</title>
-    <!-- 引入 7 款纖細高雅字體 (無粗體) -->
+    <!-- 引入 3 款精選高質感纖細字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hina+Mincho&family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@300;400&family=Noto+Serif+TC:wght@300;400&family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400&family=Zen+Maru+Gothic:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+    <!-- 引入 PapaParse 解析 CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- 引入 Firebase Realtime Database (跨裝置遙控同步) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -1007,6 +1009,188 @@
             color: #a7f3d0;
             min-height: 18px;
         }
+        /* ================= 8. 精品暗黑劇院視覺 ＋ 手機動態升級 (V7) ================= */
+        .svg-ic {
+            width: 15px;
+            height: 15px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .brand-emblem {
+            width: 22px;
+            height: 22px;
+            color: var(--gold-accent);
+            filter: drop-shadow(0 0 8px var(--bg-glow));
+        }
+        .brand-title {
+            letter-spacing: 3px;
+            text-shadow: 0 2px 16px var(--bg-glow);
+        }
+        .icon-btn {
+            background: linear-gradient(180deg, rgba(36, 16, 24, 0.78) 0%, rgba(16, 6, 10, 0.88) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.14), 0 4px 14px rgba(0, 0, 0, 0.45);
+            letter-spacing: 1px;
+        }
+        .icon-btn:hover {
+            background: linear-gradient(180deg, rgba(110, 24, 46, 0.55) 0%, rgba(45, 10, 20, 0.85) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.28), 0 0 18px var(--bg-glow);
+        }
+        .top-preview-bar {
+            background: linear-gradient(180deg, rgba(28, 12, 18, 0.9) 0%, rgba(14, 5, 9, 0.94) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.15), 0 12px 32px rgba(0, 0, 0, 0.78);
+            padding: 9px 16px;
+        }
+        .preview-tag {
+            background: rgba(255, 240, 210, 0.06);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-accent);
+            letter-spacing: 1.5px;
+        }
+        .reopen-last-btn {
+            display: none;
+            background: rgba(255, 240, 210, 0.06);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-primary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .reopen-last-btn.show { display: inline-flex; }
+        .reopen-last-btn:hover {
+            border-color: var(--gold-primary);
+            background: rgba(222, 176, 104, 0.18);
+        }
+
+        /* 轉盤背後微光古天文星盤刻度環 */
+        .astrolabe-halo {
+            position: absolute;
+            inset: -44px;
+            width: calc(100% + 88px);
+            height: calc(100% + 88px);
+            pointer-events: none;
+            z-index: 0;
+            color: var(--gold-accent);
+            opacity: 0.32;
+        }
+
+        /* 中央啟動鈕與手機長按鈕支援 4 款暗黑主題色同步 */
+        .center-hub,
+        .remote-hold-btn {
+            background: radial-gradient(circle at 35% 28%, var(--hub-top, #7d1124) 0%, var(--hub-mid, #3d0610) 64%, #120206 100%);
+            box-shadow:
+                0 12px 32px rgba(0, 0, 0, 0.92),
+                0 0 26px var(--bg-glow),
+                inset 0 1px 6px rgba(255, 244, 220, 0.34);
+        }
+
+        /* 結果巨幅視窗：黑金燙金雙層框與精緻留白 */
+        .result-card {
+            background: radial-gradient(circle at 50% 0%, var(--bg-mid) 0%, #14050a 64%, #090204 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.22), 0 32px 96px rgba(0, 0, 0, 0.96), 0 0 65px var(--bg-glow);
+            padding: 42px 38px 34px;
+        }
+        .result-card::after {
+            content: "✦";
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--gold-accent);
+            opacity: 0.65;
+            pointer-events: none;
+        }
+        .result-subtitle {
+            letter-spacing: 4px;
+            font-size: 14.5px;
+            border-bottom: 1px solid var(--panel-border);
+            padding: 0 18px 8px;
+        }
+        .seal-btn {
+            background: linear-gradient(135deg, var(--hub-top, #8a1429) 0%, var(--hub-mid, #4a0713) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.25), 0 10px 26px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 手機遙控端精品升級：星盤旋轉流光、開獎閃金邊、iPhone 防輸入放大、歷史折疊 */
+        .remote-card-box {
+            background: linear-gradient(180deg, rgba(28, 12, 18, 0.9) 0%, rgba(13, 5, 9, 0.94) 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.14), 0 12px 30px rgba(0, 0, 0, 0.78);
+            transition: border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        .remote-card-box.flash-gold {
+            animation: cardGoldFlash 1.2s ease;
+        }
+        @keyframes cardGoldFlash {
+            0% { border-color: var(--gold-primary); box-shadow: 0 0 36px rgba(246, 234, 194, 0.65), inset 0 0 18px rgba(246, 234, 194, 0.2); }
+            100% { border-color: var(--panel-border); box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.14), 0 12px 30px rgba(0, 0, 0, 0.78); }
+        }
+        .remote-orbit-svg {
+            position: absolute;
+            inset: -14px;
+            width: calc(100% + 28px);
+            height: calc(100% + 28px);
+            pointer-events: none;
+            color: var(--gold-accent);
+            opacity: 0.32;
+            transition: opacity 0.3s ease;
+        }
+        .remote-hold-stage.is-spinning .remote-orbit-svg {
+            opacity: 0.92;
+            animation: slowOrbit 2.4s linear infinite;
+        }
+        @keyframes slowOrbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        /* iOS Safari 防自動放大關鍵：手機端輸入框字級 >= 16px */
+        #remoteAddInput {
+            font-size: 16px;
+            padding: 9px 12px;
+        }
+        .remote-history-details summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+        }
+        .remote-history-details summary::-webkit-details-marker { display: none; }
+        .remote-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-top: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .remote-history-item {
+            background: rgba(0, 0, 0, 0.38);
+            border: 1px solid rgba(255, 240, 215, 0.1);
+            border-radius: 9px;
+            padding: 8px 11px;
+            font-size: 13.5px;
+            color: var(--text-main);
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .remote-history-num {
+            color: var(--gold-accent);
+            margin-right: 6px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -1018,40 +1202,67 @@
     <header class="top-header">
         <div class="brand-group">
             <div class="brand-title-wrap">
-                <span style="font-size: 18px;">🗝️</span>
+                <svg class="svg-ic brand-emblem" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9.5" stroke-opacity="0.65"></circle>
+                    <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"></path>
+                    <path d="M12 7l1.8 3.2L17 12l-3.2 1.8L12 17l-1.8-3.2L7 12l3.2-1.8z"></path>
+                </svg>
                 <span class="brand-title">血染戰鬥營・真心話</span>
             </div>
             <span class="remain-badge" id="statusInfo">載入中</span>
-            <span class="remain-badge host-remote-badge" id="remoteHostBadge">📡 遠端待命</span>
+            <span class="remain-badge host-remote-badge" id="remoteHostBadge">◈ 遠端待命</span>
         </div>
 
         <div class="corner-dock">
-            <button class="icon-btn" id="standbyBtn" title="純淨待機畫面 (快捷鍵 H)">👁️ 待機</button>
-            <button class="icon-btn" id="openHistoryBtn" title="題庫管理與已抽歷史">📜 題庫</button>
-            <button class="icon-btn" id="fullscreenBtn" title="切換全螢幕">⛶ 全螢幕</button>
-            <button class="icon-btn" id="openSettingsBtn" title="開啟視覺與音效設定">⚙️ 設定</button>
+            <button class="icon-btn" id="standbyBtn" title="純淨待機畫面 (快捷鍵 H)">
+                <svg class="svg-ic" viewBox="0 0 24 24"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"></path><circle cx="12" cy="12" r="2.8"></circle></svg>
+                <span>待機</span>
+            </button>
+            <button class="icon-btn" id="openHistoryBtn" title="題庫管理與已抽歷史">
+                <svg class="svg-ic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+                <span>題庫</span>
+            </button>
+            <button class="icon-btn" id="fullscreenBtn" title="切換全螢幕">
+                <svg class="svg-ic" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
+                <span>全螢幕</span>
+            </button>
+            <button class="icon-btn" id="openSettingsBtn" title="開啟視覺與音效設定">
+                <svg class="svg-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"></path></svg>
+                <span>設定</span>
+            </button>
         </div>
     </header>
 
     <!-- 退出純淨待機按鈕 -->
-    <button class="icon-btn exit-standby-btn" id="exitStandbyBtn">👁️ 恢復介面 (H)</button>
+    <button class="icon-btn exit-standby-btn" id="exitStandbyBtn">✦ 恢復介面 (H)</button>
 
     <!-- 頂部通知 -->
     <div class="toast-stack" id="toastStack"></div>
     <!-- 遠端模式音效／語音解鎖提示條 -->
-    <button class="audio-unlock-banner" id="audioUnlockBanner">🔇 遠端模式已就緒：請主持人點擊此處一次，啟用電腦鐘聲與語音播報</button>
+    <button class="audio-unlock-banner" id="audioUnlockBanner">✦ 遠端模式已就緒：請主持人點擊此處一次，啟用電腦鐘聲與語音播報</button>
 
     <!-- 3. 主舞台：頂部即時預覽框 ＋ 1:1 絕對正圓大轉盤 -->
     <main class="stage-column">
         <!-- 正上方指針頂端的「即時聚焦預覽框」 -->
         <div class="top-preview-bar">
-            <span class="preview-tag" id="tickerLabel">🕯️ 正上方指針</span>
-            <div class="preview-text" id="tickerText">點擊中央紅寶石或滑動轉盤開始抽題</div>
+            <span class="preview-tag" id="tickerLabel">◈ 指針聚焦</span>
+            <div class="preview-text" id="tickerText">點擊中央寶石或滑動轉盤開始抽題</div>
+            <button class="reopen-last-btn" id="reopenLastBtn" title="重新放大顯示剛抽中的題目">
+                <svg class="svg-ic" viewBox="0 0 24 24" style="width:13px;height:13px;"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.8-3.8"></path></svg>
+                <span>重看上一題</span>
+            </button>
         </div>
 
         <!-- 1:1 絕對正圓轉盤容器 -->
         <div class="wheel-wrapper" id="wheelTouchArea">
             <div class="blood-moon-glow"></div>
+
+            <!-- 古天文鐘樓星盤微光細刻度環 -->
+            <svg class="astrolabe-halo" viewBox="0 0 400 400" aria-hidden="true">
+                <circle cx="200" cy="200" r="194" fill="none" stroke="currentColor" stroke-width="0.7" stroke-dasharray="3 6"></circle>
+                <circle cx="200" cy="200" r="184" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"></circle>
+                <path d="M200 2v12M200 386v12M2 200h12M386 200h12M60 60l8 8M332 332l8 8M340 60l-8 8M68 332l-8 8" stroke="currentColor" stroke-width="1.2"></path>
+            </svg>
 
             <div class="antique-bronze-rim">
                 <div class="antique-bronze-inner"></div>
@@ -1132,35 +1343,27 @@
                     </select>
                 </div>
                 <div class="setting-row">
-                    <span>絲絨配色主題 (8款)</span>
+                    <span>暗黑精品主題 (4款)</span>
                     <select class="ui-select" id="paletteSelect">
-                        <option value="opera">🍷 歌劇院黑紅金</option>
-                        <option value="dracula">🩸 鮮血伯爵與純金</option>
-                        <option value="parchment">📜 羊皮紙與緋紅</option>
-                        <option value="rosegold">🌹 午夜薔薇玫瑰金</option>
-                        <option value="amethyst">🔮 皇家紫晶與月光銀</option>
-                        <option value="prussian">🌌 星夜普魯士藍香檳</option>
-                        <option value="emerald">🌲 迷霧黑森林與古銅</option>
-                        <option value="obsidian">👑 曜石黑金奢華</option>
+                        <option value="opera">✦ 血月絲絨・黑紅香檳</option>
+                        <option value="prussian">✦ 午夜星象・深藍冷銀</option>
+                        <option value="emerald">✦ 翡翠莊園・墨綠古銅</option>
+                        <option value="obsidian">✦ 曜石玫瑰・炭黑鎏金</option>
                     </select>
                 </div>
                 <div class="setting-row">
                     <span>轉盤外框風格</span>
                     <select class="ui-select" id="rimSelect">
                         <option value="bronze">🏛️ 古銅暗金外框</option>
-                        <option value="rimless">🌑 無邊框血月光暈</option>
+                        <option value="rimless">🌑 無邊框星盤光暈</option>
                     </select>
                 </div>
                 <div class="setting-row">
-                    <span>纖細字體風格 (7款)</span>
+                    <span>精品纖細字體 (3款)</span>
                     <select class="ui-select" id="fontSelect">
-                        <option value="mincho">✒️ 日本古典明朝體</option>
-                        <option value="klee">🖋️ 日系手寫硬筆楷體</option>
-                        <option value="hina">🏛️ 古典歌劇院明朝體</option>
-                        <option value="notoserif">📖 思源古典細宋體</option>
-                        <option value="gothic">✨ 日系極簡細黑體</option>
-                        <option value="notosans">💎 現代俐落細黑體</option>
-                        <option value="maru">🌸 日系纖細圓體</option>
+                        <option value="mincho">✒️ 古典雕版明朝</option>
+                        <option value="klee">🖋️ 秘密信箋手寫</option>
+                        <option value="gothic">💎 美術館極簡細黑</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -1198,9 +1401,18 @@
                     <button class="ui-btn" id="ttsToggleBtn">🎙️ 語音：開啟</button>
                 </div>
                 <div class="setting-row">
-                    <span>播報人聲選擇</span>
-                    <select class="ui-select" id="ttsVoiceSelect" style="max-width: 210px;">
-                        <option value="">自動選擇最佳中文人聲</option>
+                    <span>台灣口音人聲</span>
+                    <select class="ui-select" id="ttsVoiceSelect" style="max-width: 215px;">
+                        <option value="">✨ 自動最佳台灣人聲</option>
+                    </select>
+                </div>
+                <div id="ttsVoiceHint" style="font-size:11.5px; color:#b39f96; line-height:1.45; display:none;"></div>
+                <div class="setting-row">
+                    <span>語音氛圍音調</span>
+                    <select class="ui-select" id="ttsPitchSelect">
+                        <option value="standard">✨ 標準清晰</option>
+                        <option value="storyteller">🕯️ 低沉說書人</option>
+                        <option value="lively">🎭 輕快活潑</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -1255,16 +1467,23 @@
                 </details>
             </div>
 
-            <!-- 檔案匯入與匯出 -->
+            <!-- 檔案匯入與備份 -->
             <div class="setting-group">
-                <div class="setting-group-title">📂 CSV 匯入與備份</div>
+                <div class="setting-group-title">📂 題庫匯入與換機備份</div>
                 <label class="ui-btn gold-btn">
                     📂 匯入 Google 表單 CSV 至當前題庫
                     <input type="file" id="csvFile" accept=".csv">
                 </label>
                 <div style="display:flex; gap:8px;">
-                    <button class="ui-btn" id="exportCsvBtn" style="flex:1;">📤 匯出備份 CSV</button>
+                    <button class="ui-btn" id="exportCsvBtn" style="flex:1;">📤 匯出單槽 CSV</button>
                     <button class="ui-btn" id="resetBtn" style="flex:1;">🔄 全部解除封印</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="ui-btn" id="exportJsonBtn" style="flex:1;">💾 匯出整包備份</button>
+                    <label class="ui-btn" style="flex:1;">
+                        📥 還原整包備份
+                        <input type="file" id="importJsonFile" accept=".json">
+                    </label>
                 </div>
             </div>
         </div>
@@ -1354,15 +1573,19 @@
     <!-- 手機玩家自助遙控專屬介面（網址帶 ?room= 時自動切換顯示） -->
     <section id="remoteView">
         <div class="remote-header">
-            <div class="remote-title">🗝️ 血染戰鬥營・命運遙控</div>
+            <div class="remote-title">✦ 血染戰鬥營・命運遙控 ✦</div>
             <div class="remote-badges">
-                <span class="remain-badge" id="remoteConnBadge">📡 連線中...</span>
+                <span class="remain-badge" id="remoteConnBadge">◈ 連線中...</span>
                 <span class="remain-badge" id="remoteRemainBadge">載入題庫中</span>
             </div>
         </div>
 
-        <!-- 長按 1 秒紅寶石蓄力啟動鈕 -->
-        <div class="remote-hold-stage">
+        <!-- 長按 1 秒寶石蓄力啟動鈕 ＋ 旋轉星盤流光 -->
+        <div class="remote-hold-stage" id="remoteHoldStage">
+            <svg class="remote-orbit-svg" viewBox="0 0 240 240" aria-hidden="true">
+                <circle cx="120" cy="120" r="115" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="4 8"></circle>
+                <circle cx="120" cy="120" r="108" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="40 160" stroke-linecap="round"></circle>
+            </svg>
             <svg class="hold-ring-svg" viewBox="0 0 210 210">
                 <circle class="hold-ring-bg" cx="105" cy="105" r="96"></circle>
                 <circle class="hold-ring-progress" id="holdRingProgress" cx="105" cy="105" r="96"></circle>
@@ -1376,144 +1599,119 @@
         <div class="remote-status-msg" id="remoteStatusMsg">正在與主畫面建立連線...</div>
 
         <!-- 同步顯示大螢幕目前抽中的題目 -->
-        <div class="remote-card-box">
+        <div class="remote-card-box" id="remoteResultCard">
             <div class="remote-card-label">
-                <span id="remoteResultMeta">🕯️ 目前大螢幕題目</span>
+                <span id="remoteResultMeta">◈ 目前大螢幕題目</span>
                 <button class="q-action-btn" id="remoteReplayTtsBtn" style="display:none;">🔊 主機重唸</button>
             </div>
-            <div class="remote-result-text" id="remoteResultText">尚未開始抽題，輪到你時請長按上方紅寶石！</div>
+            <div class="remote-result-text" id="remoteResultText">尚未開始抽題，輪到你時請長按上方寶石！</div>
         </div>
 
         <!-- 匿名加碼出題區 -->
         <div class="remote-card-box" id="remoteAddSection">
             <div class="remote-card-label">
-                <span>✍️ 匿名加碼出題（直接加入轉盤）</span>
+                <span>◈ 匿名加碼出題（直接加入轉盤）</span>
             </div>
             <div class="remote-add-row">
-                <input type="text" class="ui-input" id="remoteAddInput" maxlength="120" placeholder="輸入真心話題目，匿名丟進轉盤..." style="flex:1;">
+                <input type="text" class="ui-input" id="remoteAddInput" maxlength="120" enterkeyhint="send" placeholder="輸入真心話題目，匿名丟進轉盤..." style="flex:1;">
                 <button class="ui-btn gold-btn" id="remoteAddSubmitBtn">送出</button>
             </div>
             <div class="remote-add-feedback" id="remoteAddFeedback"></div>
         </div>
+
+        <!-- 可收合：本場最近已抽過題目清單 -->
+        <details class="remote-card-box remote-history-details" id="remoteHistoryDetails">
+            <summary>
+                <span>◈ 查看本場已抽過題目（最新 <span id="remoteHistoryCount">0</span> 題）</span>
+                <span style="font-size:11px; opacity:0.75;">點擊展開 ▾</span>
+            </summary>
+            <div class="remote-history-list" id="remoteHistoryList">
+                <div style="font-size:13px; color:#8c7a72; text-align:center; padding:8px 0;">尚無已抽紀錄</div>
+            </div>
+        </details>
     </section>
 
 <script>
-    // ================= 1. 擴充為 8 款高質感配色主題 ＋ 7 款纖細字體 =================
+    // ================= 1. 精選 4 款全暗黑精品配色 ＋ 3 款纖細字體 =================
     const PALETTES = {
         opera: {
             slices: [
-                ['#380713', '#5c0c20'],
-                ['#140b0e', '#261419'],
-                ['#4a0a1a', '#730f28'],
-                ['#220e19', '#3b162b']
+                ['#340712', '#590c20'],
+                ['#130a0d', '#241318'],
+                ['#470919', '#6e0e26'],
+                ['#200d17', '#361526']
             ],
-            textColor: '#f6eac2',
-            lineColor: 'rgba(222, 176, 104, 0.34)',
-            pegColor: '#deb068',
+            textColor: '#f5e8c4',
+            accentColor: '#d6a760',
+            panelBorder: 'rgba(214, 167, 96, 0.34)',
+            lineColor: 'rgba(214, 167, 96, 0.34)',
+            pegColor: '#d6a760',
+            bgDeep: '#080205',
             bgMid: '#1f0710',
-            bgGlow: 'rgba(185, 20, 48, 0.34)'
-        },
-        dracula: {
-            slices: [
-                ['#4d0611', '#850a1d'],
-                ['#0d0a0b', '#1c1517'],
-                ['#36040c', '#610715'],
-                ['#1c0c10', '#33141b']
-            ],
-            textColor: '#ffe89e',
-            lineColor: 'rgba(255, 215, 100, 0.4)',
-            pegColor: '#ffd166',
-            bgMid: '#26050c',
-            bgGlow: 'rgba(220, 20, 50, 0.4)'
-        },
-        parchment: {
-            slices: [
-                ['#420915', '#660f22'],
-                ['#140f10', '#241b1d'],
-                ['#300d12', '#4d141d'],
-                ['#1f1513', '#33221f']
-            ],
-            textColor: '#f7f2eb',
-            lineColor: 'rgba(247, 242, 235, 0.28)',
-            pegColor: '#e6ccb2',
-            bgMid: '#1c090d',
-            bgGlow: 'rgba(165, 30, 50, 0.3)'
-        },
-        rosegold: {
-            slices: [
-                ['#3d0c24', '#61133a'],
-                ['#160d16', '#281728'],
-                ['#2e081d', '#4a0d2e'],
-                ['#220f1d', '#36182e']
-            ],
-            textColor: '#f7dcd4',
-            lineColor: 'rgba(235, 195, 180, 0.3)',
-            pegColor: '#e6beae',
-            bgMid: '#210818',
-            bgGlow: 'rgba(180, 30, 100, 0.32)'
-        },
-        amethyst: {
-            slices: [
-                ['#240b36', '#3f145e'],
-                ['#0f0b17', '#1d162b'],
-                ['#310e42', '#52176e'],
-                ['#181026', '#291b42']
-            ],
-            textColor: '#f0e6ff',
-            lineColor: 'rgba(216, 180, 254, 0.32)',
-            pegColor: '#d8b4fe',
-            bgMid: '#180826',
-            bgGlow: 'rgba(147, 51, 234, 0.32)'
+            bgGlow: 'rgba(185, 20, 48, 0.34)',
+            hubTop: '#851328',
+            hubMid: '#400611'
         },
         prussian: {
             slices: [
-                ['#0c192e', '#162e52'],
-                ['#0b0f17', '#161e2e'],
-                ['#13233d', '#1f3a61'],
-                ['#161829', '#252945']
+                ['#0b172c', '#162e54'],
+                ['#090d16', '#151e2e'],
+                ['#122340', '#1f3a66'],
+                ['#14182a', '#232a47']
             ],
-            textColor: '#f5e6c4',
-            lineColor: 'rgba(230, 198, 135, 0.32)',
-            pegColor: '#e6c687',
-            bgMid: '#0b1528',
-            bgGlow: 'rgba(56, 120, 210, 0.3)'
+            textColor: '#edf2fa',
+            accentColor: '#a8bedb',
+            panelBorder: 'rgba(168, 190, 219, 0.32)',
+            lineColor: 'rgba(168, 190, 219, 0.3)',
+            pegColor: '#c4d5ec',
+            bgDeep: '#040812',
+            bgMid: '#0c182e',
+            bgGlow: 'rgba(65, 128, 220, 0.3)',
+            hubTop: '#1f4478',
+            hubMid: '#0d1f3a'
         },
         emerald: {
             slices: [
-                ['#09261c', '#114231'],
-                ['#0c1210', '#17241f'],
-                ['#113022', '#1c4f38'],
-                ['#171c16', '#273026']
+                ['#09241a', '#124231'],
+                ['#0a110f', '#15221d'],
+                ['#103022', '#1c5039'],
+                ['#141b16', '#232f26']
             ],
-            textColor: '#f2e5c6',
-            lineColor: 'rgba(212, 175, 105, 0.32)',
-            pegColor: '#d4af69',
-            bgMid: '#081c14',
-            bgGlow: 'rgba(25, 135, 95, 0.3)'
+            textColor: '#f0e4c6',
+            accentColor: '#caa562',
+            panelBorder: 'rgba(202, 165, 98, 0.33)',
+            lineColor: 'rgba(202, 165, 98, 0.32)',
+            pegColor: '#d4b16e',
+            bgDeep: '#040c09',
+            bgMid: '#0a1f16',
+            bgGlow: 'rgba(28, 140, 98, 0.3)',
+            hubTop: '#16573f',
+            hubMid: '#0a291d'
         },
         obsidian: {
             slices: [
-                ['#1c1610', '#33281c'],
-                ['#0d0c0b', '#1a1816'],
-                ['#291f14', '#453420'],
-                ['#141210', '#24201c']
+                ['#191516', '#2e2528'],
+                ['#0c0b0c', '#191618'],
+                ['#241b1e', '#3c2c31'],
+                ['#131112', '#221d1f']
             ],
-            textColor: '#ffdf85',
-            lineColor: 'rgba(245, 195, 85, 0.38)',
-            pegColor: '#f5c355',
-            bgMid: '#17120b',
-            bgGlow: 'rgba(212, 163, 60, 0.28)'
+            textColor: '#f5e0d9',
+            accentColor: '#d49a89',
+            panelBorder: 'rgba(212, 154, 137, 0.34)',
+            lineColor: 'rgba(212, 154, 137, 0.32)',
+            pegColor: '#dfa999',
+            bgDeep: '#060506',
+            bgMid: '#181315',
+            bgGlow: 'rgba(212, 140, 125, 0.25)',
+            hubTop: '#5e2f36',
+            hubMid: '#291317'
         }
     };
 
     const FONTS = {
-        mincho:    { family: "'Shippori Mincho', serif", weight: "400" },
-        klee:      { family: "'Klee One', cursive, serif", weight: "400" },
-        hina:      { family: "'Hina Mincho', serif", weight: "400" },
-        notoserif: { family: "'Noto Serif TC', serif", weight: "300" },
-        gothic:    { family: "'Zen Kaku Gothic New', sans-serif", weight: "300" },
-        notosans:  { family: "'Noto Sans TC', sans-serif", weight: "300" },
-        maru:      { family: "'Zen Maru Gothic', sans-serif", weight: "400" }
+        mincho: { family: "'Shippori Mincho', serif", weight: "400" },
+        klee:   { family: "'Klee One', cursive, serif", weight: "400" },
+        gothic: { family: "'Zen Kaku Gothic New', sans-serif", weight: "300" }
     };
 
     const DEFAULT_DEMO_QUESTIONS = [
@@ -1530,7 +1728,7 @@
     // ================= Firebase 預設資料庫網址（第 7 段教學填寫處） =================
     // 填上你的 Firebase Realtime Database 網址後，放到 GitHub Pages 大家掃碼就能直接連！
     // 範例：const DEFAULT_FIREBASE_DB_URL = 'https://botc-truth-wheel-xxxx-default-rtdb.asia-southeast1.firebasedatabase.app';
-    const DEFAULT_FIREBASE_DB_URL = 'https://botc-truth-wheel-xxxx-default-rtdb.asia-southeast1.firebasedatabase.app';
+    const DEFAULT_FIREBASE_DB_URL = 'https://botc-truth-wheel-default-rtdb.asia-southeast1.firebasedatabase.app';
 
     const STORAGE_KEY = 'botc_truth_wheel_v5';
     const urlParams = new URLSearchParams(window.location.search);
@@ -1561,6 +1759,8 @@
     let ttsVoiceURI = '';
     let ttsRate = 0.95;
     let ttsPrefixMode = 'with_num';
+    let ttsPitchMode = 'standard';
+    let lastSpinSeq = 0;
     let lastDrawnText = '';
     let lastDrawnNum = 0;
 
@@ -1631,9 +1831,15 @@
 
     function applyPaletteCSS(key) {
         const p = PALETTES[key] || PALETTES.opera;
-        document.documentElement.style.setProperty('--gold-primary', p.textColor);
-        document.documentElement.style.setProperty('--bg-mid', p.bgMid);
-        document.documentElement.style.setProperty('--bg-glow', p.bgGlow);
+        const root = document.documentElement.style;
+        root.setProperty('--gold-primary', p.textColor);
+        root.setProperty('--gold-accent', p.accentColor);
+        root.setProperty('--panel-border', p.panelBorder);
+        root.setProperty('--bg-deep', p.bgDeep);
+        root.setProperty('--bg-mid', p.bgMid);
+        root.setProperty('--bg-glow', p.bgGlow);
+        root.setProperty('--hub-top', p.hubTop);
+        root.setProperty('--hub-mid', p.hubMid);
     }
 
     // ================= 2. 自動記憶與初始化 =================
@@ -1656,6 +1862,7 @@
                 ttsVoiceURI,
                 ttsRate,
                 ttsPrefixMode,
+                ttsPitchMode,
                 remoteEnabled,
                 remoteAllowAdd,
                 remoteCooldownSec,
@@ -1691,6 +1898,7 @@
                 if (typeof data.ttsVoiceURI === 'string') ttsVoiceURI = data.ttsVoiceURI;
                 if (data.ttsRate) ttsRate = Number(data.ttsRate);
                 if (data.ttsPrefixMode) ttsPrefixMode = data.ttsPrefixMode;
+                if (data.ttsPitchMode) ttsPitchMode = data.ttsPitchMode;
                 if (typeof data.remoteEnabled === 'boolean') remoteEnabled = data.remoteEnabled;
                 if (typeof data.remoteAllowAdd === 'boolean') remoteAllowAdd = data.remoteAllowAdd;
                 if (data.remoteCooldownSec) remoteCooldownSec = Number(data.remoteCooldownSec);
@@ -1736,6 +1944,7 @@
         document.getElementById('ttsRateRange').value = String(ttsRate);
         document.getElementById('ttsRateVal').textContent = `${ttsRate.toFixed(2)}x`;
         document.getElementById('ttsPrefixSelect').value = ttsPrefixMode;
+        document.getElementById('ttsPitchSelect').value = ttsPitchMode;
 
         document.getElementById('remoteModeToggleBtn').textContent = remoteEnabled ? '📡 遠端：開啟' : '🔒 遠端：暫停';
         document.getElementById('remoteAllowAddToggleBtn').textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
@@ -1985,48 +2194,106 @@
         triggerBronzeBellStrike(185.00, now, 3.0, 1.0);         // 第一響 (F#3 宏亮定音)
         triggerBronzeBellStrike(146.83, now + 1.15, 3.3, 1.15); // 第二響 (D3 下潛重音)
     }
+    // 收到手機匿名加碼題目時的輕柔魔法鈴聲
+    function playMagicChime() {
+        if (!soundEnabled || IS_REMOTE_MODE || !audioUnlocked) return;
+        try {
+            initAudio();
+            const now = audioCtx.currentTime;
+            [659.25, 987.77].forEach((freq, idx) => {
+                const t = now + idx * 0.09;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, t);
+                gain.gain.setValueAtTime(0.001, t);
+                gain.gain.linearRampToValueAtTime(0.14, t + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.85);
+                osc.connect(gain);
+                gain.connect(masterBus);
+                osc.start(t);
+                osc.stop(t + 0.9);
+            });
+        } catch (e) {}
+    }
 
-    // ================= 4.5 主畫面語音播報模組 (Web Speech API) =================
+    // ================= 4.5 主畫面語音播報模組 (嚴格台灣口音 zh-TW) =================
     let availableVoices = [];
     let ttsDelayTimer = null;
     let activeUtterance = null;
 
-    function scoreVoice(v) {
-        const lang = (v.lang || '').toLowerCase();
+    function isTaiwanVoice(v) {
+        const lang = (v.lang || '').toLowerCase().replace('_', '-');
         const name = (v.name || '').toLowerCase();
-        let score = 0;
-        if (lang === 'zh-tw' || lang === 'zh_tw') score += 100;
-        else if (lang.startsWith('zh')) score += 40;
-        if (name.includes('natural') || name.includes('online')) score += 60;
-        if (name.includes('hsiaochen') || name.includes('yunjhe') || name.includes('hsiaoyu')) score += 40;
-        if (name.includes('meijia') || name.includes('mei-jia') || name.includes('google')) score += 25;
+        return lang === 'zh-tw' || lang.includes('-tw') || name.includes('taiwan') || name.includes('臺灣') || name.includes('台灣');
+    }
+
+    function scoreVoice(v) {
+        const name = (v.name || '').toLowerCase();
+        let score = isTaiwanVoice(v) ? 200 : 0;
+        if (name.includes('natural') || name.includes('online')) score += 80;
+        if (name.includes('hsiaochen')) score += 55;
+        if (name.includes('yunjhe')) score += 50;
+        if (name.includes('hsiaoyu')) score += 45;
+        if (name.includes('meijia') || name.includes('mei-jia')) score += 35;
+        if (name.includes('google')) score += 30;
+        if (name.includes('yating') || name.includes('zhiwei') || name.includes('hanhan')) score += 20;
         return score;
+    }
+
+    function formatTaiwanVoiceName(v) {
+        const name = (v.name || '').toLowerCase();
+        if (name.includes('hsiaochen')) return '⭐ 台灣女聲・曉臻 (自然)';
+        if (name.includes('yunjhe')) return '⭐ 台灣男聲・雲哲 (自然)';
+        if (name.includes('hsiaoyu')) return '⭐ 台灣女聲・曉雨 (自然)';
+        if (name.includes('yating')) return '台灣女聲・雅婷';
+        if (name.includes('hanhan')) return '台灣女聲・涵涵';
+        if (name.includes('zhiwei')) return '台灣男聲・志偉';
+        if (name.includes('meijia') || name.includes('mei-jia')) return '台灣女聲・美佳';
+        if (name.includes('google') && isTaiwanVoice(v)) return '台灣女聲・Google 國語';
+        return `${v.name} (${v.lang})`;
+    }
+
+    function getFilteredTaiwanVoices() {
+        const all = window.speechSynthesis.getVoices() || [];
+        const twOnly = all.filter(isTaiwanVoice).sort((a, b) => scoreVoice(b) - scoreVoice(a));
+        if (twOnly.length > 0) return { list: twOnly, isStrictTw: true };
+        // 極少數裝置完全沒有 zh-TW 時才退回一般中文避免無聲
+        const fallback = all.filter(v => (v.lang || '').toLowerCase().startsWith('zh')).sort((a, b) => scoreVoice(b) - scoreVoice(a));
+        return { list: fallback, isStrictTw: false };
     }
 
     function populateTtsVoices() {
         if (!('speechSynthesis' in window) || IS_REMOTE_MODE) return;
         const select = document.getElementById('ttsVoiceSelect');
+        const hintEl = document.getElementById('ttsVoiceHint');
         if (!select) return;
 
-        availableVoices = window.speechSynthesis.getVoices() || [];
-        const sorted = [...availableVoices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+        const { list, isStrictTw } = getFilteredTaiwanVoices();
+        availableVoices = list;
 
-        select.innerHTML = '<option value="">✨ 自動最佳中文人聲（推薦）</option>';
-        sorted.forEach(v => {
-            if (!v.lang.toLowerCase().startsWith('zh') && sorted.some(x => x.lang.toLowerCase().startsWith('zh'))) {
-                return; // 有中文語音時只列中文聲線，選單乾淨不雜亂
-            }
+        select.innerHTML = '<option value="">✨ 自動最佳台灣人聲</option>';
+        list.forEach(v => {
             const opt = document.createElement('option');
             opt.value = v.voiceURI;
-            const tag = v.name.toLowerCase().includes('natural') ? '⭐ ' : '';
-            opt.textContent = `${tag}${v.name} (${v.lang})`;
+            opt.textContent = formatTaiwanVoiceName(v);
             select.appendChild(opt);
         });
 
-        if (ttsVoiceURI && sorted.some(v => v.voiceURI === ttsVoiceURI)) {
+        if (ttsVoiceURI && list.some(v => v.voiceURI === ttsVoiceURI)) {
             select.value = ttsVoiceURI;
         } else {
+            ttsVoiceURI = '';
             select.value = '';
+        }
+
+        if (hintEl) {
+            if (!isStrictTw || list.length <= 1) {
+                hintEl.style.display = 'block';
+                hintEl.textContent = `💡 目前瀏覽器僅偵測到 ${isStrictTw ? list.length : 0} 組台灣人聲；改用 Microsoft Edge 開啟可免費解鎖「曉臻 / 雲哲 / 曉雨」3 款自然台灣男女聲，或搭配下方「語音氛圍音調」微調！`;
+            } else {
+                hintEl.style.display = 'none';
+            }
         }
     }
 
@@ -2050,14 +2317,13 @@
 
     function pickBestVoice() {
         if (availableVoices.length === 0 && 'speechSynthesis' in window) {
-            availableVoices = window.speechSynthesis.getVoices() || [];
+            availableVoices = getFilteredTaiwanVoices().list;
         }
         if (ttsVoiceURI) {
             const matched = availableVoices.find(v => v.voiceURI === ttsVoiceURI);
             if (matched) return matched;
         }
-        const sorted = [...availableVoices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
-        return sorted[0] || null;
+        return availableVoices[0] || null;
     }
 
     function speakText(text, delayMs = 0) {
@@ -2071,9 +2337,16 @@
                 const utter = new SpeechSynthesisUtterance(text);
                 const voice = pickBestVoice();
                 if (voice) utter.voice = voice;
-                utter.lang = voice?.lang || 'zh-TW';
-                utter.rate = ttsRate;
-                utter.pitch = 0.96;
+                utter.lang = 'zh-TW';
+
+                // 依語音氛圍微調音調與語速
+                let pitch = 0.98;
+                let rateMul = 1.0;
+                if (ttsPitchMode === 'storyteller') { pitch = 0.80; rateMul = 0.94; }
+                else if (ttsPitchMode === 'lively') { pitch = 1.12; rateMul = 1.04; }
+
+                utter.rate = Math.min(1.5, Math.max(0.6, ttsRate * rateMul));
+                utter.pitch = pitch;
                 utter.volume = 1.0;
 
                 utter.onstart = () => duckBellAudio(true);
@@ -2397,6 +2670,8 @@
 
                 lastDrawnText = questions[winningIndex].text;
                 lastDrawnNum = winningIndex + 1;
+                lastSpinSeq++;
+                document.getElementById('reopenLastBtn').classList.add('show');
                 const remainingAfter = questions.filter(q => !q.drawn).length;
                 const isLastQuestion = (remainingAfter === 0);
 
@@ -2501,12 +2776,26 @@
             updateStatusUI();
             spinBtn.disabled = false;
             remoteCooldownUntil = 0;
+            lastDrawnText = '';
+            lastDrawnNum = 0;
+            document.getElementById('reopenLastBtn').classList.remove('show');
             showToast('↩️ 已將該題放回轉盤（未封印）');
         }
         resultModal.classList.remove('show');
         if (typeof publishHostState === 'function') {
             publishHostState('idle');
         }
+    });
+
+    document.getElementById('reopenLastBtn').addEventListener('click', () => {
+        if (isSpinning || !lastDrawnText) return;
+        resultBadge.textContent = `✦ 題庫 ${currentSlot}・第 ${lastDrawnNum} 號真心話 ✦`;
+        modalQuestionText.textContent = lastDrawnText;
+        applyResultTextSizing(lastDrawnText);
+        modalSafeLockUntil = 0;
+        closeModalBtn.disabled = false;
+        closeModalBtn.textContent = '🗝️ 關閉視窗 (Space)';
+        resultModal.classList.add('show');
     });
 
     // ================= 7. 空白鍵 / 簡報筆 / 純淨待機快捷鍵 =================
@@ -2738,12 +3027,13 @@
     document.getElementById('searchQInput').addEventListener('input', renderQuestionManagerList);
     document.getElementById('smartCheckBtn').addEventListener('click', (e) => {
         filterAbnormalOnly = !filterAbnormalOnly;
-        e.target.style.borderColor = filterAbnormalOnly ? '#ff6b6b' : '';
-        e.target.textContent = filterAbnormalOnly ? '🧹 顯示全部' : '🧹 檢查異常題';
+        e.currentTarget.style.borderColor = filterAbnormalOnly ? '#ff6b6b' : '';
+        e.currentTarget.textContent = filterAbnormalOnly ? '🧹 顯示全部' : '🧹 異常題';
         renderQuestionManagerList();
     });
 
     function handleSingleAdd() {
+        if (isSpinning) return;
         const input = document.getElementById('manualAddInput');
         const val = input.value.trim();
         if (!val) return;
@@ -2754,6 +3044,7 @@
         saveState();
         updateStatusUI();
         renderStaticWheel();
+        drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
         renderQuestionManagerList();
         showToast('➕ 已新增 1 道題目');
     }
@@ -2763,6 +3054,7 @@
     });
 
     document.getElementById('batchPasteBtn').addEventListener('click', () => {
+        if (isSpinning) return;
         const textarea = document.getElementById('batchPasteInput');
         const lines = textarea.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
         if (lines.length === 0) return;
@@ -2773,6 +3065,7 @@
         saveState();
         updateStatusUI();
         renderStaticWheel();
+        drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
         renderQuestionManagerList();
         showToast(`📥 成功批次加入 ${lines.length} 道題目`);
     });
@@ -2808,6 +3101,7 @@
         applyPaletteCSS(currentPaletteKey);
         saveState();
         renderStaticWheel();
+        if (typeof publishHostState === 'function') publishHostState();
     });
 
     document.getElementById('rimSelect').addEventListener('change', (e) => {
@@ -2865,6 +3159,11 @@
     document.getElementById('ttsPrefixSelect').addEventListener('change', (e) => {
         ttsPrefixMode = e.target.value;
         saveState();
+    });
+    document.getElementById('ttsPitchSelect').addEventListener('change', (e) => {
+        ttsPitchMode = e.target.value;
+        saveState();
+        if (ttsEnabled) speakText('命運轉盤已就緒，請迎接今晚的真心話。', 0);
     });
 
     document.getElementById('testTtsBtn').addEventListener('click', () => {
@@ -2933,6 +3232,73 @@
         showToast(`🕯️ 成功載入 ${newQuestions.length} 題至題庫 ${currentSlot}${extraMsg}`);
     }
 
+    // 內建離線 CSV 備援解析器（即使斷網無法載入 PapaParse 也能正常匯入／匯出）
+    function parseCsvFallback(text) {
+        const rows = [];
+        let row = [], cell = '', inQuotes = false;
+        const clean = text.replace(/^\uFEFF/, '');
+        for (let i = 0; i < clean.length; i++) {
+            const ch = clean[i], next = clean[i + 1];
+            if (inQuotes) {
+                if (ch === '"' && next === '"') { cell += '"'; i++; }
+                else if (ch === '"') inQuotes = false;
+                else cell += ch;
+            } else {
+                if (ch === '"') inQuotes = true;
+                else if (ch === ',') { row.push(cell); cell = ''; }
+                else if (ch === '\r' && next === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; i++; }
+                else if (ch === '\n' || ch === '\r') { row.push(cell); rows.push(row); row = []; cell = ''; }
+                else cell += ch;
+            }
+        }
+        if (cell.length > 0 || row.length > 0) { row.push(cell); rows.push(row); }
+        return rows.filter(r => r.some(c => c.trim() !== ''));
+    }
+
+    function handleParsedCsvRows(rows) {
+        if (!rows || rows.length <= 1) {
+            showDialog({ title: '⚠️ 檔案格式錯誤', message: 'CSV 檔案內沒有找到有效的問卷問題。' });
+            return;
+        }
+        const header = rows[0].map(c => (c || '').trim());
+        const colCount = header.length;
+
+        if (colCount >= 3 && header[1] === '真心話問題內容' && header[2] === '狀態') {
+            applyImportedCsv(rows, 1, 2);
+            return;
+        }
+        if (colCount <= 2) {
+            applyImportedCsv(rows, colCount > 1 ? 1 : 0, -1);
+            return;
+        }
+
+        const colWrap = document.createElement('div');
+        colWrap.style.display = 'flex';
+        colWrap.style.flexDirection = 'column';
+        colWrap.style.gap = '7px';
+
+        header.forEach((colName, idx) => {
+            const sample = (rows[1][idx] || '').trim();
+            const preview = sample.length > 26 ? sample.substring(0, 26) + '…' : (sample || '(空)');
+            const btn = document.createElement('button');
+            btn.className = 'csv-col-option';
+            btn.textContent = `第 ${idx + 1} 欄【${colName || '未命名'}】範例：${preview}`;
+            btn.onclick = () => {
+                document.getElementById('dialogModal').classList.remove('show');
+                applyImportedCsv(rows, idx, -1);
+            };
+            colWrap.appendChild(btn);
+        });
+
+        showDialog({
+            title: '📂 偵測到多欄 CSV，請選擇題目欄位',
+            message: '點擊下方要匯入成轉盤題目的那一欄：',
+            customNode: colWrap,
+            hideConfirm: true,
+            cancelText: '取消'
+        });
+    }
+
     document.getElementById('csvFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         e.target.value = '';
@@ -2942,59 +3308,18 @@
             return;
         }
 
-        Papa.parse(file, {
-            header: false,
-            skipEmptyLines: true,
-            complete: function(results) {
-                const rows = results.data;
-                if (rows.length <= 1) {
-                    showDialog({ title: '⚠️ 檔案格式錯誤', message: 'CSV 檔案內沒有找到有效的問卷問題。' });
-                    return;
-                }
-
-                const header = rows[0].map(c => (c || '').trim());
-                const colCount = header.length;
-
-                // 若為本程式匯出的備份 CSV，自動還原問題與已封印狀態
-                if (colCount >= 3 && header[1] === '真心話問題內容' && header[2] === '狀態') {
-                    applyImportedCsv(rows, 1, 2);
-                    return;
-                }
-
-                // 若為標準 1~2 欄 Google 表單 CSV，直接匯入
-                if (colCount <= 2) {
-                    applyImportedCsv(rows, colCount > 1 ? 1 : 0, -1);
-                    return;
-                }
-
-                // 若超過 2 欄，彈出預覽讓主持人點選哪一欄才是問題
-                const colWrap = document.createElement('div');
-                colWrap.style.display = 'flex';
-                colWrap.style.flexDirection = 'column';
-                colWrap.style.gap = '7px';
-
-                header.forEach((colName, idx) => {
-                    const sample = (rows[1][idx] || '').trim();
-                    const preview = sample.length > 26 ? sample.substring(0, 26) + '…' : (sample || '(空)');
-                    const btn = document.createElement('button');
-                    btn.className = 'csv-col-option';
-                    btn.textContent = `第 ${idx + 1} 欄【${colName || '未命名'}】範例：${preview}`;
-                    btn.onclick = () => {
-                        document.getElementById('dialogModal').classList.remove('show');
-                        applyImportedCsv(rows, idx, -1);
-                    };
-                    colWrap.appendChild(btn);
-                });
-
-                showDialog({
-                    title: '📂 偵測到多欄 CSV，請選擇題目欄位',
-                    message: '點擊下方要匯入成轉盤題目的那一欄：',
-                    customNode: colWrap,
-                    hideConfirm: true,
-                    cancelText: '取消'
-                });
-            }
-        });
+        if (typeof Papa !== 'undefined') {
+            Papa.parse(file, {
+                header: false,
+                skipEmptyLines: true,
+                complete: (results) => handleParsedCsvRows(results.data),
+                error: () => showDialog({ title: '⚠️ 讀取失敗', message: 'CSV 解析失敗，請確認檔案為 UTF-8 格式。' })
+            });
+        } else {
+            const reader = new FileReader();
+            reader.onload = () => handleParsedCsvRows(parseCsvFallback(String(reader.result || '')));
+            reader.readAsText(file, 'UTF-8');
+        }
     });
 
     document.getElementById('exportCsvBtn').addEventListener('click', () => {
@@ -3007,8 +3332,10 @@
         questions.forEach((q, idx) => {
             rows.push([`#${idx + 1}`, q.text, q.drawn ? '已封印' : '未抽取']);
         });
-        const csvContent = '\uFEFF' + Papa.unparse(rows);
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const csvBody = (typeof Papa !== 'undefined')
+            ? Papa.unparse(rows)
+            : rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+        const blob = new Blob(['\uFEFF' + csvBody], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -3016,6 +3343,89 @@
         a.click();
         URL.revokeObjectURL(url);
         showToast('📤 已下載 CSV 備份檔案');
+    });
+
+    // 整包活動備份（三組題庫 A/B/C ＋ 所有外觀／語音／遠端設定）
+    document.getElementById('exportJsonBtn').addEventListener('click', () => {
+        const backup = {
+            app: 'botc_truth_wheel',
+            version: 7,
+            exportedAt: new Date().toISOString(),
+            currentSlot,
+            slotsData,
+            settings: {
+                currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, wheelScale,
+                spinDuration, soundEnabled, ttsEnabled, ttsVoiceURI, ttsRate, ttsPrefixMode,
+                ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteCooldownSec, roomCode,
+                showCornerQr, firebaseDbUrl
+            }
+        };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `血染轉盤_整包備份_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('💾 已匯出整包活動備份 (.json)');
+    });
+
+    document.getElementById('importJsonFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        e.target.value = '';
+        if (!file || isSpinning) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const parsed = JSON.parse(String(reader.result || ''));
+                if (!parsed || !parsed.slotsData || !parsed.slotsData.A || !Array.isArray(parsed.slotsData.A.questions)) {
+                    throw new Error('invalid');
+                }
+                showDialog({
+                    title: '📥 還原整包備份檔案',
+                    message: '確定要覆蓋目前電腦上的「A/B/C 三組題庫」與所有外觀／語音設定嗎？',
+                    confirmText: '確定還原',
+                    cancelText: '取消',
+                    onConfirm: () => {
+                        slotsData = parsed.slotsData;
+                        ['A', 'B', 'C'].forEach(k => {
+                            if (!slotsData[k] || !Array.isArray(slotsData[k].questions)) {
+                                slotsData[k] = { questions: [], drawCounter: 0 };
+                            }
+                            reassignColors(slotsData[k].questions);
+                        });
+                        if (parsed.currentSlot && slotsData[parsed.currentSlot]) currentSlot = parsed.currentSlot;
+                        const s = parsed.settings || {};
+                        if (s.currentPaletteKey && PALETTES[s.currentPaletteKey]) currentPaletteKey = s.currentPaletteKey;
+                        if (s.currentFontKey && FONTS[s.currentFontKey]) currentFontKey = s.currentFontKey;
+                        if (s.sliceLabelMode) sliceLabelMode = s.sliceLabelMode;
+                        if (s.rimStyle) rimStyle = s.rimStyle;
+                        if (s.wheelScale) wheelScale = Number(s.wheelScale);
+                        if (s.spinDuration) spinDuration = Number(s.spinDuration);
+                        if (typeof s.soundEnabled === 'boolean') soundEnabled = s.soundEnabled;
+                        if (typeof s.ttsEnabled === 'boolean') ttsEnabled = s.ttsEnabled;
+                        if (typeof s.ttsVoiceURI === 'string') ttsVoiceURI = s.ttsVoiceURI;
+                        if (s.ttsRate) ttsRate = Number(s.ttsRate);
+                        if (s.ttsPrefixMode) ttsPrefixMode = s.ttsPrefixMode;
+                        if (s.ttsPitchMode) ttsPitchMode = s.ttsPitchMode;
+                        if (typeof s.remoteEnabled === 'boolean') remoteEnabled = s.remoteEnabled;
+                        if (typeof s.remoteAllowAdd === 'boolean') remoteAllowAdd = s.remoteAllowAdd;
+                        if (s.remoteCooldownSec) remoteCooldownSec = Number(s.remoteCooldownSec);
+                        if (s.roomCode) roomCode = sanitizeRoomCode(s.roomCode);
+                        if (typeof s.showCornerQr === 'boolean') showCornerQr = s.showCornerQr;
+                        if (typeof s.firebaseDbUrl === 'string' && s.firebaseDbUrl) firebaseDbUrl = s.firebaseDbUrl;
+
+                        hasBeenInitialized = true;
+                        saveState();
+                        initAppState();
+                        showToast('✨ 已完整還原三組題庫與所有設定！');
+                    }
+                });
+            } catch (err) {
+                showDialog({ title: '⚠️ 備份檔格式錯誤', message: '請選擇由本系統匯出的 .json 備份檔案。' });
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
@@ -3032,9 +3442,14 @@
                     delete q.drawnOrder;
                 });
                 slotsData[currentSlot].drawCounter = 0;
+                remoteCooldownUntil = 0;
+                lastDrawnText = '';
+                lastDrawnNum = 0;
+                document.getElementById('reopenLastBtn').classList.remove('show');
                 saveState();
                 updateStatusUI();
                 renderStaticWheel();
+                drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
                 showToast('✨ 所有題目已解除封印');
             }
         });
@@ -3273,9 +3688,19 @@
         const serverNow = Date.now() + serverTimeOffset;
         const cooldownLeftMs = Math.max(0, remoteCooldownUntil - Date.now());
 
+        // 整理最新 10 題已抽紀錄同步給手機端查閱
+        const recentDrawn = questions
+            .map((q, idx) => ({ num: idx + 1, text: q.text, drawn: q.drawn, order: q.drawnOrder || 0 }))
+            .filter(item => item.drawn)
+            .sort((a, b) => b.order - a.order)
+            .slice(0, 10)
+            .map(({ num, text }) => ({ num, text }));
+
         const statePayload = {
             hostOnline: true,
             status: isSpinning ? 'spinning' : (resultModal.classList.contains('show') ? 'result' : lastPublishedStatus),
+            palette: currentPaletteKey,
+            spinSeq: lastSpinSeq,
             remoteEnabled: remoteEnabled,
             allowAdd: remoteAllowAdd,
             remaining: remaining,
@@ -3283,6 +3708,7 @@
             slot: currentSlot,
             lastQuestion: lastDrawnText || '',
             lastNum: lastDrawnNum || 0,
+            recentDrawn: recentDrawn,
             cooldownUntilServer: cooldownLeftMs > 0 ? (serverNow + cooldownLeftMs) : 0,
             updatedAt: firebase.database.ServerValue.TIMESTAMP
         };
@@ -3290,19 +3716,21 @@
         hostRoomRef.child('state').set(statePayload).catch(() => {});
     }
 
-    // 匿名投稿安全入庫（絕不在轉動期間改動題庫陣列）
+    // 匿名投稿安全入庫（回傳真實狀態給手機端：'added' | 'queued' | 'duplicate' | 'invalid'）
     function insertAnonymousQuestion(rawText) {
         const clean = String(rawText || '').replace(/\r?\n/g, ' ').trim();
-        if (clean.length < 2 || clean.length > 120) return false;
+        if (clean.length < 2 || clean.length > 120) return 'invalid';
 
         const questions = getActiveQuestions();
         const exists = questions.some(q => q.text.trim() === clean) || pendingRemoteQuestions.includes(clean);
-        if (exists) return false;
+        if (exists) return 'duplicate';
+
+        playMagicChime();
 
         if (isSpinning) {
             pendingRemoteQuestions.push(clean);
-            showToast('📥 收到匿名加碼題目，轉盤停止後將自動加入');
-            return true;
+            showToast('✦ 收到匿名加碼題目，轉盤停止後將自動加入');
+            return 'queued';
         }
 
         questions.push({ text: clean, drawn: false, colorIndex: 0 });
@@ -3314,8 +3742,8 @@
         if (historyDrawer.classList.contains('open')) {
             renderQuestionManagerList();
         }
-        showToast(`✍️ 收到 1 題匿名加碼！目前共 ${questions.length} 題`);
-        return true;
+        showToast(`✦ 收到 1 題匿名加碼！目前共 ${questions.length} 題`);
+        return 'added';
     }
 
     function flushPendingRemoteQuestions() {
@@ -3336,7 +3764,7 @@
             renderStaticWheel();
             drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
             if (historyDrawer.classList.contains('open')) renderQuestionManagerList();
-            showToast(`✍️ 已將 ${added} 題匿名加碼加入轉盤！`);
+            showToast(`✦ 已將 ${added} 題匿名加碼加入轉盤！`);
         }
     }
 
@@ -3358,6 +3786,8 @@
             return;
         }
 
+        // 先鎖定會話啟動時間，徹底杜絕剛連線瞬間誤讀舊指令
+        hostSessionStartMs = Date.now();
         roomCode = sanitizeRoomCode(roomCode);
         hostRoomRef = db.ref(`rooms/${roomCode}`);
         hostCmdRef = hostRoomRef.child('commands');
@@ -3374,10 +3804,9 @@
             updateHostRemoteBadge();
             if (fbConnected) {
                 hostSessionStartMs = Date.now() + serverTimeOffset;
-                // 主機離線時自動標記 hostOnline: false，讓手機立刻知道主畫面已關閉
                 hostRoomRef.child('state/hostOnline').onDisconnect().set(false);
-                // 清除舊指令避免重整誤觸
                 hostCmdRef.remove().catch(() => {});
+                hostRoomRef.child('receipts').remove().catch(() => {});
                 publishHostState();
             }
         });
@@ -3387,8 +3816,6 @@
             const cmd = snap.val();
             snap.ref.remove().catch(() => {});
             if (!cmd || !remoteEnabled) return;
-
-            const serverNow = Date.now() + serverTimeOffset;
             if (cmd.ts && cmd.ts < hostSessionStartMs - 2500) return;
 
             if (cmd.type === 'spin') {
@@ -3402,15 +3829,23 @@
             }
         });
 
-        // 監聽手機匿名加碼出題
+        // 監聽手機匿名加碼出題並寫入雙向回執
         hostSubRef.on('child_added', (snap) => {
             const sub = snap.val();
             snap.ref.remove().catch(() => {});
             if (!sub || !remoteAllowAdd) return;
 
             const serverNow = Date.now() + serverTimeOffset;
-            if (sub.ts && sub.ts < serverNow - 300000) return; // 丟棄超過 5 分鐘前的過期舊投稿
-            insertAnonymousQuestion(sub.text);
+            if (sub.ts && sub.ts < serverNow - 300000) return;
+
+            const resultStatus = insertAnonymousQuestion(sub.text);
+            const safeId = sub.id ? String(sub.id).replace(/[^a-zA-Z0-9_-]/g, '') : '';
+            if (safeId && hostRoomRef) {
+                hostRoomRef.child(`receipts/${safeId}`).set({
+                    status: resultStatus,
+                    ts: firebase.database.ServerValue.TIMESTAMP
+                }).catch(() => {});
+            }
         });
 
         updateHostRemoteBadge();
@@ -3493,18 +3928,20 @@
             showToast('請手動複製下方網址');
         }
     });
-    // ================= 12. 手機玩家端自助遙控介面邏輯 =================
+    // ================= 12. 手機玩家端自助遙控介面邏輯 (V7 精品同步版) =================
     function initRemoteClient() {
         const remoteRoom = sanitizeRoomCode(urlParams.get('room'));
         const remoteDbUrl = normalizeFirebaseUrl(urlParams.get('db') || DEFAULT_FIREBASE_DB_URL || firebaseDbUrl);
 
         const connBadge = document.getElementById('remoteConnBadge');
         const remainBadge = document.getElementById('remoteRemainBadge');
+        const holdStage = document.getElementById('remoteHoldStage');
         const holdBtn = document.getElementById('remoteHoldBtn');
         const holdRing = document.getElementById('holdRingProgress');
         const btnMain = document.getElementById('remoteBtnMain');
         const btnSub = document.getElementById('remoteBtnSub');
         const statusMsg = document.getElementById('remoteStatusMsg');
+        const resultCard = document.getElementById('remoteResultCard');
         const resultMeta = document.getElementById('remoteResultMeta');
         const resultText = document.getElementById('remoteResultText');
         const replayBtn = document.getElementById('remoteReplayTtsBtn');
@@ -3512,6 +3949,8 @@
         const addInput = document.getElementById('remoteAddInput');
         const addSubmitBtn = document.getElementById('remoteAddSubmitBtn');
         const addFeedback = document.getElementById('remoteAddFeedback');
+        const historyCountEl = document.getElementById('remoteHistoryCount');
+        const historyListEl = document.getElementById('remoteHistoryList');
 
         const RING_CIRCUMFERENCE = 603;
         const HOLD_DURATION_MS = 1000;
@@ -3525,6 +3964,11 @@
         let holdStartTime = 0;
         let holdRafId = null;
         let feedbackTimer = null;
+
+        let hasInitializedState = false;
+        let seenSpinSeq = 0;
+        let appliedPalette = '';
+        let lastHistoryKey = '';
 
         if (!remoteDbUrl) {
             connBadge.textContent = '⚠️ 未設定連線';
@@ -3559,8 +4003,56 @@
 
         stateRef.on('value', (snap) => {
             hostState = snap.val();
+
+            if (hostState) {
+                // 1. 即時同步主機暗黑精品配色
+                if (hostState.palette && PALETTES[hostState.palette] && hostState.palette !== appliedPalette) {
+                    appliedPalette = hostState.palette;
+                    applyPaletteCSS(appliedPalette);
+                }
+
+                // 2. 偵測新一輪開獎完成 → 手機震動＋題目卡片閃金邊
+                const seq = Number(hostState.spinSeq || 0);
+                if (!hasInitializedState) {
+                    hasInitializedState = true;
+                    seenSpinSeq = seq;
+                } else if (seq > seenSpinSeq && hostState.status === 'result') {
+                    seenSpinSeq = seq;
+                    if (navigator.vibrate) navigator.vibrate([30, 45, 35]);
+                    resultCard.classList.remove('flash-gold');
+                    void resultCard.offsetWidth;
+                    resultCard.classList.add('flash-gold');
+                }
+            }
             renderRemoteUi();
         });
+
+        function renderRemoteHistory(list) {
+            const items = Array.isArray(list) ? list : [];
+            const key = JSON.stringify(items);
+            if (key === lastHistoryKey) return;
+            lastHistoryKey = key;
+
+            historyCountEl.textContent = String(items.length);
+            historyListEl.innerHTML = '';
+
+            if (items.length === 0) {
+                historyListEl.innerHTML = '<div style="font-size:13px; color:#8c7a72; text-align:center; padding:8px 0;">尚無已抽紀錄</div>';
+                return;
+            }
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'remote-history-item';
+                const numSpan = document.createElement('span');
+                numSpan.className = 'remote-history-num';
+                numSpan.textContent = `#${String(item.num || 0).padStart(2, '0')}`;
+                const textNode = document.createTextNode(item.text || '');
+                div.appendChild(numSpan);
+                div.appendChild(textNode);
+                historyListEl.appendChild(div);
+            });
+        }
 
         function cancelHold(showHint = false) {
             if (!isHolding) return;
@@ -3572,7 +4064,7 @@
             }
             holdRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE);
             if (showHint && !holdBtn.disabled) {
-                statusMsg.textContent = '💡 請按住紅寶石滿 1 秒才會啟動（防誤觸）';
+                statusMsg.textContent = '💡 請按住寶石滿 1 秒才會啟動（防誤觸）';
             }
         }
 
@@ -3588,10 +4080,11 @@
         }
 
         function renderRemoteUi() {
-            connBadge.textContent = remoteConnected ? `📡 已連線 (${remoteRoom})` : '📡 連線中...';
+            connBadge.textContent = remoteConnected ? `◈ 已連線 (${remoteRoom})` : '◈ 連線中...';
 
             if (!remoteConnected) {
                 cancelHold(false);
+                holdStage.classList.remove('is-spinning');
                 holdBtn.disabled = true;
                 btnMain.textContent = '連線中';
                 btnSub.textContent = '請稍候';
@@ -3601,6 +4094,7 @@
 
             if (!hostState || hostState.hostOnline === false) {
                 cancelHold(false);
+                holdStage.classList.remove('is-spinning');
                 holdBtn.disabled = true;
                 remainBadge.textContent = '等待主畫面';
                 btnMain.textContent = '主機離線';
@@ -3614,18 +4108,21 @@
             const tot = hostState.total || 0;
             remainBadge.textContent = `題庫 ${hostState.slot || 'A'}｜剩 ${rem}/${tot}`;
 
-            // 同步顯示大螢幕抽中的題目與重唸按鈕
+            // 轉動時啟動星盤外環流光旋轉
+            holdStage.classList.toggle('is-spinning', hostState.status === 'spinning');
+
+            // 同步顯示大螢幕抽中題目、重唸按鈕與本場已抽紀錄牆
             if (hostState.lastQuestion) {
-                resultMeta.textContent = `🕯️ 目前大螢幕題目 (#${String(hostState.lastNum || 0).padStart(2, '0')})`;
+                resultMeta.textContent = `◈ 目前大螢幕題目 (#${String(hostState.lastNum || 0).padStart(2, '0')})`;
                 resultText.textContent = hostState.lastQuestion;
                 replayBtn.style.display = (hostState.status === 'spinning') ? 'none' : 'inline-block';
             } else {
-                resultMeta.textContent = '🕯️ 目前大螢幕題目';
-                resultText.textContent = '尚未開始抽題，輪到你時請長按上方紅寶石！';
+                resultMeta.textContent = '◈ 目前大螢幕題目';
+                resultText.textContent = '尚未開始抽題，輪到你時請長按上方寶石！';
                 replayBtn.style.display = 'none';
             }
+            renderRemoteHistory(hostState.recentDrawn);
 
-            // 同步是否允許手機匿名加碼出題
             addSection.style.display = hostState.allowAdd ? 'flex' : 'none';
 
             // 計算按鈕可用狀態
@@ -3643,18 +4140,18 @@
                 holdBtn.disabled = true;
                 btnMain.textContent = '轉動中';
                 btnSub.textContent = '請看大螢幕';
-                statusMsg.textContent = '🕯️ 命運轉盤流轉中，請注視大螢幕！';
+                statusMsg.textContent = '✦ 命運轉盤流轉中，請注視大螢幕！';
             } else if (Date.now() < localSpinLockUntil) {
                 holdBtn.disabled = true;
                 btnMain.textContent = '已送出';
                 btnSub.textContent = '啟動中...';
-                statusMsg.textContent = '✨ 已通知主畫面啟動轉盤！';
+                statusMsg.textContent = '✦ 已通知主畫面啟動轉盤！';
             } else if (rem <= 0) {
                 cancelHold(false);
                 holdBtn.disabled = true;
                 btnMain.textContent = '已抽完';
                 btnSub.textContent = '題庫全封印';
-                statusMsg.textContent = '🕯️ 題庫已全數抽完，可於下方匿名加碼新題目！';
+                statusMsg.textContent = '✦ 題庫已全數抽完，可於下方匿名加碼新題目！';
             } else if (cooldownLeftSec > 0) {
                 cancelHold(false);
                 holdBtn.disabled = true;
@@ -3667,16 +4164,14 @@
                     btnMain.textContent = '長按啟動';
                     btnSub.textContent = '按住 1 秒開轉';
                     statusMsg.textContent = hostState.status === 'result'
-                        ? '🩸 上一題回答完後，下一位長按紅寶石即可開轉'
-                        : '🩸 輪到你時，長按上方紅寶石 1 秒啟動轉盤';
+                        ? '✦ 上一題回答完後，下一位長按寶石即可開轉'
+                        : '✦ 輪到你時，長按上方寶石 1 秒啟動轉盤';
                 }
             }
         }
 
-        // 每 250ms 刷新一次倒數冷卻，確保時間一到立即解鎖按鈕
         setInterval(renderRemoteUi, 250);
 
-        // 長按 1 秒蓄力啟動互動（支援手機觸控與滑鼠，防誤觸）
         holdBtn.addEventListener('contextmenu', (e) => e.preventDefault());
 
         holdBtn.addEventListener('pointerdown', (e) => {
@@ -3735,11 +4230,13 @@
             setTimeout(() => { replayBtn.textContent = '🔊 主機重唸'; }, 2500);
         });
 
-        // 手機匿名加碼出題（送出後直接進大螢幕轉盤，5 秒防連發）
+        // 手機匿名加碼出題（含主機雙向防重複回執 ＋ 冷卻剩餘秒數提示）
         function submitAnonymousQuestion() {
             if (!remoteConnected || !hostState || !hostState.allowAdd) return;
-            if (Date.now() < localAddLockUntil) {
-                showAddFeedback('⏳ 送出太快了，請等 5 秒後再投稿下一題', '#fca5a5');
+            const nowMs = Date.now();
+            if (nowMs < localAddLockUntil) {
+                const leftSec = Math.ceil((localAddLockUntil - nowMs) / 1000);
+                showAddFeedback(`⏳ 請等 ${leftSec} 秒後再投稿下一題`, '#fca5a5');
                 return;
             }
             const text = addInput.value.replace(/\r?\n/g, ' ').trim();
@@ -3752,20 +4249,59 @@
                 return;
             }
 
+            const subId = 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            const receiptRef = roomRef.child(`receipts/${subId}`);
+            let settled = false;
+
             localAddLockUntil = Date.now() + 5000;
             addSubmitBtn.disabled = true;
+            showAddFeedback('✦ 傳送至大螢幕轉盤中…', 'var(--gold-accent)');
+
+            const receiptTimeout = setTimeout(() => {
+                if (settled) return;
+                settled = true;
+                receiptRef.off();
+                addSubmitBtn.disabled = false;
+                showAddFeedback('✅ 已送出至主畫面！', '#a7f3d0');
+            }, 4500);
+
+            receiptRef.on('value', (snap) => {
+                const rec = snap.val();
+                if (!rec || settled) return;
+                settled = true;
+                clearTimeout(receiptTimeout);
+                receiptRef.off();
+                receiptRef.remove().catch(() => {});
+                addSubmitBtn.disabled = false;
+
+                if (rec.status === 'added') {
+                    addInput.value = '';
+                    showAddFeedback('✅ 已匿名加入大螢幕轉盤！', '#a7f3d0');
+                    if (navigator.vibrate) navigator.vibrate(25);
+                } else if (rec.status === 'queued') {
+                    addInput.value = '';
+                    showAddFeedback('📥 轉盤轉動中，停下後會自動加入！', '#a7f3d0');
+                    if (navigator.vibrate) navigator.vibrate(25);
+                } else if (rec.status === 'duplicate') {
+                    localAddLockUntil = 0;
+                    showAddFeedback('⚠️ 轉盤裡已經有相同題目囉！請換一題', '#fca5a5');
+                } else {
+                    localAddLockUntil = 0;
+                    showAddFeedback('⚠️ 題目格式不符（需 2～120 字）', '#fca5a5');
+                }
+            });
+
             subRef.push({
+                id: subId,
                 text: text,
                 ts: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                addInput.value = '';
-                showAddFeedback('✅ 已匿名送出，直接加入大螢幕轉盤！', '#a7f3d0');
-                if (navigator.vibrate) navigator.vibrate(25);
             }).catch(() => {
+                settled = true;
+                clearTimeout(receiptTimeout);
+                receiptRef.off();
                 localAddLockUntil = 0;
+                addSubmitBtn.disabled = false;
                 showAddFeedback('⚠️ 送出失敗，請檢查網路後重試', '#fca5a5');
-            }).finally(() => {
-                setTimeout(() => { addSubmitBtn.disabled = false; }, 1200);
             });
         }
 
@@ -3773,7 +4309,7 @@
             addFeedback.textContent = msg;
             addFeedback.style.color = color;
             if (feedbackTimer) clearTimeout(feedbackTimer);
-            feedbackTimer = setTimeout(() => { addFeedback.textContent = ''; }, 3600);
+            feedbackTimer = setTimeout(() => { addFeedback.textContent = ''; }, 3800);
         }
 
         addSubmitBtn.addEventListener('click', submitAnonymousQuestion);
