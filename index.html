@@ -1432,6 +1432,178 @@
         }
         .dialog-box { background: linear-gradient(160deg, var(--bg-mid, #1f0710) 0%, var(--bg-deep, #080205) 100%); }
         .toast-item, .qr-corner-widget { background: var(--card-bot, rgba(20, 8, 13, 0.9)); }
+        /* ================= 10. 劇院暗幕待機主視覺 ＋ 收件脈動特效 (V11) ================= */
+        .stage-column {
+            transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.42s ease;
+        }
+        /* 進入待機模式時，完全隱藏轉盤與角落小 QR（改由劇院暗幕接手） */
+        body.standby-mode .stage-column {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.94);
+        }
+        body.standby-mode .qr-corner-widget {
+            opacity: 0;
+            pointer-events: none;
+        }
+        body.is-remote-mode .standby-curtain,
+        body.is-remote-mode .standby-dock {
+            display: none !important;
+        }
+
+        /* 劇院暗幕全螢幕主視覺（保留背後主題色營火火星） */
+        .standby-curtain {
+            position: fixed;
+            inset: 0;
+            z-index: 42;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: scale(1.03);
+            transition: opacity 0.46s cubic-bezier(0.16, 1, 0.3, 1), transform 0.46s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.46s;
+        }
+        body.standby-mode .standby-curtain {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .standby-clock {
+            font-size: clamp(14px, 1.8vw, 18px);
+            color: var(--gold-accent);
+            letter-spacing: 4px;
+            opacity: 0.82;
+            min-height: 24px;
+        }
+        .standby-emblem-wrap {
+            position: relative;
+            width: 78px;
+            height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-accent);
+        }
+        .standby-emblem-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -24px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--bg-glow) 0%, transparent 70%);
+            animation: breathe 4s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        .standby-emblem-svg {
+            width: 68px;
+            height: 68px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.1;
+            filter: drop-shadow(0 0 14px var(--bg-glow));
+        }
+        .standby-title {
+            font-size: clamp(28px, 4.8vw, 52px);
+            color: var(--gold-primary);
+            letter-spacing: clamp(4px, 0.8vw, 9px);
+            text-shadow: 0 4px 26px var(--bg-glow), 0 2px 10px rgba(0, 0, 0, 0.9);
+            margin: 0;
+        }
+        .standby-divider {
+            width: min(320px, 68vw);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            opacity: 0.65;
+        }
+        .standby-subtitle {
+            font-size: clamp(14.5px, 2vw, 20px);
+            color: var(--gold-accent);
+            letter-spacing: 3px;
+            max-width: 720px;
+            line-height: 1.6;
+        }
+
+        /* 已封存題數膠囊（收到匿名投稿時閃耀金光彈跳 +1） */
+        .standby-count-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(180deg, var(--card-top, rgba(34, 12, 20, 0.88)) 0%, var(--card-bot, rgba(14, 5, 9, 0.92)) 100%);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-primary);
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-size: clamp(14px, 1.8vw, 17px);
+            letter-spacing: 2px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .standby-count-num {
+            color: var(--gold-primary);
+            font-size: 1.2em;
+            text-shadow: 0 0 12px var(--bg-glow);
+        }
+        .standby-count-pill.pulse-gold {
+            animation: countGoldPulse 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes countGoldPulse {
+            0% { transform: scale(1); border-color: var(--gold-primary); box-shadow: 0 0 36px var(--bg-glow), 0 0 20px var(--gold-primary); }
+            35% { transform: scale(1.1); border-color: var(--gold-primary); box-shadow: 0 0 42px var(--bg-glow), 0 0 26px var(--gold-primary); }
+            100% { transform: scale(1); border-color: var(--panel-border); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65); }
+        }
+
+        /* 待機中央暖場掃碼卡片 */
+        .standby-qr-card {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            padding: 14px 20px 12px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, var(--card-top, rgba(30, 12, 18, 0.88)) 0%, var(--card-bot, rgba(12, 5, 8, 0.94)) 100%);
+            border: 1px solid var(--panel-border);
+            box-shadow: inset 0 1px 0 rgba(255, 242, 215, 0.14), 0 16px 40px rgba(0, 0, 0, 0.8);
+        }
+        .standby-qr-card.show { display: flex; }
+        #standbyQrCanvas {
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 10px;
+            line-height: 0;
+        }
+        .standby-qr-caption {
+            font-size: 12.5px;
+            color: var(--gold-accent);
+            letter-spacing: 1.5px;
+        }
+
+        /* 待機右下角低調控制組（快切鎖轉 ＋ 揭幕開始） */
+        .standby-dock {
+            position: fixed;
+            bottom: 18px;
+            right: 22px;
+            z-index: 55;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.56;
+            transition: opacity 0.25s ease;
+        }
+        .standby-dock:hover { opacity: 1; }
+        body.standby-mode .standby-dock { display: inline-flex; }
+        .standby-dock .exit-standby-btn {
+            position: static;
+            display: inline-flex;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -1479,8 +1651,36 @@
         </div>
     </header>
 
-    <!-- 退出純淨待機按鈕 -->
-    <button class="icon-btn exit-standby-btn" id="exitStandbyBtn">✦ 恢復介面 (H)</button>
+    <!-- 劇院暗幕待機主視覺（隱藏轉盤防劇透，支援暖場掃碼與匿名收件脈動） -->
+    <section class="standby-curtain" id="standbyCurtain" aria-hidden="true">
+        <div class="standby-clock" id="standbyClock"></div>
+        <div class="standby-emblem-wrap">
+            <svg class="standby-emblem-svg" viewBox="0 0 64 64" aria-hidden="true">
+                <circle cx="32" cy="32" r="28" stroke-opacity="0.45"></circle>
+                <circle cx="32" cy="32" r="22" stroke-opacity="0.7" stroke-dasharray="2 5"></circle>
+                <path d="M32 8l5.2 18.8L56 32l-18.8 5.2L32 56l-5.2-18.8L8 32l18.8-5.2z"></path>
+                <circle cx="32" cy="32" r="4" fill="currentColor" opacity="0.85"></circle>
+            </svg>
+        </div>
+        <h1 class="standby-title">血染戰鬥營・夜晚真心話</h1>
+        <div class="standby-divider"></div>
+        <div class="standby-subtitle" id="standbySubtitleDisplay">✦ 命運封存中・掃碼搶先匿名投稿 ✦</div>
+        <div class="standby-count-pill" id="standbyCountPill">
+            <span>◈ 目前已封存</span>
+            <span class="standby-count-num" id="standbyTotalCount">0</span>
+            <span>道真心話</span>
+        </div>
+        <div class="standby-qr-card" id="standbyQrCard">
+            <div id="standbyQrCanvas"></div>
+            <div class="standby-qr-caption" id="standbyQrCaption">◈ 掃碼連線・搶先匿名投稿真心話</div>
+        </div>
+    </section>
+
+    <!-- 待機右下角低調控制組（快切手機開轉鎖定 ＋ 一鍵揭幕） -->
+    <div class="standby-dock">
+        <button class="icon-btn" id="standbySpinLockQuickBtn" title="切換是否允許待機中由手機啟動轉盤">🔒 待機鎖轉中</button>
+        <button class="icon-btn exit-standby-btn" id="exitStandbyBtn">✦ 揭幕開始 (H)</button>
+    </div>
 
     <!-- 頂部通知 -->
     <div class="toast-stack" id="toastStack"></div>
@@ -1761,7 +1961,22 @@
                     </div>
                 </details>
             </div>
-
+<!-- 劇院待機暗幕設定 -->
+            <div class="setting-group">
+                <div class="setting-group-title">🎭 劇院待機暗幕（隱藏轉盤防劇透）</div>
+                <div class="setting-row">
+                    <span>待機中允許手機開轉</span>
+                    <button class="ui-btn" id="standbyAllowSpinToggleBtn">🔒 鎖定（僅開放投稿）</button>
+                </div>
+                <div class="setting-row">
+                    <span>待機畫面顯示時鐘</span>
+                    <button class="ui-btn" id="standbyClockToggleBtn">🕒 時鐘：開啟</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <span style="font-size:13px; color:#cbb8b0;">自訂暖場副標題</span>
+                    <input type="text" class="ui-input" id="standbySubtitleInput" maxlength="50" value="✦ 命運封存中・掃碼搶先匿名投稿 ✦" placeholder="例如：✦ 21:30 準時開抽 ✦">
+                </div>
+            </div>
             <!-- 檔案匯入與備份 -->
             <div class="setting-group">
                 <div class="setting-group-title">📂 題庫匯入與換機備份</div>
@@ -1946,7 +2161,7 @@
 
 <script>
     // ================= 1. 精選 6 款全暗黑精品配色 ＋ 3 款纖細字體 (V10) =================
-    const APP_VERSION = '10';
+    const APP_VERSION = '11';
     const PALETTES = {
         opera: {
             slices: [
@@ -2155,6 +2370,9 @@
     let remoteEnabled = true;
     let remoteAllowAdd = true;
     let remoteAllowReact = true;
+    let standbyAllowSpin = false;
+    let standbyShowClock = true;
+    let standbySubtitle = '✦ 命運封存中・掃碼搶先匿名投稿 ✦';
     let remoteCooldownSec = 10;
     let roomCode = 'botc01';
     let showCornerQr = true;
@@ -2278,6 +2496,9 @@
                 remoteEnabled,
                 remoteAllowAdd,
                 remoteAllowReact,
+                standbyAllowSpin,
+                standbyShowClock,
+                standbySubtitle,
                 remoteCooldownSec,
                 roomCode,
                 showCornerQr,
@@ -2316,6 +2537,9 @@
                 if (typeof data.remoteEnabled === 'boolean') remoteEnabled = data.remoteEnabled;
                 if (typeof data.remoteAllowAdd === 'boolean') remoteAllowAdd = data.remoteAllowAdd;
                 if (typeof data.remoteAllowReact === 'boolean') remoteAllowReact = data.remoteAllowReact;
+                if (typeof data.standbyAllowSpin === 'boolean') standbyAllowSpin = data.standbyAllowSpin;
+                if (typeof data.standbyShowClock === 'boolean') standbyShowClock = data.standbyShowClock;
+                if (typeof data.standbySubtitle === 'string') standbySubtitle = data.standbySubtitle;
                 if (data.remoteCooldownSec) remoteCooldownSec = Number(data.remoteCooldownSec);
                 if (data.roomCode) roomCode = sanitizeRoomCode(data.roomCode);
                 if (typeof data.showCornerQr === 'boolean') showCornerQr = data.showCornerQr;
@@ -2366,6 +2590,8 @@
         document.getElementById('remoteModeToggleBtn').textContent = remoteEnabled ? '📡 遠端：開啟' : '🔒 遠端：暫停';
         document.getElementById('remoteAllowAddToggleBtn').textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
         document.getElementById('remoteAllowReactToggleBtn').textContent = remoteAllowReact ? '✨ 應援：開啟' : '🚫 應援：關閉';
+        document.getElementById('standbySubtitleInput').value = standbySubtitle;
+        if (typeof syncStandbyUi === 'function') syncStandbyUi(false);
         document.getElementById('remoteCooldownSelect').value = String(remoteCooldownSec);
         document.getElementById('roomCodeInput').value = roomCode;
         document.getElementById('toggleCornerQrBtn').textContent = showCornerQr ? '📌 角落掃碼：開' : '📌 角落掃碼：關';
@@ -3004,7 +3230,9 @@
             }
             return false;
         }
-
+if (document.body.classList.contains('standby-mode')) {
+            document.body.classList.remove('standby-mode');
+        }
         // 無人值守無縫接續：若上一題結果視窗還開著，自動收起（維持已封印）並直接開轉
         if (resultModal.classList.contains('show')) {
             resultModal.classList.remove('show');
@@ -3075,9 +3303,14 @@
                 pointerVelocity = -Math.max(5, speedRatio * 20);
 
                 const currentQ = questions[currentSlice];
-                tickerText.textContent = currentQ.drawn
-                    ? `(已封印) ${currentQ.text}`
-                    : `#${String(currentSlice + 1).padStart(2, '0')} ${currentQ.text}`;
+                const numLabel = String(currentSlice + 1).padStart(2, '0');
+                if (sliceLabelMode === 'number') {
+                    tickerText.textContent = currentQ.drawn ? `(已封印) No.${numLabel}` : `No.${numLabel}・命運流轉中…`;
+                } else {
+                    tickerText.textContent = currentQ.drawn
+                        ? `(已封印) ${currentQ.text}`
+                        : `#${numLabel} ${currentQ.text}`;
+                }
             }
 
             // Delta-Time 修正：60Hz / 120Hz / 144Hz 螢幕回彈手感完全一致
@@ -3105,7 +3338,9 @@
                 const isLastQuestion = (remainingAfter === 0);
 
                 tickerLabel.textContent = `🎉 抽中 #${String(lastDrawnNum).padStart(2, '0')}`;
-                tickerText.textContent = lastDrawnText;
+                tickerText.textContent = (sliceLabelMode === 'number')
+                    ? `No.${String(lastDrawnNum).padStart(2, '0')}・命運揭曉中…`
+                    : lastDrawnText;
 
                 // 播放審判雙響重鐘 ＋ 金色營火爆發 ＋ 延遲語音朗讀
                 playHeavyBell();
@@ -3133,6 +3368,7 @@
                     resultBadge.textContent = `🕯️ 題庫 ${currentSlot}・第 ${lastDrawnNum} 號真心話 🕯️`;
                     modalQuestionText.textContent = lastDrawnText;
                     applyResultTextSizing(lastDrawnText);
+                    tickerText.textContent = lastDrawnText;
                     resultModal.classList.add('show');
 
                     modalSafeLockUntil = performance.now() + 1200;
@@ -3208,6 +3444,8 @@
             lastDrawnText = '';
             lastDrawnNum = 0;
             document.getElementById('reopenLastBtn').classList.remove('show');
+            tickerLabel.textContent = '◈ 指針聚焦';
+            tickerText.textContent = '已放回轉盤・點擊中央寶石重新抽題';
             showToast('↩️ 已將該題放回轉盤（未封印）');
         }
         resultModal.classList.remove('show');
@@ -3227,13 +3465,91 @@
         resultModal.classList.add('show');
     });
 
-    // ================= 7. 空白鍵 / 簡報筆 / 純淨待機快捷鍵 =================
+    // ================= 7. 劇院暗幕待機、極簡時鐘與控場快捷鍵 =================
+    let lastClockText = '';
+    function updateStandbyClock() {
+        if (IS_REMOTE_MODE) return;
+        const el = document.getElementById('standbyClock');
+        if (!el) return;
+        if (!standbyShowClock) {
+            if (lastClockText !== '') { el.textContent = ''; lastClockText = ''; }
+            return;
+        }
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const str = `✦ ${hh} : ${mm} ✦`;
+        if (str !== lastClockText) {
+            lastClockText = str;
+            el.textContent = str;
+        }
+    }
+    if (!IS_REMOTE_MODE) {
+        updateStandbyClock();
+        setInterval(updateStandbyClock, 1000);
+    }
+
+    function syncStandbyUi(pulseCount = false) {
+        if (IS_REMOTE_MODE) return;
+        const questions = getActiveQuestions();
+        const remaining = questions.filter(q => !q.drawn).length;
+        const countEl = document.getElementById('standbyTotalCount');
+        const pillEl = document.getElementById('standbyCountPill');
+        if (countEl) countEl.textContent = String(remaining);
+
+        if (pulseCount && pillEl) {
+            pillEl.classList.remove('pulse-gold');
+            void pillEl.offsetWidth;
+            pillEl.classList.add('pulse-gold');
+        }
+
+        const subEl = document.getElementById('standbySubtitleDisplay');
+        if (subEl) subEl.textContent = standbySubtitle.trim() || '✦ 命運封存中・掃碼搶先匿名投稿 ✦';
+
+        const lockBtn = document.getElementById('standbyAllowSpinToggleBtn');
+        const quickBtn = document.getElementById('standbySpinLockQuickBtn');
+        const qrCap = document.getElementById('standbyQrCaption');
+        if (lockBtn) lockBtn.textContent = standbyAllowSpin ? '🔓 允許（手機按即揭幕）' : '🔒 鎖定（僅開放投稿）';
+        if (quickBtn) quickBtn.textContent = standbyAllowSpin ? '🔓 待機允許開轉' : '🔒 待機鎖轉中';
+        if (qrCap) qrCap.textContent = standbyAllowSpin ? '◈ 掃碼連線・長按啟動或匿名投稿' : '◈ 掃碼連線・搶先匿名投稿真心話';
+
+        const clockBtn = document.getElementById('standbyClockToggleBtn');
+        if (clockBtn) clockBtn.textContent = standbyShowClock ? '🕒 時鐘：開啟' : '🕒 時鐘：關閉';
+        updateStandbyClock();
+    }
+
     function toggleStandbyMode() {
+        if (isSpinning) { showToast('⏳ 轉盤轉動中，請待停止後再切換待機'); return; }
         document.body.classList.toggle('standby-mode');
         closeAllDrawers();
+        syncStandbyUi(false);
+        if (typeof updateQrWidgets === 'function') updateQrWidgets();
+        if (typeof publishHostState === 'function') publishHostState();
     }
     document.getElementById('standbyBtn').addEventListener('click', toggleStandbyMode);
     document.getElementById('exitStandbyBtn').addEventListener('click', toggleStandbyMode);
+
+    function toggleStandbyAllowSpin() {
+        standbyAllowSpin = !standbyAllowSpin;
+        saveState();
+        syncStandbyUi(false);
+        if (typeof publishHostState === 'function') publishHostState();
+        showToast(standbyAllowSpin ? '🔓 待機中已開放手機開轉（按即自動揭幕）' : '🔒 待機中已鎖定手機開轉（僅開放匿名投稿）');
+    }
+    document.getElementById('standbyAllowSpinToggleBtn').addEventListener('click', toggleStandbyAllowSpin);
+    document.getElementById('standbySpinLockQuickBtn').addEventListener('click', toggleStandbyAllowSpin);
+
+    document.getElementById('standbyClockToggleBtn').addEventListener('click', () => {
+        standbyShowClock = !standbyShowClock;
+        saveState();
+        syncStandbyUi(false);
+    });
+
+    document.getElementById('standbySubtitleInput').addEventListener('input', (e) => {
+        standbySubtitle = e.target.value;
+        saveState();
+        syncStandbyUi(false);
+    });
 
     window.addEventListener('keydown', (e) => {
         if (IS_REMOTE_MODE) return;
@@ -3264,10 +3580,12 @@
             return;
         }
         if (e.code === 'Escape') {
+            const wasStandby = document.body.classList.contains('standby-mode');
             document.body.classList.remove('standby-mode');
             closeAllDrawers();
             document.getElementById('dialogModal').classList.remove('show');
             document.getElementById('qrEnlargeModal').classList.remove('show');
+            if (wasStandby && typeof publishHostState === 'function') publishHostState();
             return;
         }
 
@@ -3279,6 +3597,10 @@
         e.preventDefault();
         if (resultModal.classList.contains('show')) {
             confirmAndSealModal();
+            return;
+        }
+        if (document.body.classList.contains('standby-mode') && !standbyAllowSpin) {
+            showToast('🔒 待機暖場鎖定中，請先按 H 揭幕後開始抽題');
             return;
         }
         if (!isSpinning && !spinBtn.disabled) {
@@ -3813,7 +4135,7 @@
             settings: {
                 currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, pointerStyle, wheelScale,
                 spinDuration, soundEnabled, ttsEnabled, ttsVoiceURI, ttsRate, ttsPrefixMode,
-                ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteAllowReact, remoteCooldownSec,
+                ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteAllowReact, standbyAllowSpin, standbyShowClock, standbySubtitle, remoteCooldownSec,
                 roomCode, showCornerQr, firebaseDbUrl
             }
         };
@@ -3869,6 +4191,9 @@
                         if (typeof s.remoteEnabled === 'boolean') remoteEnabled = s.remoteEnabled;
                         if (typeof s.remoteAllowAdd === 'boolean') remoteAllowAdd = s.remoteAllowAdd;
                         if (typeof s.remoteAllowReact === 'boolean') remoteAllowReact = s.remoteAllowReact;
+                        if (typeof s.standbyAllowSpin === 'boolean') standbyAllowSpin = s.standbyAllowSpin;
+                        if (typeof s.standbyShowClock === 'boolean') standbyShowClock = s.standbyShowClock;
+                        if (typeof s.standbySubtitle === 'string') standbySubtitle = s.standbySubtitle;
                         if (s.remoteCooldownSec) remoteCooldownSec = Number(s.remoteCooldownSec);
                         if (s.roomCode) roomCode = sanitizeRoomCode(s.roomCode);
                         if (typeof s.showCornerQr === 'boolean') showCornerQr = s.showCornerQr;
@@ -3938,6 +4263,7 @@
         spinBtn.innerHTML = remaining === 0 && questions.length > 0
             ? '<span>已抽完</span>'
             : '<span>開始</span><span style="font-size:11px; opacity:0.8;">抽題</span>';
+            if (!IS_REMOTE_MODE && typeof syncStandbyUi === 'function') syncStandbyUi(false);
             if (!IS_REMOTE_MODE && !isSpinning && typeof publishHostState === 'function') {
             publishHostState();
         }
@@ -4095,6 +4421,8 @@
     function updateQrWidgets() {
         if (IS_REMOTE_MODE) return;
         const cornerWidget = document.getElementById('qrCornerWidget');
+        const standbyQrCard = document.getElementById('standbyQrCard');
+        const standbyQrEl = document.getElementById('standbyQrCanvas');
         const miniEl = document.getElementById('qrMiniCanvas');
         const bigEl = document.getElementById('qrBigCanvas');
         const roomTextEl = document.getElementById('qrRoomText');
@@ -4102,6 +4430,7 @@
 
         if (!cleanDb || !remoteEnabled) {
             cornerWidget.classList.remove('show');
+            if (standbyQrCard) standbyQrCard.classList.remove('show');
             return;
         }
 
@@ -4116,8 +4445,13 @@
             bigEl.innerHTML = '';
             new QRCode(miniEl, { text: shareUrl, width: 72, height: 72, correctLevel: QRCode.CorrectLevel.M });
             new QRCode(bigEl, { text: shareUrl, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
+            if (standbyQrEl) {
+                standbyQrEl.innerHTML = '';
+                new QRCode(standbyQrEl, { text: shareUrl, width: 148, height: 148, correctLevel: QRCode.CorrectLevel.M });
+            }
         }
 
+        if (standbyQrCard) standbyQrCard.classList.add('show');
         cornerWidget.classList.toggle('show', showCornerQr && remoteEnabled && Boolean(cleanDb));
     }
 
@@ -4174,6 +4508,8 @@
             palette: currentPaletteKey,
             spinSeq: lastSpinSeq,
             remoteEnabled: remoteEnabled,
+            isStandby: document.body.classList.contains('standby-mode'),
+            standbyAllowSpin: standbyAllowSpin,
             allowAdd: remoteAllowAdd,
             allowReact: remoteAllowReact,
             remaining: remaining,
@@ -4215,7 +4551,13 @@
         if (historyDrawer.classList.contains('open')) {
             renderQuestionManagerList();
         }
-        showToast(`✦ 收到 1 題匿名加碼！目前共 ${questions.length} 題`);
+        if (document.body.classList.contains('standby-mode')) {
+            triggerEmberBurst(1200);
+            syncStandbyUi(true);
+            showToast('✦ 收到一封新的匿名真心話！');
+        } else {
+            showToast(`✦ 收到 1 題匿名加碼！目前共 ${questions.length} 題`);
+        }
         return 'added';
     }
 
@@ -4323,6 +4665,7 @@
             if (cmd.type === 'spin') {
                 if (isSpinning) return;
                 if (Date.now() < remoteCooldownUntil) return;
+                if (document.body.classList.contains('standby-mode') && !standbyAllowSpin) return;
                 startSpin({ fromRemote: true });
             } else if (cmd.type === 'replayTts') {
                 if (lastDrawnText && !isSpinning) {
@@ -4610,6 +4953,7 @@
         function canRemoteSpinNow() {
             if (!remoteConnected || !hostState || hostState.hostOnline === false) return false;
             if (!hostState.remoteEnabled) return false;
+            if (hostState.isStandby && !hostState.standbyAllowSpin) return false;
             if (hostState.status === 'spinning') return false;
             if ((hostState.remaining || 0) <= 0) return false;
             if (Date.now() < localSpinLockUntil) return false;
@@ -4679,6 +5023,14 @@
                 btnMain.textContent = '已鎖定';
                 btnSub.textContent = '主持人專控中';
                 statusMsg.textContent = '🔒 主持人暫時關閉手機遠端啟動';
+            } else if (hostState.isStandby && !hostState.standbyAllowSpin) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = '暖場待命';
+                btnSub.textContent = '即將揭幕';
+                statusMsg.textContent = hostState.allowAdd
+                    ? '✦ 活動暖場待機中，請先於下方匿名加碼出題！'
+                    : '✦ 活動暖場待機中，請靜候主持人揭幕開抽';
             } else if (hostState.status === 'spinning') {
                 cancelHold(false);
                 holdBtn.disabled = true;
@@ -4707,9 +5059,11 @@
                 if (!isHolding) {
                     btnMain.textContent = '長按啟動';
                     btnSub.textContent = '按住 0.75 秒開轉';
-                    statusMsg.textContent = hostState.status === 'result'
-                        ? '✦ 上一題回答完後，下一位長按寶石即可開轉'
-                        : '✦ 輪到你時，長按上方寶石 0.75 秒啟動轉盤';
+                    statusMsg.textContent = hostState.isStandby
+                        ? '✦ 待機已開放開轉：長按寶石 0.75 秒直接揭幕開轉！'
+                        : (hostState.status === 'result'
+                            ? '✦ 上一題回答完後，下一位長按寶石即可開轉'
+                            : '✦ 輪到你時，長按上方寶石 0.75 秒啟動轉盤');
                 }
             }
         }
