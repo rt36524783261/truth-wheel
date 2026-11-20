@@ -1,0 +1,3787 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🗝️ 血染戰鬥營 — 夜晚真心話命運轉盤</title>
+    <!-- 引入 7 款纖細高雅字體 (無粗體) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hina+Mincho&family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@300;400&family=Noto+Serif+TC:wght@300;400&family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400&family=Zen+Maru+Gothic:wght@300;400&display=swap" rel="stylesheet">
+    <!-- 引入 Firebase Realtime Database (跨裝置遙控同步) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <!-- 引入 QRCode 產生器 (主畫面角落掃碼遙控) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-deep: #080205;
+            --bg-mid: #1f0710;
+            --bg-glow: rgba(185, 20, 48, 0.34);
+            --panel-bg: rgba(22, 8, 14, 0.92);
+            --panel-border: rgba(222, 176, 104, 0.34);
+            --gold-primary: #f6eac2;
+            --gold-accent: #deb068;
+            --text-main: #f7f2eb;
+            --ui-font: 'Shippori Mincho', serif;
+            --wheel-scale: 74vmin;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: var(--ui-font), 'Hiragino Mincho ProN', 'Yu Mincho', 'Microsoft JhengHei', serif;
+            user-select: none;
+            font-weight: 400;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 48%, var(--bg-mid) 0%, var(--bg-deep) 74%, #030102 100%);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 12px 16px;
+            overflow: hidden;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+
+        /* ================= 1. 背景營火餘燼粒子畫布 ================= */
+        #emberCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ================= 2. 頂部導覽列 ================= */
+        .top-header {
+            width: 100%;
+            max-width: 1380px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 30;
+            gap: 10px;
+            flex-shrink: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .brand-title {
+            font-size: clamp(16px, 2.2vw, 21px);
+            letter-spacing: 2px;
+            color: var(--gold-primary);
+            text-shadow: 0 2px 12px rgba(180, 20, 45, 0.65);
+            white-space: nowrap;
+        }
+        .remain-badge {
+            background: rgba(25, 8, 14, 0.85);
+            border: 1px solid var(--panel-border);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .corner-dock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-btn {
+            background: rgba(26, 9, 16, 0.85);
+            backdrop-filter: blur(10px);
+            color: var(--gold-primary);
+            border: 1px solid var(--panel-border);
+            padding: 7px 13px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .icon-btn:hover {
+            background: rgba(140, 20, 42, 0.5);
+            border-color: var(--gold-primary);
+        }
+
+        @media (max-width: 720px) {
+            .top-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .brand-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .corner-dock {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+            .icon-btn {
+                padding: 7px 4px;
+                font-size: 12.5px;
+            }
+        }
+
+        /* 純淨待機模式 */
+        body.standby-mode .top-header,
+        body.standby-mode .top-preview-bar {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-15px);
+        }
+        .exit-standby-btn {
+            position: fixed;
+            bottom: 18px;
+            right: 22px;
+            z-index: 50;
+            display: none;
+            opacity: 0.55;
+        }
+        .exit-standby-btn:hover { opacity: 1; }
+        body.standby-mode .exit-standby-btn { display: inline-flex; }
+
+        /* ================= 3. 主舞台：頂部即時預覽框 ＋ 1:1 絕對正圓大轉盤 ================= */
+        .stage-column {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            min-height: 0;
+            z-index: 10;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 960px) {
+            body.drawer-open .stage-column {
+                transform: translateX(-190px);
+            }
+        }
+
+        .top-preview-bar {
+            width: 96%;
+            max-width: 720px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 8px 18px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+            position: relative;
+            z-index: 20;
+            flex-shrink: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .preview-tag {
+            background: rgba(175, 20, 45, 0.35);
+            border: 1px solid rgba(222, 176, 104, 0.45);
+            color: var(--gold-primary);
+            font-size: 12px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .preview-text {
+            font-size: clamp(15px, 2.2vw, 19px);
+            color: var(--gold-primary);
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        /* 1:1 絕對正圓轉盤容器 */
+        .wheel-wrapper {
+            --exact-diameter: min(var(--wheel-scale), 88vw, calc(100dvh - 190px));
+            position: relative;
+            width: var(--exact-diameter);
+            height: var(--exact-diameter);
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blood-moon-glow {
+            position: absolute;
+            inset: -26px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--bg-glow) 0%, rgba(100, 12, 28, 0.14) 55%, transparent 72%);
+            pointer-events: none;
+            z-index: 0;
+            animation: breathe 4s ease-in-out infinite alternate;
+        }
+        @keyframes breathe {
+            0% { transform: scale(0.97); opacity: 0.75; }
+            100% { transform: scale(1.03); opacity: 1; }
+        }
+
+        .antique-bronze-rim {
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #26140c, #7a5228, #331910, #ad7e42, #2b140d, #855b2d, #1f0e09, #ad7e42, #26140c
+            );
+            padding: 3.5px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), inset 0 0 12px rgba(0, 0, 0, 0.9);
+            z-index: 1;
+        }
+        .antique-bronze-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #0a0306;
+            border: 1px solid rgba(222, 176, 104, 0.3);
+        }
+        body.rimless-mode .antique-bronze-rim {
+            background: transparent;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
+        }
+
+        #wheelCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 2;
+            will-change: transform;
+            transform: translate3d(0, 0, 0) rotate(0deg);
+        }
+
+        #highlightCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .wheel-vignette {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, transparent 62%, rgba(8, 2, 4, 0.5) 100%);
+            border: 1px solid rgba(222, 176, 104, 0.32);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* 正上方 12 點鐘固定古銅金指針 */
+        .top-pointer-assembly {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            width: 46px;
+            height: 72px;
+            margin-left: -23px;
+            z-index: 15;
+            pointer-events: none;
+            transform-origin: 23px 14px;
+            will-change: transform;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.9));
+        }
+
+        /* 中央紅寶石啟動鈕 */
+        .center-hub {
+            position: relative;
+            width: 15%;
+            height: 15%;
+            min-width: 68px;
+            min-height: 68px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #7d1124 0%, #3d0610 65%, #1a0106 100%);
+            border: 2px solid var(--gold-accent);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.95),
+                0 0 20px rgba(185, 22, 48, 0.55),
+                inset 0 1px 5px rgba(246, 234, 194, 0.35);
+            color: var(--gold-primary);
+            font-size: clamp(13px, 1.8vw, 16px);
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1px;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+            outline: none;
+        }
+        .center-hub::after {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            border: 1px solid rgba(246, 234, 194, 0.25);
+            pointer-events: none;
+        }
+        .center-hub:hover:not(:disabled) {
+            transform: scale(1.07);
+            border-color: var(--gold-primary);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95), 0 0 30px rgba(222, 176, 104, 0.65);
+        }
+        .center-hub:disabled {
+            background: radial-gradient(circle, #211518, #0d080a);
+            border-color: #4a3830;
+            color: #6e5a53;
+            cursor: not-allowed;
+        }
+
+        /* ================= 4. 側邊/底部抽屜 ================= */
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            right: -460px;
+            width: 420px;
+            max-width: 94vw;
+            height: 100dvh;
+            background: rgba(20, 7, 12, 0.95);
+            backdrop-filter: blur(12px);
+            border-left: 1px solid var(--panel-border);
+            box-shadow: -15px 0 45px rgba(0, 0, 0, 0.85);
+            z-index: 95;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .side-drawer.open {
+            right: 0;
+        }
+
+        @media (max-width: 820px) {
+            .side-drawer {
+                top: auto;
+                bottom: -58dvh;
+                right: 0;
+                width: 100vw;
+                max-width: 100vw;
+                height: 52dvh;
+                border-left: none;
+                border-top: 1.5px solid var(--gold-accent);
+                border-radius: 20px 20px 0 0;
+            }
+            .side-drawer.open {
+                bottom: 0;
+            }
+        }
+
+        .drawer-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(222, 176, 104, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .drawer-title {
+            font-size: 17px;
+            color: var(--gold-primary);
+            letter-spacing: 1.5px;
+        }
+        .drawer-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(222, 176, 104, 0.35);
+            color: var(--gold-primary);
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .setting-group {
+            background: rgba(0, 0, 0, 0.38);
+            border: 1px solid rgba(222, 176, 104, 0.16);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .setting-group-title {
+            font-size: 13px;
+            color: var(--gold-accent);
+            letter-spacing: 1.2px;
+            border-bottom: 1px solid rgba(222, 176, 104, 0.12);
+            padding-bottom: 4px;
+        }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+        .ui-select, .ui-btn, .ui-input {
+            background: rgba(255, 245, 230, 0.06);
+            color: var(--gold-primary);
+            border: 1px solid rgba(222, 176, 104, 0.35);
+            padding: 6px 11px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .ui-input { user-select: text; color: #fff; }
+        .ui-input::placeholder { color: #8c7a72; }
+        .ui-select option { background: #1a070d; color: var(--gold-primary); }
+        .ui-btn { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+        .ui-btn.gold-btn {
+            background: linear-gradient(135deg, #8a1529 0%, #4d0713 100%);
+            border-color: var(--gold-accent);
+        }
+        .ui-btn:hover, .ui-select:hover {
+            border-color: var(--gold-primary);
+            background: rgba(222, 176, 104, 0.16);
+        }
+        input[type="file"] { display: none; }
+        input[type="range"] {
+            accent-color: var(--gold-accent);
+            width: 130px;
+            cursor: pointer;
+        }
+
+        .slot-switcher {
+            display: flex;
+            background: rgba(18, 6, 11, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 4px;
+        }
+        .slot-pill {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #b59e94;
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .slot-pill.active {
+            background: linear-gradient(135deg, #8a1429 0%, #4d0713 100%);
+            color: var(--gold-primary);
+            box-shadow: 0 2px 8px rgba(138, 20, 41, 0.6);
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(222, 176, 104, 0.2);
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #a8948b;
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: rgba(165, 22, 48, 0.5);
+            color: var(--gold-primary);
+            border: 1px solid rgba(222, 176, 104, 0.35);
+        }
+
+        .q-list-item {
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(222, 176, 104, 0.18);
+            border-radius: 9px;
+            padding: 8px 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+        }
+        .q-list-item.abnormal {
+            border-color: #ff6b6b;
+            background: rgba(180, 20, 30, 0.2);
+        }
+        .q-list-text {
+            flex: 1;
+            line-height: 1.4;
+            word-break: break-word;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .q-list-text:hover { background: rgba(255, 255, 255, 0.06); }
+        .q-action-btn {
+            background: rgba(222, 176, 104, 0.12);
+            border: 1px solid rgba(222, 176, 104, 0.32);
+            color: var(--gold-primary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .q-action-btn:hover { background: rgba(222, 176, 104, 0.28); }
+        .q-action-btn.del { color: #f28b82; border-color: rgba(242, 139, 130, 0.3); }
+
+        /* ================= 5. 抽中結果巨幅視窗 ================= */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 1, 3, 0.86);
+            backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 18px;
+            opacity: 0;
+            transition: opacity 0.32s ease;
+        }
+        .modal-backdrop.show {
+            display: flex;
+            opacity: 1;
+        }
+        .result-card {
+            background: radial-gradient(circle at 50% 0%, #450b1b 0%, #1c060d 62%, #0d0206 100%);
+            border: 1.5px solid var(--gold-accent);
+            border-radius: 22px;
+            padding: 40px 36px 34px;
+            max-width: 980px;
+            width: 94%;
+            text-align: center;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 60px rgba(185, 22, 48, 0.35);
+            position: relative;
+            transform: scale(0.9) translateY(15px);
+            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .result-card::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(222, 176, 104, 0.22);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+        .modal-backdrop.show .result-card {
+            transform: scale(1) translateY(0);
+        }
+        .result-subtitle {
+            display: inline-block;
+            color: var(--gold-accent);
+            border-bottom: 1px solid rgba(222, 176, 104, 0.4);
+            padding-bottom: 6px;
+            font-size: 16px;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+        }
+        .result-main-text {
+            font-size: clamp(24px, 4.5vw, 48px);
+            color: var(--gold-primary);
+            line-height: 1.48;
+            letter-spacing: 1.5px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
+            margin-bottom: 36px;
+            word-break: break-word;
+        }
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .seal-btn {
+            background: linear-gradient(135deg, #8a1429 0%, #4a0713 100%);
+            color: var(--gold-primary);
+            border: 1px solid var(--gold-accent);
+            font-size: clamp(15px, 2.2vw, 19px);
+            letter-spacing: 1.5px;
+            padding: 12px 32px;
+            border-radius: 35px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+            transition: all 0.25s ease;
+        }
+        .seal-btn:disabled { opacity: 0.6; cursor: wait; }
+        .skip-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbb8b0;
+            border: 1px solid rgba(222, 176, 104, 0.28);
+            font-size: 14px;
+            padding: 11px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .dialog-box {
+            background: linear-gradient(160deg, #240911 0%, #120408 100%);
+            border: 1px solid var(--gold-accent);
+            border-radius: 16px;
+            padding: 26px 30px;
+            max-width: 420px;
+            width: 92%;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.95);
+        }
+        .dialog-title { font-size: 19px; color: var(--gold-primary); margin-bottom: 12px; }
+        .dialog-desc { font-size: 14.5px; color: #d6c7bc; line-height: 1.6; margin-bottom: 22px; }
+        .dialog-btns { display: flex; justify-content: center; gap: 12px; }
+
+        .toast-stack {
+            position: fixed;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast-item {
+            background: rgba(24, 8, 14, 0.95);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-primary);
+            padding: 7px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            animation: fadeSlide 0.25s ease forwards;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* ================= 6. 防呆補強與新功能樣式 (V6) ================= */
+        html, body {
+            overscroll-behavior: none;
+        }
+        #wheelTouchArea {
+            touch-action: none;
+        }
+        .wheel-wrapper {
+            --exact-diameter: max(220px, min(var(--wheel-scale), 88vw, calc(100dvh - 190px)));
+        }
+
+        /* 超長題目防爆版：限制卡片高度並支援內部捲動與字級自動縮放 */
+        .result-card {
+            max-height: 88dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .result-main-text {
+            max-height: 46dvh;
+            width: 100%;
+            overflow-y: auto;
+            padding: 4px 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold-accent) transparent;
+        }
+        .result-main-text.size-md { font-size: clamp(20px, 3.4vw, 36px); line-height: 1.5; }
+        .result-main-text.size-lg { font-size: clamp(17px, 2.4vw, 27px); line-height: 1.55; text-align: left; }
+        .result-main-text.size-xl { font-size: clamp(15px, 1.9vw, 21px); line-height: 1.6; text-align: left; }
+
+        /* 遠端狀態標籤與音效解鎖提示條 */
+        .host-remote-badge {
+            display: none;
+            border-color: rgba(110, 231, 183, 0.45);
+            color: #a7f3d0;
+        }
+        .host-remote-badge.offline {
+            border-color: rgba(248, 113, 113, 0.45);
+            color: #fca5a5;
+        }
+        .audio-unlock-banner {
+            position: fixed;
+            top: 64px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 80;
+            background: linear-gradient(135deg, #991b1b 0%, #5c0a16 100%);
+            border: 1.5px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), 0 0 20px rgba(220, 38, 38, 0.5);
+            display: none;
+            white-space: nowrap;
+            animation: pulseBanner 1.8s ease-in-out infinite;
+        }
+        .audio-unlock-banner.show { display: inline-flex; align-items: center; gap: 8px; }
+        @keyframes pulseBanner {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.03); }
+        }
+
+        /* 主畫面左下角迷你掃碼角標 */
+        .qr-corner-widget {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            z-index: 45;
+            background: rgba(20, 7, 12, 0.9);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .qr-corner-widget.show { display: flex; }
+        .qr-corner-widget:hover { transform: scale(1.05); border-color: var(--gold-primary); }
+        #qrMiniCanvas {
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 6px;
+            line-height: 0;
+        }
+        .qr-corner-label {
+            font-size: 11px;
+            color: var(--gold-primary);
+            letter-spacing: 0.8px;
+        }
+        #qrBigCanvas {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 12px auto 14px;
+            line-height: 0;
+        }
+
+        /* 自訂對話框輸入欄位與 CSV 欄位選擇器 */
+        #dialogExtra {
+            margin-bottom: 18px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+        #dialogExtra.show { display: flex; }
+        .dialog-textarea {
+            width: 100%;
+            min-height: 82px;
+            resize: vertical;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--gold-accent);
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 12px;
+            font-size: 14.5px;
+            line-height: 1.5;
+            outline: none;
+            user-select: text;
+        }
+        .csv-col-option {
+            background: rgba(255, 245, 230, 0.06);
+            border: 1px solid rgba(222, 176, 104, 0.35);
+            color: var(--gold-primary);
+            padding: 9px 12px;
+            border-radius: 9px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.4;
+            transition: background 0.2s;
+        }
+        .csv-col-option:hover { background: rgba(165, 22, 48, 0.45); border-color: var(--gold-primary); }
+
+        /* ================= 7. 手機玩家自助遙控模式專屬介面 ================= */
+        body.is-remote-mode .top-header,
+        body.is-remote-mode .stage-column,
+        body.is-remote-mode .exit-standby-btn,
+        body.is-remote-mode .side-drawer,
+        body.is-remote-mode #resultModal,
+        body.is-remote-mode .qr-corner-widget,
+        body.is-remote-mode .audio-unlock-banner {
+            display: none !important;
+        }
+        body.is-remote-mode {
+            overflow-y: auto;
+            justify-content: flex-start;
+            padding: 16px 14px 32px;
+        }
+        #remoteView {
+            display: none;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            z-index: 15;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        body.is-remote-mode #remoteView {
+            display: flex;
+        }
+        .remote-header {
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .remote-title {
+            font-size: 21px;
+            color: var(--gold-primary);
+            letter-spacing: 2px;
+            text-shadow: 0 2px 12px rgba(185, 20, 48, 0.7);
+        }
+        .remote-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 手機端核心：紅寶石長按蓄力啟動鈕 */
+        .remote-hold-stage {
+            position: relative;
+            width: 210px;
+            height: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 6px 0;
+        }
+        .hold-ring-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            pointer-events: none;
+        }
+        .hold-ring-bg {
+            fill: none;
+            stroke: rgba(222, 176, 104, 0.2);
+            stroke-width: 6;
+        }
+        .hold-ring-progress {
+            fill: none;
+            stroke: var(--gold-primary);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 603;
+            stroke-dashoffset: 603;
+            filter: drop-shadow(0 0 8px rgba(246, 234, 194, 0.85));
+        }
+        .remote-hold-btn {
+            width: 174px;
+            height: 174px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-accent);
+            background: radial-gradient(circle at 35% 30%, #8c1329 0%, #450612 65%, #1c0106 100%);
+            color: var(--gold-primary);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9), 0 0 28px rgba(185, 22, 48, 0.55), inset 0 2px 8px rgba(246, 234, 194, 0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            touch-action: none;
+            outline: none;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+        .remote-hold-btn.holding {
+            transform: scale(0.95);
+            box-shadow: 0 0 42px rgba(235, 38, 72, 0.9), inset 0 0 18px rgba(246, 234, 194, 0.45);
+            border-color: var(--gold-primary);
+        }
+        .remote-hold-btn:disabled {
+            background: radial-gradient(circle, #24171a, #10090b);
+            border-color: #4a3830;
+            color: #8c756d;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+            cursor: not-allowed;
+        }
+        .remote-btn-main { font-size: 22px; letter-spacing: 2px; }
+        .remote-btn-sub { font-size: 12.5px; opacity: 0.85; letter-spacing: 1px; }
+
+        .remote-status-msg {
+            font-size: 14px;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+            text-align: center;
+            min-height: 22px;
+        }
+
+        /* 手機端同步顯示目前抽中的題目與匿名加碼投稿區 */
+        .remote-card-box {
+            width: 100%;
+            background: rgba(24, 8, 14, 0.9);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 15px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75);
+        }
+        .remote-card-label {
+            font-size: 12.5px;
+            color: var(--gold-accent);
+            letter-spacing: 1.2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remote-result-text {
+            font-size: 18px;
+            color: var(--gold-primary);
+            line-height: 1.55;
+            word-break: break-word;
+            min-height: 28px;
+        }
+        .remote-add-row {
+            display: flex;
+            gap: 8px;
+        }
+        .remote-add-feedback {
+            font-size: 12.5px;
+            color: #a7f3d0;
+            min-height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 背景營火粒子畫布 -->
+    <canvas id="emberCanvas"></canvas>
+
+    <!-- 2. 頂部導覽列 -->
+    <header class="top-header">
+        <div class="brand-group">
+            <div class="brand-title-wrap">
+                <span style="font-size: 18px;">🗝️</span>
+                <span class="brand-title">血染戰鬥營・真心話</span>
+            </div>
+            <span class="remain-badge" id="statusInfo">載入中</span>
+            <span class="remain-badge host-remote-badge" id="remoteHostBadge">📡 遠端待命</span>
+        </div>
+
+        <div class="corner-dock">
+            <button class="icon-btn" id="standbyBtn" title="純淨待機畫面 (快捷鍵 H)">👁️ 待機</button>
+            <button class="icon-btn" id="openHistoryBtn" title="題庫管理與已抽歷史">📜 題庫</button>
+            <button class="icon-btn" id="fullscreenBtn" title="切換全螢幕">⛶ 全螢幕</button>
+            <button class="icon-btn" id="openSettingsBtn" title="開啟視覺與音效設定">⚙️ 設定</button>
+        </div>
+    </header>
+
+    <!-- 退出純淨待機按鈕 -->
+    <button class="icon-btn exit-standby-btn" id="exitStandbyBtn">👁️ 恢復介面 (H)</button>
+
+    <!-- 頂部通知 -->
+    <div class="toast-stack" id="toastStack"></div>
+    <!-- 遠端模式音效／語音解鎖提示條 -->
+    <button class="audio-unlock-banner" id="audioUnlockBanner">🔇 遠端模式已就緒：請主持人點擊此處一次，啟用電腦鐘聲與語音播報</button>
+
+    <!-- 3. 主舞台：頂部即時預覽框 ＋ 1:1 絕對正圓大轉盤 -->
+    <main class="stage-column">
+        <!-- 正上方指針頂端的「即時聚焦預覽框」 -->
+        <div class="top-preview-bar">
+            <span class="preview-tag" id="tickerLabel">🕯️ 正上方指針</span>
+            <div class="preview-text" id="tickerText">點擊中央紅寶石或滑動轉盤開始抽題</div>
+        </div>
+
+        <!-- 1:1 絕對正圓轉盤容器 -->
+        <div class="wheel-wrapper" id="wheelTouchArea">
+            <div class="blood-moon-glow"></div>
+
+            <div class="antique-bronze-rim">
+                <div class="antique-bronze-inner"></div>
+            </div>
+
+            <!-- 離屏快取主轉盤 -->
+            <canvas id="wheelCanvas" width="1600" height="1600"></canvas>
+
+            <!-- 正上方 12 點鐘扇形「即時發光高亮」圖層 -->
+            <canvas id="highlightCanvas" width="1600" height="1600"></canvas>
+
+            <div class="wheel-vignette"></div>
+
+            <!-- 正上方 12 點鐘固定古銅金指針 (往下指) -->
+            <div class="top-pointer-assembly" id="pointerEl">
+                <svg viewBox="0 0 54 84" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="antiqueGoldV" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f6eac2"/>
+                            <stop offset="50%" stop-color="#d4a359"/>
+                            <stop offset="100%" stop-color="#6e481f"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M27,81 L11,16 L27,27 L43,16 Z" fill="url(#antiqueGoldV)" stroke="#1a090d" stroke-width="2" stroke-linejoin="round"/>
+                    <polygon points="27,71 19,40 27,46 35,40" fill="#6e0d1f"/>
+                    <circle cx="27" cy="16" r="12" fill="#1a080d" stroke="url(#antiqueGoldV)" stroke-width="3"/>
+                    <circle cx="27" cy="16" r="4.5" fill="#9e162e"/>
+                </svg>
+            </div>
+
+            <!-- 中央紅寶石啟動鈕 -->
+            <button class="center-hub" id="spinBtn">
+                <span>開始</span>
+                <span style="font-size: 11px; opacity: 0.8;">抽題</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- 4. 抽中結果巨幅視窗 -->
+    <div class="modal-backdrop" id="resultModal">
+        <div class="result-card">
+            <div class="result-subtitle" id="resultBadge">🕯️ 夜晚真心話大拷問 🕯️</div>
+            <div class="result-main-text" id="modalQuestionText">問題內容</div>
+            <div class="result-actions">
+                <button class="skip-btn" id="replayTtsBtn">🔊 重唸一次</button>
+                <button class="skip-btn" id="unsealSkipBtn">↩️ 放回重抽 (不封印)</button>
+                <button class="seal-btn" id="closeModalBtn">🗝️ 封印此題並繼續 (Space)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 抽屜：⚙️ 設定面板 (無背景模糊遮罩，即時看轉盤變化！) -->
+    <aside class="side-drawer" id="settingsDrawer">
+        <div class="drawer-header">
+            <span class="drawer-title">⚙️ 轉盤視覺與鐘聲設定</span>
+            <button class="drawer-close" id="closeSettingsBtn">✕</button>
+        </div>
+        <div class="drawer-body">
+            <!-- 3 組獨立題庫記憶槽切換 -->
+            <div class="setting-group">
+                <div class="setting-group-title">🗂️ 切換獨立題庫記憶槽（自動保存）</div>
+                <div class="slot-switcher">
+                    <button class="slot-pill active" data-slot="A">題庫 A</button>
+                    <button class="slot-pill" data-slot="B">題庫 B</button>
+                    <button class="slot-pill" data-slot="C">題庫 C</button>
+                </div>
+            </div>
+
+            <!-- 視覺與扇形文字模式 (擴充為 8 款配色 + 7 款纖細字體) -->
+            <div class="setting-group">
+                <div class="setting-group-title">🎨 轉盤視覺與文字模式（即時預覽）</div>
+                <div class="setting-row">
+                    <span>扇形文字顯示模式</span>
+                    <select class="ui-select" id="sliceLabelModeSelect">
+                        <option value="text">📝 顯示題目文字</option>
+                        <option value="number">🔢 極簡編號 (No.01)</option>
+                        <option value="both">🔖 編號＋短題目</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>絲絨配色主題 (8款)</span>
+                    <select class="ui-select" id="paletteSelect">
+                        <option value="opera">🍷 歌劇院黑紅金</option>
+                        <option value="dracula">🩸 鮮血伯爵與純金</option>
+                        <option value="parchment">📜 羊皮紙與緋紅</option>
+                        <option value="rosegold">🌹 午夜薔薇玫瑰金</option>
+                        <option value="amethyst">🔮 皇家紫晶與月光銀</option>
+                        <option value="prussian">🌌 星夜普魯士藍香檳</option>
+                        <option value="emerald">🌲 迷霧黑森林與古銅</option>
+                        <option value="obsidian">👑 曜石黑金奢華</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>轉盤外框風格</span>
+                    <select class="ui-select" id="rimSelect">
+                        <option value="bronze">🏛️ 古銅暗金外框</option>
+                        <option value="rimless">🌑 無邊框血月光暈</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>纖細字體風格 (7款)</span>
+                    <select class="ui-select" id="fontSelect">
+                        <option value="mincho">✒️ 日本古典明朝體</option>
+                        <option value="klee">🖋️ 日系手寫硬筆楷體</option>
+                        <option value="hina">🏛️ 古典歌劇院明朝體</option>
+                        <option value="notoserif">📖 思源古典細宋體</option>
+                        <option value="gothic">✨ 日系極簡細黑體</option>
+                        <option value="notosans">💎 現代俐落細黑體</option>
+                        <option value="maru">🌸 日系纖細圓體</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>轉盤畫面大小微調</span>
+                    <input type="range" id="wheelScaleRange" min="52" max="86" value="74">
+                </div>
+            </div>
+
+            <!-- 雙響重鐘音效與轉速設定 -->
+            <div class="setting-group">
+                <div class="setting-group-title">⚡ 審判雙響重鐘與轉速</div>
+                <div class="setting-row">
+                    <span>總音效開關</span>
+                    <button class="ui-btn" id="soundToggleBtn">🔊 音效：開啟</button>
+                </div>
+                <div class="setting-row">
+                    <span>中獎音效（雙響重鐘）</span>
+                    <button class="ui-btn" id="testBellBtn">🔔 試聽雙響重鐘</button>
+                </div>
+                <div class="setting-row">
+                    <span>轉動時間模式</span>
+                    <select class="ui-select" id="speedSelect">
+                        <option value="3200">⚡ 極速模式 (3 秒)</option>
+                        <option value="7200" selected>🕯️ 標準流暢 (7 秒)</option>
+                        <option value="10800">🔥 終極慢速懸念 (11 秒)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 主畫面語音播報設定 (TTS) -->
+            <div class="setting-group">
+                <div class="setting-group-title">🎙️ 主畫面語音播報（建議用 Edge 獲最佳中文人聲）</div>
+                <div class="setting-row">
+                    <span>抽中自動朗讀</span>
+                    <button class="ui-btn" id="ttsToggleBtn">🎙️ 語音：開啟</button>
+                </div>
+                <div class="setting-row">
+                    <span>播報人聲選擇</span>
+                    <select class="ui-select" id="ttsVoiceSelect" style="max-width: 210px;">
+                        <option value="">自動選擇最佳中文人聲</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>朗讀語速 (<span id="ttsRateVal">0.95x</span>)</span>
+                    <input type="range" id="ttsRateRange" min="0.7" max="1.3" step="0.05" value="0.95">
+                </div>
+                <div class="setting-row">
+                    <span>播報格式</span>
+                    <select class="ui-select" id="ttsPrefixSelect">
+                        <option value="with_num">唸編號＋題目內容</option>
+                        <option value="text_only">直接唸題目內容</option>
+                    </select>
+                </div>
+                <button class="ui-btn" id="testTtsBtn">🔊 立即試聽語音效果</button>
+            </div>
+
+            <!-- 手機自助遙控設定 (Firebase) -->
+            <div class="setting-group">
+                <div class="setting-group-title">📱 手機玩家自助遙控（無人值守）</div>
+                <div class="setting-row">
+                    <span>遠端遙控開關</span>
+                    <button class="ui-btn" id="remoteModeToggleBtn">📡 遠端：開啟</button>
+                </div>
+                <div class="setting-row">
+                    <span>手機匿名加碼出題</span>
+                    <button class="ui-btn" id="remoteAllowAddToggleBtn">✍️ 加碼：允許</button>
+                </div>
+                <div class="setting-row">
+                    <span>換下一位冷卻防誤觸</span>
+                    <select class="ui-select" id="remoteCooldownSelect">
+                        <option value="3">3 秒（快節奏）</option>
+                        <option value="6">6 秒</option>
+                        <option value="10" selected>10 秒（推薦）</option>
+                        <option value="15">15 秒</option>
+                        <option value="20">20 秒</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>房間代碼</span>
+                    <input type="text" class="ui-input" id="roomCodeInput" value="botc01" placeholder="英數如 botc01" style="width: 130px;">
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="ui-btn gold-btn" id="showQrBtn" style="flex:1;">📱 顯示 QR / 連結</button>
+                    <button class="ui-btn" id="toggleCornerQrBtn" style="flex:1;">📌 角落掃碼：開</button>
+                </div>
+                <details style="font-size:12.5px; color:#bdaaa2;">
+                    <summary style="cursor:pointer; color:var(--gold-accent);">🔧 Firebase 資料庫網址設定（免改碼直接貼）</summary>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                        <input type="text" class="ui-input" id="firebaseDbUrlInput" placeholder="貼上 https://xxx-default-rtdb...firebaseio.com">
+                        <button class="ui-btn gold-btn" id="saveFirebaseBtn">💾 儲存並連線</button>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 檔案匯入與匯出 -->
+            <div class="setting-group">
+                <div class="setting-group-title">📂 CSV 匯入與備份</div>
+                <label class="ui-btn gold-btn">
+                    📂 匯入 Google 表單 CSV 至當前題庫
+                    <input type="file" id="csvFile" accept=".csv">
+                </label>
+                <div style="display:flex; gap:8px;">
+                    <button class="ui-btn" id="exportCsvBtn" style="flex:1;">📤 匯出備份 CSV</button>
+                    <button class="ui-btn" id="resetBtn" style="flex:1;">🔄 全部解除封印</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 6. 抽屜：📜 題庫管理與已抽歷史 -->
+    <aside class="side-drawer" id="historyDrawer">
+        <div class="drawer-header">
+            <span class="drawer-title">📜 題庫管理與已抽歷史</span>
+            <button class="drawer-close" id="closeHistoryBtn">✕</button>
+        </div>
+        <div class="drawer-body">
+            <!-- 3 組獨立題庫記憶槽切換 -->
+            <div class="slot-switcher">
+                <button class="slot-pill active" data-slot="A">題庫 A</button>
+                <button class="slot-pill" data-slot="B">題庫 B</button>
+                <button class="slot-pill" data-slot="C">題庫 C</button>
+            </div>
+
+            <!-- 手動輸入與批次新增區 -->
+            <div class="setting-group">
+                <div class="setting-group-title">✍️ 手動新增題目（支援單筆或多行貼上）</div>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" class="ui-input" id="manualAddInput" placeholder="輸入題目後按新增..." style="flex:1;">
+                    <button class="ui-btn gold-btn" id="manualAddBtn">➕ 新增</button>
+                </div>
+                <details style="font-size:12.5px; color:#bdaaa2;">
+                    <summary style="cursor:pointer; color:var(--gold-accent);">📋 展開「多行批次貼上」或「清空題庫」</summary>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                        <textarea class="ui-input" id="batchPasteInput" rows="3" placeholder="每行一題，可直接從 Line 或記事本貼上..."></textarea>
+                        <div style="display:flex; gap:6px;">
+                            <button class="ui-btn gold-btn" id="batchPasteBtn" style="flex:1;">📥 批次加入題庫</button>
+                            <button class="ui-btn" id="clearSlotBtn" style="color:#f28b82;">🗑️ 清空此槽</button>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- 分頁切換：未抽題庫 vs 已抽歷史 -->
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tabActiveBtn">✨ 未抽題庫 (<span id="unsealedCount">0</span>)</button>
+                <button class="tab-btn" id="tabDrawnBtn">🔒 已封印歷史 (<span id="sealedCount">0</span>)</button>
+            </div>
+
+            <!-- 搜尋、檢查異常題與隨機洗牌 -->
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <input type="text" class="ui-input" id="searchQInput" placeholder="🔍 搜尋關鍵字..." style="flex:1; min-width:130px;">
+                <button class="ui-btn" id="smartCheckBtn" title="自動篩選出少於4個字或重複的異常題目">🧹 異常題</button>
+                <button class="ui-btn" id="shuffleBtn" title="隨機打亂目前題庫的轉盤順序">🔀 洗牌</button>
+            </div>
+
+            <!-- 題目清單容器 -->
+            <div id="questionListContainer" style="display:flex; flex-direction:column; gap:7px;"></div>
+        </div>
+    </aside>
+
+    <!-- 自訂確認／編輯／選欄對話框 -->
+    <div class="modal-backdrop" id="dialogModal">
+        <div class="dialog-box">
+            <div class="dialog-title" id="dialogTitle">提示</div>
+            <div class="dialog-desc" id="dialogMsg">訊息</div>
+            <div id="dialogExtra"></div>
+            <div class="dialog-btns" id="dialogActions"></div>
+        </div>
+    </div>
+
+    <!-- 主畫面左下角迷你掃碼角標 -->
+    <div class="qr-corner-widget" id="qrCornerWidget" title="點擊放大 QR Code 給玩家掃描">
+        <div id="qrMiniCanvas"></div>
+        <span class="qr-corner-label">📱 掃碼遙控</span>
+    </div>
+
+    <!-- 放大 QR Code 與複製連結彈窗 -->
+    <div class="modal-backdrop" id="qrEnlargeModal">
+        <div class="dialog-box">
+            <div class="dialog-title">📱 掃碼加入・自助轉動命運轉盤</div>
+            <div class="dialog-desc" style="margin-bottom: 6px;">玩家用手機掃描或開啟連結，即可直接啟動主畫面轉盤並匿名加碼出題。</div>
+            <div id="qrBigCanvas"></div>
+            <div id="qrRoomText" style="font-size:12.5px; color:var(--gold-accent); word-break:break-all; margin-bottom:16px;"></div>
+            <div class="dialog-btns">
+                <button class="ui-btn gold-btn" id="copyRemoteLinkBtn">📋 複製連結</button>
+                <button class="ui-btn" id="closeQrModalBtn">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 手機玩家自助遙控專屬介面（網址帶 ?room= 時自動切換顯示） -->
+    <section id="remoteView">
+        <div class="remote-header">
+            <div class="remote-title">🗝️ 血染戰鬥營・命運遙控</div>
+            <div class="remote-badges">
+                <span class="remain-badge" id="remoteConnBadge">📡 連線中...</span>
+                <span class="remain-badge" id="remoteRemainBadge">載入題庫中</span>
+            </div>
+        </div>
+
+        <!-- 長按 1 秒紅寶石蓄力啟動鈕 -->
+        <div class="remote-hold-stage">
+            <svg class="hold-ring-svg" viewBox="0 0 210 210">
+                <circle class="hold-ring-bg" cx="105" cy="105" r="96"></circle>
+                <circle class="hold-ring-progress" id="holdRingProgress" cx="105" cy="105" r="96"></circle>
+            </svg>
+            <button class="remote-hold-btn" id="remoteHoldBtn" disabled>
+                <span class="remote-btn-main" id="remoteBtnMain">連線中</span>
+                <span class="remote-btn-sub" id="remoteBtnSub">請稍候</span>
+            </button>
+        </div>
+
+        <div class="remote-status-msg" id="remoteStatusMsg">正在與主畫面建立連線...</div>
+
+        <!-- 同步顯示大螢幕目前抽中的題目 -->
+        <div class="remote-card-box">
+            <div class="remote-card-label">
+                <span id="remoteResultMeta">🕯️ 目前大螢幕題目</span>
+                <button class="q-action-btn" id="remoteReplayTtsBtn" style="display:none;">🔊 主機重唸</button>
+            </div>
+            <div class="remote-result-text" id="remoteResultText">尚未開始抽題，輪到你時請長按上方紅寶石！</div>
+        </div>
+
+        <!-- 匿名加碼出題區 -->
+        <div class="remote-card-box" id="remoteAddSection">
+            <div class="remote-card-label">
+                <span>✍️ 匿名加碼出題（直接加入轉盤）</span>
+            </div>
+            <div class="remote-add-row">
+                <input type="text" class="ui-input" id="remoteAddInput" maxlength="120" placeholder="輸入真心話題目，匿名丟進轉盤..." style="flex:1;">
+                <button class="ui-btn gold-btn" id="remoteAddSubmitBtn">送出</button>
+            </div>
+            <div class="remote-add-feedback" id="remoteAddFeedback"></div>
+        </div>
+    </section>
+
+<script>
+    // ================= 1. 擴充為 8 款高質感配色主題 ＋ 7 款纖細字體 =================
+    const PALETTES = {
+        opera: {
+            slices: [
+                ['#380713', '#5c0c20'],
+                ['#140b0e', '#261419'],
+                ['#4a0a1a', '#730f28'],
+                ['#220e19', '#3b162b']
+            ],
+            textColor: '#f6eac2',
+            lineColor: 'rgba(222, 176, 104, 0.34)',
+            pegColor: '#deb068',
+            bgMid: '#1f0710',
+            bgGlow: 'rgba(185, 20, 48, 0.34)'
+        },
+        dracula: {
+            slices: [
+                ['#4d0611', '#850a1d'],
+                ['#0d0a0b', '#1c1517'],
+                ['#36040c', '#610715'],
+                ['#1c0c10', '#33141b']
+            ],
+            textColor: '#ffe89e',
+            lineColor: 'rgba(255, 215, 100, 0.4)',
+            pegColor: '#ffd166',
+            bgMid: '#26050c',
+            bgGlow: 'rgba(220, 20, 50, 0.4)'
+        },
+        parchment: {
+            slices: [
+                ['#420915', '#660f22'],
+                ['#140f10', '#241b1d'],
+                ['#300d12', '#4d141d'],
+                ['#1f1513', '#33221f']
+            ],
+            textColor: '#f7f2eb',
+            lineColor: 'rgba(247, 242, 235, 0.28)',
+            pegColor: '#e6ccb2',
+            bgMid: '#1c090d',
+            bgGlow: 'rgba(165, 30, 50, 0.3)'
+        },
+        rosegold: {
+            slices: [
+                ['#3d0c24', '#61133a'],
+                ['#160d16', '#281728'],
+                ['#2e081d', '#4a0d2e'],
+                ['#220f1d', '#36182e']
+            ],
+            textColor: '#f7dcd4',
+            lineColor: 'rgba(235, 195, 180, 0.3)',
+            pegColor: '#e6beae',
+            bgMid: '#210818',
+            bgGlow: 'rgba(180, 30, 100, 0.32)'
+        },
+        amethyst: {
+            slices: [
+                ['#240b36', '#3f145e'],
+                ['#0f0b17', '#1d162b'],
+                ['#310e42', '#52176e'],
+                ['#181026', '#291b42']
+            ],
+            textColor: '#f0e6ff',
+            lineColor: 'rgba(216, 180, 254, 0.32)',
+            pegColor: '#d8b4fe',
+            bgMid: '#180826',
+            bgGlow: 'rgba(147, 51, 234, 0.32)'
+        },
+        prussian: {
+            slices: [
+                ['#0c192e', '#162e52'],
+                ['#0b0f17', '#161e2e'],
+                ['#13233d', '#1f3a61'],
+                ['#161829', '#252945']
+            ],
+            textColor: '#f5e6c4',
+            lineColor: 'rgba(230, 198, 135, 0.32)',
+            pegColor: '#e6c687',
+            bgMid: '#0b1528',
+            bgGlow: 'rgba(56, 120, 210, 0.3)'
+        },
+        emerald: {
+            slices: [
+                ['#09261c', '#114231'],
+                ['#0c1210', '#17241f'],
+                ['#113022', '#1c4f38'],
+                ['#171c16', '#273026']
+            ],
+            textColor: '#f2e5c6',
+            lineColor: 'rgba(212, 175, 105, 0.32)',
+            pegColor: '#d4af69',
+            bgMid: '#081c14',
+            bgGlow: 'rgba(25, 135, 95, 0.3)'
+        },
+        obsidian: {
+            slices: [
+                ['#1c1610', '#33281c'],
+                ['#0d0c0b', '#1a1816'],
+                ['#291f14', '#453420'],
+                ['#141210', '#24201c']
+            ],
+            textColor: '#ffdf85',
+            lineColor: 'rgba(245, 195, 85, 0.38)',
+            pegColor: '#f5c355',
+            bgMid: '#17120b',
+            bgGlow: 'rgba(212, 163, 60, 0.28)'
+        }
+    };
+
+    const FONTS = {
+        mincho:    { family: "'Shippori Mincho', serif", weight: "400" },
+        klee:      { family: "'Klee One', cursive, serif", weight: "400" },
+        hina:      { family: "'Hina Mincho', serif", weight: "400" },
+        notoserif: { family: "'Noto Serif TC', serif", weight: "300" },
+        gothic:    { family: "'Zen Kaku Gothic New', sans-serif", weight: "300" },
+        notosans:  { family: "'Noto Sans TC', sans-serif", weight: "300" },
+        maru:      { family: "'Zen Maru Gothic', sans-serif", weight: "400" }
+    };
+
+    const DEFAULT_DEMO_QUESTIONS = [
+        "收過什麼最印象深刻的聖誕禮物？",
+        "為什麼想要參加血染營？對此活動有什麼期許？",
+        "說出你這局的真實角色，不能說謊",
+        "曾經為了取悅別人改變過自己嗎？會後悔嗎？",
+        "愛情和友情中，哪個讓你更難放棄？",
+        "做什麼事會讓你有心動的瞬間？",
+        "你買過最後悔的東西是什麼？",
+        "覺得在場誰最會提供情緒價值？"
+    ];
+
+    // ================= Firebase 預設資料庫網址（第 7 段教學填寫處） =================
+    // 填上你的 Firebase Realtime Database 網址後，放到 GitHub Pages 大家掃碼就能直接連！
+    // 範例：const DEFAULT_FIREBASE_DB_URL = 'https://botc-truth-wheel-default-rtdb.asia-southeast1.firebasedatabase.app/';
+    const DEFAULT_FIREBASE_DB_URL = '';
+
+    const STORAGE_KEY = 'botc_truth_wheel_v5';
+    const urlParams = new URLSearchParams(window.location.search);
+    const IS_REMOTE_MODE = Boolean(urlParams.get('room'));
+    if (IS_REMOTE_MODE) {
+        document.body.classList.add('is-remote-mode');
+    }
+
+    let currentSlot = 'A';
+    let slotsData = {
+        A: { questions: [], drawCounter: 0 },
+        B: { questions: [], drawCounter: 0 },
+        C: { questions: [], drawCounter: 0 }
+    };
+    let hasBeenInitialized = false;
+
+    // 視覺與音效設定（全數記憶至 localStorage）
+    let currentPaletteKey = 'opera';
+    let currentFontKey = 'mincho';
+    let sliceLabelMode = 'text';
+    let rimStyle = 'bronze';
+    let wheelScale = 74;
+    let spinDuration = 7200;
+    let soundEnabled = true;
+
+    // 語音播報設定 (TTS)
+    let ttsEnabled = true;
+    let ttsVoiceURI = '';
+    let ttsRate = 0.95;
+    let ttsPrefixMode = 'with_num';
+    let lastDrawnText = '';
+    let lastDrawnNum = 0;
+
+    // 遠端自助遙控設定 (Firebase)
+    let remoteEnabled = true;
+    let remoteAllowAdd = true;
+    let remoteCooldownSec = 10;
+    let roomCode = 'botc01';
+    let showCornerQr = true;
+    let firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
+    let remoteCooldownUntil = 0;
+    let pendingRemoteQuestions = [];
+    let audioUnlocked = false;
+
+    // 轉盤物理與互動狀態
+    let currentRotationDeg = 0;
+    let isSpinning = false;
+    let lastSliceIndex = -1;
+    let lastWinningIndex = -1;
+    let modalSafeLockUntil = 0;
+    let safeLockTimerId = null;
+
+    let currentHistoryTab = 'active';
+    let filterAbnormalOnly = false;
+
+    let pointerAngle = 0;
+    let pointerVelocity = 0;
+
+    function sanitizeRoomCode(raw) {
+        const cleaned = String(raw || '').trim().replace(/[.#$\[\]\/\s]/g, '');
+        return cleaned || 'botc01';
+    }
+
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const hlCanvas = document.getElementById('highlightCanvas');
+    const hlCtx = hlCanvas.getContext('2d');
+
+    const spinBtn = document.getElementById('spinBtn');
+    const statusInfo = document.getElementById('statusInfo');
+    const pointerEl = document.getElementById('pointerEl');
+    const tickerLabel = document.getElementById('tickerLabel');
+    const tickerText = document.getElementById('tickerText');
+
+    const resultModal = document.getElementById('resultModal');
+    const resultBadge = document.getElementById('resultBadge');
+    const modalQuestionText = document.getElementById('modalQuestionText');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const unsealSkipBtn = document.getElementById('unsealSkipBtn');
+
+    function getActiveQuestions() {
+        return slotsData[currentSlot].questions;
+    }
+
+    function setActiveQuestions(arr) {
+        slotsData[currentSlot].questions = arr;
+        reassignColors(arr);
+    }
+
+    function reassignColors(arr) {
+        arr.forEach((q, idx) => {
+            q.colorIndex = idx % 4;
+        });
+        if (arr.length > 1 && arr[arr.length - 1].colorIndex === 0) {
+            arr[arr.length - 1].colorIndex = 1;
+        }
+    }
+
+    function applyPaletteCSS(key) {
+        const p = PALETTES[key] || PALETTES.opera;
+        document.documentElement.style.setProperty('--gold-primary', p.textColor);
+        document.documentElement.style.setProperty('--bg-mid', p.bgMid);
+        document.documentElement.style.setProperty('--bg-glow', p.bgGlow);
+    }
+
+    // ================= 2. 自動記憶與初始化 =================
+    let storageWarned = false;
+    function saveState() {
+        if (IS_REMOTE_MODE) return;
+        try {
+            const payload = {
+                hasBeenInitialized: true,
+                currentSlot,
+                slotsData,
+                currentPaletteKey,
+                currentFontKey,
+                sliceLabelMode,
+                rimStyle,
+                wheelScale,
+                spinDuration,
+                soundEnabled,
+                ttsEnabled,
+                ttsVoiceURI,
+                ttsRate,
+                ttsPrefixMode,
+                remoteEnabled,
+                remoteAllowAdd,
+                remoteCooldownSec,
+                roomCode,
+                showCornerQr,
+                firebaseDbUrl
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {
+            if (!storageWarned) {
+                storageWarned = true;
+                showToast('⚠️ 瀏覽器無痕模式或空間已滿，無法自動存檔');
+            }
+        }
+    }
+
+    function initAppState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const data = JSON.parse(raw);
+                if (typeof data.hasBeenInitialized === 'boolean') hasBeenInitialized = data.hasBeenInitialized;
+                if (data.slotsData) slotsData = data.slotsData;
+                if (data.currentSlot && slotsData[data.currentSlot]) currentSlot = data.currentSlot;
+                if (data.currentPaletteKey && PALETTES[data.currentPaletteKey]) currentPaletteKey = data.currentPaletteKey;
+                if (data.currentFontKey && FONTS[data.currentFontKey]) currentFontKey = data.currentFontKey;
+                if (data.sliceLabelMode) sliceLabelMode = data.sliceLabelMode;
+                if (data.rimStyle) rimStyle = data.rimStyle;
+                if (data.wheelScale) wheelScale = Number(data.wheelScale);
+                if (data.spinDuration) spinDuration = Number(data.spinDuration);
+                if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
+                if (typeof data.ttsEnabled === 'boolean') ttsEnabled = data.ttsEnabled;
+                if (typeof data.ttsVoiceURI === 'string') ttsVoiceURI = data.ttsVoiceURI;
+                if (data.ttsRate) ttsRate = Number(data.ttsRate);
+                if (data.ttsPrefixMode) ttsPrefixMode = data.ttsPrefixMode;
+                if (typeof data.remoteEnabled === 'boolean') remoteEnabled = data.remoteEnabled;
+                if (typeof data.remoteAllowAdd === 'boolean') remoteAllowAdd = data.remoteAllowAdd;
+                if (data.remoteCooldownSec) remoteCooldownSec = Number(data.remoteCooldownSec);
+                if (data.roomCode) roomCode = sanitizeRoomCode(data.roomCode);
+                if (typeof data.showCornerQr === 'boolean') showCornerQr = data.showCornerQr;
+                if (data.firebaseDbUrl) firebaseDbUrl = data.firebaseDbUrl;
+            }
+        } catch (e) {}
+
+        applyPaletteCSS(currentPaletteKey);
+        document.documentElement.style.setProperty('--ui-font', FONTS[currentFontKey].family);
+
+        // 若為手機端遙控網址，直接啟動手機介面，不初始化主轉盤
+        if (IS_REMOTE_MODE) {
+            if (typeof initRemoteClient === 'function') initRemoteClient();
+            return;
+        }
+
+        // 僅在「真正第一次開啟」且題庫 A 為空時才填入示範題（手動清空後重整不會復活）
+        if (!hasBeenInitialized && slotsData.A.questions.length === 0) {
+            slotsData.A.questions = DEFAULT_DEMO_QUESTIONS.map((t, i) => ({
+                text: t,
+                drawn: false,
+                colorIndex: i % 4
+            }));
+            hasBeenInitialized = true;
+            saveState();
+        }
+
+        // 同步所有設定介面控制項
+        document.getElementById('paletteSelect').value = currentPaletteKey;
+        document.getElementById('fontSelect').value = currentFontKey;
+        document.getElementById('sliceLabelModeSelect').value = sliceLabelMode;
+        document.getElementById('rimSelect').value = rimStyle;
+        document.body.classList.toggle('rimless-mode', rimStyle === 'rimless');
+        document.getElementById('wheelScaleRange').value = String(wheelScale);
+        document.documentElement.style.setProperty('--wheel-scale', `${wheelScale}vmin`);
+
+        document.getElementById('speedSelect').value = String(spinDuration);
+        document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊 音效：開啟' : '🔇 音效：靜音';
+
+        document.getElementById('ttsToggleBtn').textContent = ttsEnabled ? '🎙️ 語音：開啟' : '🔇 語音：關閉';
+        document.getElementById('ttsRateRange').value = String(ttsRate);
+        document.getElementById('ttsRateVal').textContent = `${ttsRate.toFixed(2)}x`;
+        document.getElementById('ttsPrefixSelect').value = ttsPrefixMode;
+
+        document.getElementById('remoteModeToggleBtn').textContent = remoteEnabled ? '📡 遠端：開啟' : '🔒 遠端：暫停';
+        document.getElementById('remoteAllowAddToggleBtn').textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
+        document.getElementById('remoteCooldownSelect').value = String(remoteCooldownSec);
+        document.getElementById('roomCodeInput').value = roomCode;
+        document.getElementById('toggleCornerQrBtn').textContent = showCornerQr ? '📌 角落掃碼：開' : '📌 角落掃碼：關';
+        document.getElementById('firebaseDbUrlInput').value = firebaseDbUrl || '';
+
+        document.querySelectorAll('.slot-pill').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.slot === currentSlot);
+        });
+
+        updateStatusUI();
+        renderStaticWheel();
+        drawTopPointerSliceHighlight(0, 0.5);
+
+        if (typeof initTtsEngine === 'function') initTtsEngine();
+        if (typeof initHostRemote === 'function') initHostRemote();
+    }
+
+    // ================= 3. 背景營火粒子系統 =================
+    const emberCanvas = document.getElementById('emberCanvas');
+    const eCtx = emberCanvas.getContext('2d');
+    let embers = [];
+
+    function resizeEmberCanvas() {
+        emberCanvas.width = window.innerWidth;
+        emberCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeEmberCanvas);
+    resizeEmberCanvas();
+
+    for (let i = 0; i < 45; i++) {
+        embers.push({
+            x: Math.random() * emberCanvas.width,
+            y: Math.random() * emberCanvas.height,
+            r: 1 + Math.random() * 2.3,
+            vy: -0.25 - Math.random() * 0.55,
+            vx: (Math.random() - 0.5) * 0.3,
+            swaySpeed: 0.01 + Math.random() * 0.02,
+            swayOffset: Math.random() * Math.PI * 2,
+            alpha: 0.18 + Math.random() * 0.55,
+            color: Math.random() > 0.35 ? '#e6b86e' : '#d9384a'
+        });
+    }
+
+    let emberBurstUntil = 0;
+    let lastEmberTime = 0;
+
+    function triggerEmberBurst(ms = 1800) {
+        emberBurstUntil = performance.now() + ms;
+    }
+
+    function animateEmbers(timestamp) {
+        if (!lastEmberTime) lastEmberTime = timestamp;
+        const dt = Math.min((timestamp - lastEmberTime) / 16.667, 3);
+        lastEmberTime = timestamp;
+
+        const isBursting = timestamp < emberBurstUntil;
+        const speedMul = isBursting ? 3.2 : 1;
+
+        eCtx.clearRect(0, 0, emberCanvas.width, emberCanvas.height);
+        for (let i = 0; i < embers.length; i++) {
+            const p = embers[i];
+            p.swayOffset += p.swaySpeed * dt * speedMul;
+            p.x += (p.vx + Math.sin(p.swayOffset) * 0.22) * dt;
+            p.y += p.vy * dt * speedMul;
+            if (p.y < -10) {
+                p.y = emberCanvas.height + 10;
+                p.x = Math.random() * emberCanvas.width;
+            }
+            eCtx.beginPath();
+            eCtx.arc(p.x, p.y, isBursting ? p.r * 1.45 : p.r, 0, Math.PI * 2);
+            eCtx.fillStyle = isBursting ? '#ffe89e' : p.color;
+            eCtx.globalAlpha = Math.min(1, p.alpha * (isBursting ? 1.5 : (0.65 + 0.35 * Math.sin(p.swayOffset * 2))));
+            eCtx.fill();
+        }
+        eCtx.globalAlpha = 1;
+        requestAnimationFrame(animateEmbers);
+    }
+    requestAnimationFrame(animateEmbers);
+
+    // ================= 4. 審判雙響重鐘音效 ＋ 自動音量閃避 ＋ 主畫面語音播報 (TTS) =================
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    let masterBus = null;
+    let reverbConvolver = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new AudioCtx();
+
+            const compressor = audioCtx.createDynamicsCompressor();
+            compressor.threshold.setValueAtTime(-16, audioCtx.currentTime);
+            compressor.knee.setValueAtTime(10, audioCtx.currentTime);
+            compressor.ratio.setValueAtTime(6, audioCtx.currentTime);
+            compressor.attack.setValueAtTime(0.002, audioCtx.currentTime);
+            compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
+
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(1.45, audioCtx.currentTime);
+
+            reverbConvolver = audioCtx.createConvolver();
+            const rate = audioCtx.sampleRate;
+            const length = Math.floor(rate * 3.4);
+            const impulse = audioCtx.createBuffer(2, length, rate);
+            for (let ch = 0; ch < 2; ch++) {
+                const channelData = impulse.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    const decay = Math.pow(1 - i / length, 2.6);
+                    channelData[i] = (Math.random() * 2 - 1) * decay * 0.35;
+                }
+            }
+            reverbConvolver.buffer = impulse;
+
+            const reverbMix = audioCtx.createGain();
+            reverbMix.gain.setValueAtTime(0.48, audioCtx.currentTime);
+
+            masterBus = audioCtx.createGain();
+            masterBus.gain.setValueAtTime(1.0, audioCtx.currentTime);
+
+            masterBus.connect(compressor);
+            masterBus.connect(reverbConvolver);
+            reverbConvolver.connect(reverbMix);
+            reverbMix.connect(compressor);
+            compressor.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    // 主畫面任一次點擊即可解鎖瀏覽器音效／語音自動播放權限（供遠端無人值守使用）
+    function unlockHostAudio() {
+        if (IS_REMOTE_MODE) return;
+        try { initAudio(); } catch (e) {}
+        audioUnlocked = true;
+        const banner = document.getElementById('audioUnlockBanner');
+        if (banner) banner.classList.remove('show');
+    }
+    if (!IS_REMOTE_MODE) {
+        window.addEventListener('pointerdown', unlockHostAudio, { once: true });
+        window.addEventListener('keydown', unlockHostAudio, { once: true });
+    }
+
+    // 語音開始講話時柔和壓低鐘聲尾音，講完恢復音量
+    function duckBellAudio(isDucking) {
+        if (!audioCtx || !masterBus) return;
+        const now = audioCtx.currentTime;
+        masterBus.gain.cancelScheduledValues(now);
+        masterBus.gain.setValueAtTime(masterBus.gain.value, now);
+        masterBus.gain.linearRampToValueAtTime(isDucking ? 0.25 : 1.0, now + 0.28);
+    }
+
+    function playTickSound(speedFactor) {
+        if (!soundEnabled || IS_REMOTE_MODE) return;
+        initAudio();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        const startFreq = 320 + speedFactor * 340;
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(85, now + 0.032);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.035);
+    }
+
+    function triggerBronzeBellStrike(baseFreq, startTime, duration, volume = 1.0) {
+        const now = startTime;
+
+        const modOsc = audioCtx.createOscillator();
+        const modGain = audioCtx.createGain();
+        const carOsc = audioCtx.createOscillator();
+        const carGain = audioCtx.createGain();
+
+        modOsc.type = 'square';
+        modOsc.frequency.setValueAtTime(baseFreq * 3.41, now);
+        modGain.gain.setValueAtTime(baseFreq * 4, now);
+        modGain.gain.exponentialRampToValueAtTime(1, now + 0.08);
+
+        carOsc.type = 'sine';
+        carOsc.frequency.setValueAtTime(baseFreq * 2.0, now);
+        carGain.gain.setValueAtTime(0.45 * volume, now);
+        carGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+        modOsc.connect(modGain);
+        modGain.connect(carOsc.frequency);
+        carOsc.connect(carGain);
+        carGain.connect(masterBus);
+        modOsc.start(now);
+        carOsc.start(now);
+        modOsc.stop(now + 0.15);
+        carOsc.stop(now + 0.15);
+
+        const bellPartials = [
+            { ratio: 0.5,   amp: 0.55, dec: duration * 1.00, beat: 0.4 },
+            { ratio: 1.0,   amp: 0.70, dec: duration * 0.92, beat: 0.8 },
+            { ratio: 1.183, amp: 0.48, dec: duration * 0.80, beat: 1.3 },
+            { ratio: 1.506, amp: 0.42, dec: duration * 0.72, beat: 1.7 },
+            { ratio: 2.0,   amp: 0.52, dec: duration * 0.60, beat: 2.2 },
+            { ratio: 2.514, amp: 0.25, dec: duration * 0.45, beat: 0 },
+            { ratio: 3.011, amp: 0.18, dec: duration * 0.35, beat: 0 },
+            { ratio: 4.16,  amp: 0.10, dec: duration * 0.22, beat: 0 }
+        ];
+
+        bellPartials.forEach((p, idx) => {
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = idx < 2 ? 'sine' : 'triangle';
+            osc1.frequency.setValueAtTime(baseFreq * p.ratio, now);
+
+            gain1.gain.setValueAtTime(0.001, now);
+            gain1.gain.linearRampToValueAtTime(p.amp * volume, now + 0.008);
+            gain1.gain.exponentialRampToValueAtTime(0.0008, now + p.dec);
+
+            osc1.connect(gain1);
+            gain1.connect(masterBus);
+            osc1.start(now);
+            osc1.stop(now + p.dec + 0.05);
+
+            if (p.beat > 0) {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(baseFreq * p.ratio + p.beat, now);
+                gain2.gain.setValueAtTime(0.001, now);
+                gain2.gain.linearRampToValueAtTime(p.amp * 0.65 * volume, now + 0.01);
+                gain2.gain.exponentialRampToValueAtTime(0.0008, now + p.dec);
+                osc2.connect(gain2);
+                gain2.connect(masterBus);
+                osc2.start(now);
+                osc2.stop(now + p.dec + 0.05);
+            }
+        });
+    }
+
+    // 專屬中獎音效：⚡ 審判之槌・雙響重鐘 (4.5秒)
+    function playHeavyBell() {
+        if (!soundEnabled || IS_REMOTE_MODE) return;
+        initAudio();
+        duckBellAudio(false);
+        const now = audioCtx.currentTime;
+        triggerBronzeBellStrike(185.00, now, 3.0, 1.0);         // 第一響 (F#3 宏亮定音)
+        triggerBronzeBellStrike(146.83, now + 1.15, 3.3, 1.15); // 第二響 (D3 下潛重音)
+    }
+
+    // ================= 4.5 主畫面語音播報模組 (Web Speech API) =================
+    let availableVoices = [];
+    let ttsDelayTimer = null;
+    let activeUtterance = null;
+
+    function scoreVoice(v) {
+        const lang = (v.lang || '').toLowerCase();
+        const name = (v.name || '').toLowerCase();
+        let score = 0;
+        if (lang === 'zh-tw' || lang === 'zh_tw') score += 100;
+        else if (lang.startsWith('zh')) score += 40;
+        if (name.includes('natural') || name.includes('online')) score += 60;
+        if (name.includes('hsiaochen') || name.includes('yunjhe') || name.includes('hsiaoyu')) score += 40;
+        if (name.includes('meijia') || name.includes('mei-jia') || name.includes('google')) score += 25;
+        return score;
+    }
+
+    function populateTtsVoices() {
+        if (!('speechSynthesis' in window) || IS_REMOTE_MODE) return;
+        const select = document.getElementById('ttsVoiceSelect');
+        if (!select) return;
+
+        availableVoices = window.speechSynthesis.getVoices() || [];
+        const sorted = [...availableVoices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+
+        select.innerHTML = '<option value="">✨ 自動最佳中文人聲（推薦）</option>';
+        sorted.forEach(v => {
+            if (!v.lang.toLowerCase().startsWith('zh') && sorted.some(x => x.lang.toLowerCase().startsWith('zh'))) {
+                return; // 有中文語音時只列中文聲線，選單乾淨不雜亂
+            }
+            const opt = document.createElement('option');
+            opt.value = v.voiceURI;
+            const tag = v.name.toLowerCase().includes('natural') ? '⭐ ' : '';
+            opt.textContent = `${tag}${v.name} (${v.lang})`;
+            select.appendChild(opt);
+        });
+
+        if (ttsVoiceURI && sorted.some(v => v.voiceURI === ttsVoiceURI)) {
+            select.value = ttsVoiceURI;
+        } else {
+            select.value = '';
+        }
+    }
+
+    function initTtsEngine() {
+        if (!('speechSynthesis' in window)) return;
+        populateTtsVoices();
+        window.speechSynthesis.onvoiceschanged = populateTtsVoices;
+    }
+
+    function stopSpeech() {
+        if (ttsDelayTimer) {
+            clearTimeout(ttsDelayTimer);
+            ttsDelayTimer = null;
+        }
+        if ('speechSynthesis' in window) {
+            try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+        activeUtterance = null;
+        duckBellAudio(false);
+    }
+
+    function pickBestVoice() {
+        if (availableVoices.length === 0 && 'speechSynthesis' in window) {
+            availableVoices = window.speechSynthesis.getVoices() || [];
+        }
+        if (ttsVoiceURI) {
+            const matched = availableVoices.find(v => v.voiceURI === ttsVoiceURI);
+            if (matched) return matched;
+        }
+        const sorted = [...availableVoices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+        return sorted[0] || null;
+    }
+
+    function speakText(text, delayMs = 0) {
+        if (!ttsEnabled || IS_REMOTE_MODE || !('speechSynthesis' in window)) return;
+        if (!text || !text.trim()) return;
+        stopSpeech();
+
+        const runSpeak = () => {
+            ttsDelayTimer = null;
+            try {
+                const utter = new SpeechSynthesisUtterance(text);
+                const voice = pickBestVoice();
+                if (voice) utter.voice = voice;
+                utter.lang = voice?.lang || 'zh-TW';
+                utter.rate = ttsRate;
+                utter.pitch = 0.96;
+                utter.volume = 1.0;
+
+                utter.onstart = () => duckBellAudio(true);
+                utter.onend = () => {
+                    duckBellAudio(false);
+                    activeUtterance = null;
+                };
+                utter.onerror = () => {
+                    duckBellAudio(false);
+                    activeUtterance = null;
+                };
+
+                activeUtterance = utter;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {
+                duckBellAudio(false);
+            }
+        };
+
+        if (delayMs > 0) {
+            ttsDelayTimer = setTimeout(runSpeak, delayMs);
+        } else {
+            runSpeak();
+        }
+    }
+
+    function speakDrawnQuestion(questionText, questionNum, isLastQuestion = false, delayMs = 1850) {
+        if (!questionText) return;
+        let scriptText = ttsPrefixMode === 'with_num'
+            ? `第 ${questionNum} 號真心話。${questionText}`
+            : questionText;
+        if (isLastQuestion) {
+            scriptText += '。這是今晚最後一道真心話。';
+        }
+        speakText(scriptText, delayMs);
+    }
+
+    // ================= 5. 離屏靜態預渲染轉盤 =================
+    setTimeout(() => initAppState(), 0);
+    document.fonts.ready.then(() => {
+        if (!IS_REMOTE_MODE) renderStaticWheel();
+    });
+
+    function formatSliceLabel(text, index) {
+        const numStr = String(index + 1).padStart(2, '0');
+        const clean = text.replace(/\r?\n/g, ' ');
+        if (sliceLabelMode === 'number') {
+            return `No.${numStr}`;
+        } else if (sliceLabelMode === 'both') {
+            const short = clean.length > 12 ? clean.substring(0, 12) + '…' : clean;
+            return `${numStr}. ${short}`;
+        }
+        return clean;
+    }
+
+    function renderStaticWheel() {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = centerX - 10;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const palette = PALETTES[currentPaletteKey] || PALETTES.opera;
+        const fontSpec = FONTS[currentFontKey] || FONTS.mincho;
+        const questions = getActiveQuestions();
+
+        if (questions.length === 0) {
+            hlCtx.clearRect(0, 0, hlCanvas.width, hlCanvas.height);
+            const grad = ctx.createRadialGradient(centerX, centerY, 40, centerX, centerY, radius);
+            grad.addColorStop(0, palette.slices[0][1]);
+            grad.addColorStop(1, '#080205');
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            ctx.fillStyle = palette.textColor;
+            ctx.font = `${fontSpec.weight} 36px ${fontSpec.family}`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("🗝️ 此題庫為空，請新增或匯入題目", centerX, centerY - 140);
+            return;
+        }
+
+        const total = questions.length;
+        const arc = (2 * Math.PI) / total;
+
+        let fontSize = 26;
+        let maxChars = 20;
+        if (sliceLabelMode === 'number') {
+            fontSize = total > 65 ? 20 : 26;
+        } else {
+            if (total > 90) { fontSize = 15.5; maxChars = 25; }
+            else if (total > 65) { fontSize = 18.5; maxChars = 23; }
+            else if (total > 45) { fontSize = 21.5; maxChars = 21; }
+            else if (total > 25) { fontSize = 24; maxChars = 19; }
+        }
+
+        questions.forEach((q, i) => {
+            const startAngle = i * arc;
+            const endAngle = startAngle + arc;
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            ctx.closePath();
+
+            const grad = ctx.createRadialGradient(centerX, centerY, 90, centerX, centerY, radius);
+            if (q.drawn) {
+                grad.addColorStop(0, '#070305');
+                grad.addColorStop(1, '#0e0609');
+            } else {
+                const pair = palette.slices[q.colorIndex];
+                grad.addColorStop(0, pair[0]);
+                grad.addColorStop(0.7, pair[1]);
+                grad.addColorStop(1, pair[0]);
+            }
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            ctx.lineWidth = total > 60 ? 1.2 : 1.8;
+            ctx.strokeStyle = q.drawn ? 'rgba(255, 255, 255, 0.04)' : palette.lineColor;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(startAngle + arc / 2);
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.font = `${fontSpec.weight} ${fontSize}px ${fontSpec.family}`;
+
+            let displayText = formatSliceLabel(q.text, i);
+            if (sliceLabelMode === 'text' && displayText.length > maxChars) {
+                displayText = displayText.substring(0, maxChars) + '…';
+            }
+
+            if (q.drawn) {
+                ctx.fillStyle = '#3a272c';
+            } else {
+                ctx.fillStyle = palette.textColor;
+            }
+
+            ctx.fillText(displayText, radius - 30, 0);
+            ctx.restore();
+        });
+
+        const pegRadius = radius - 12;
+        for (let i = 0; i < total; i++) {
+            const angle = i * arc;
+            const px = centerX + Math.cos(angle) * pegRadius;
+            const py = centerY + Math.sin(angle) * pegRadius;
+            ctx.beginPath();
+            ctx.arc(px, py, total > 60 ? 2.6 : 4, 0, Math.PI * 2);
+            ctx.fillStyle = questions[i].drawn ? '#291a1e' : palette.pegColor;
+            ctx.fill();
+        }
+    }
+
+    // 正上方 12 點鐘方向 (270度) 扇形即時發光高亮
+    function drawTopPointerSliceHighlight(nowDeg, intensity = 0.7) {
+        hlCtx.clearRect(0, 0, hlCanvas.width, hlCanvas.height);
+        const questions = getActiveQuestions();
+        if (questions.length === 0) return;
+
+        const total = questions.length;
+        const sliceDeg = 360 / total;
+        const arc = (2 * Math.PI) / total;
+
+        const pointerNormalizedDeg = ((270 - (nowDeg % 360)) + 360) % 360;
+        const currentSlice = Math.floor(pointerNormalizedDeg / sliceDeg) % total;
+
+        const sliceStartDeg = (currentSlice * sliceDeg + nowDeg) % 360;
+        const startRad = (sliceStartDeg * Math.PI) / 180;
+        const endRad = startRad + arc;
+
+        const centerX = hlCanvas.width / 2;
+        const centerY = hlCanvas.height / 2;
+        const radius = centerX - 10;
+
+        hlCtx.save();
+        hlCtx.beginPath();
+        hlCtx.moveTo(centerX, centerY);
+        hlCtx.arc(centerX, centerY, radius, startRad, endRad);
+        hlCtx.closePath();
+
+        const hlGrad = hlCtx.createRadialGradient(centerX, centerY, 90, centerX, centerY, radius);
+        hlGrad.addColorStop(0, `rgba(246, 234, 194, ${0.06 * intensity})`);
+        hlGrad.addColorStop(0.6, `rgba(255, 215, 110, ${0.26 * intensity})`);
+        hlGrad.addColorStop(1, `rgba(255, 230, 150, ${0.42 * intensity})`);
+
+        hlCtx.fillStyle = hlGrad;
+        hlCtx.fill();
+
+        hlCtx.lineWidth = 2.5;
+        hlCtx.strokeStyle = `rgba(255, 235, 160, ${0.8 * intensity})`;
+        hlCtx.stroke();
+        hlCtx.restore();
+    }
+
+    function setWheelRotationGPU(deg) {
+        currentRotationDeg = deg;
+        canvas.style.transform = `translate3d(0, 0, 0) rotate(${deg}deg)`;
+    }
+
+    // ================= 6. 正上方指針 60~144 FPS 絲滑旋轉引擎 =================
+    function applyResultTextSizing(text) {
+        modalQuestionText.classList.remove('size-md', 'size-lg', 'size-xl');
+        const len = (text || '').length;
+        if (len > 90) modalQuestionText.classList.add('size-xl');
+        else if (len > 50) modalQuestionText.classList.add('size-lg');
+        else if (len > 26) modalQuestionText.classList.add('size-md');
+        modalQuestionText.scrollTop = 0;
+    }
+
+    function startSpin(options = {}) {
+        const questions = getActiveQuestions();
+        if (isSpinning || questions.length === 0) return false;
+
+        const availableIndices = questions
+            .map((q, idx) => q.drawn ? -1 : idx)
+            .filter(idx => idx !== -1);
+
+        if (availableIndices.length === 0) {
+            if (!options.fromRemote) {
+                showDialog({ title: '🕯️ 題庫已全數抽完', message: '當前題庫槽的所有題目皆已抽取完畢，可打開「📜 題庫」或「⚙️ 設定」解除封印。' });
+            }
+            return false;
+        }
+
+        // 無人值守無縫接續：若上一題結果視窗還開著，自動收起（維持已封印）並直接開轉
+        if (resultModal.classList.contains('show')) {
+            resultModal.classList.remove('show');
+        }
+        if (safeLockTimerId) {
+            clearTimeout(safeLockTimerId);
+            safeLockTimerId = null;
+        }
+        stopSpeech();
+        closeAllDrawers();
+
+        isSpinning = true;
+        spinBtn.disabled = true;
+        spinBtn.blur();
+        tickerLabel.textContent = options.fromRemote ? '📱 玩家啟動轉盤中' : '🕯️ 命運流轉中';
+
+        if (typeof publishHostState === 'function') {
+            publishHostState('spinning');
+        }
+
+        const winningIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        lastWinningIndex = winningIndex;
+        const total = questions.length;
+        const sliceDeg = 360 / total;
+
+        const centerOffset = 0.35 + Math.random() * 0.30;
+        const sliceTargetDeg = (winningIndex + centerOffset) * sliceDeg;
+
+        const targetModDeg = (270 - sliceTargetDeg + 360) % 360;
+        const currentModDeg = ((currentRotationDeg % 360) + 360) % 360;
+
+        let diffDeg = targetModDeg - currentModDeg;
+        if (diffDeg < 0) diffDeg += 360;
+
+        const baseSpins = spinDuration < 4000 ? 4 : (spinDuration > 9000 ? 8 : 6);
+        const totalDeltaDeg = (baseSpins * 360) + diffDeg;
+        const startDeg = currentRotationDeg;
+        const duration = spinDuration;
+        let startTime = null;
+        let lastFrameTime = 0;
+
+        function stepAnimation(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const dt = lastFrameTime ? Math.min((timestamp - lastFrameTime) / 16.667, 3) : 1;
+            lastFrameTime = timestamp;
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            const easeOut = 1 - Math.pow(1 - progress, 4.5);
+            const nowDeg = startDeg + totalDeltaDeg * easeOut;
+
+            setWheelRotationGPU(nowDeg);
+
+            const glowIntensity = 0.45 + progress * 0.55;
+            drawTopPointerSliceHighlight(nowDeg, glowIntensity);
+
+            const pointerNormalizedDeg = ((270 - (nowDeg % 360)) + 360) % 360;
+            const currentSlice = Math.floor(pointerNormalizedDeg / sliceDeg) % total;
+
+            if (currentSlice !== lastSliceIndex) {
+                lastSliceIndex = currentSlice;
+                const speedRatio = Math.pow(1 - progress, 3.4);
+                playTickSound(speedRatio);
+
+                if (navigator.vibrate) navigator.vibrate(6);
+
+                pointerVelocity = -Math.max(5, speedRatio * 20);
+
+                const currentQ = questions[currentSlice];
+                tickerText.textContent = currentQ.drawn
+                    ? `(已封印) ${currentQ.text}`
+                    : `#${String(currentSlice + 1).padStart(2, '0')} ${currentQ.text}`;
+            }
+
+            // Delta-Time 修正：60Hz / 120Hz / 144Hz 螢幕回彈手感完全一致
+            pointerAngle += pointerVelocity * dt;
+            pointerVelocity *= Math.pow(0.72, dt);
+            pointerAngle *= Math.pow(0.78, dt);
+            if (pointerAngle < -28) pointerAngle = -28;
+            pointerEl.style.transform = `rotate(${pointerAngle.toFixed(2)}deg)`;
+
+            if (progress < 1) {
+                requestAnimationFrame(stepAnimation);
+            } else {
+                pointerEl.style.transform = `rotate(0deg)`;
+
+                slotsData[currentSlot].drawCounter = (slotsData[currentSlot].drawCounter || 0) + 1;
+                questions[winningIndex].drawn = true;
+                questions[winningIndex].drawnOrder = slotsData[currentSlot].drawCounter;
+                saveState();
+
+                lastDrawnText = questions[winningIndex].text;
+                lastDrawnNum = winningIndex + 1;
+                const remainingAfter = questions.filter(q => !q.drawn).length;
+                const isLastQuestion = (remainingAfter === 0);
+
+                tickerLabel.textContent = `🎉 抽中 #${String(lastDrawnNum).padStart(2, '0')}`;
+                tickerText.textContent = lastDrawnText;
+
+                // 播放審判雙響重鐘 ＋ 金色營火爆發 ＋ 延遲語音朗讀
+                playHeavyBell();
+                triggerEmberBurst(2000);
+                speakDrawnQuestion(lastDrawnText, lastDrawnNum, isLastQuestion, 1850);
+
+                // 設定遠端防誤觸冷卻時間
+                remoteCooldownUntil = Date.now() + 800 + (remoteCooldownSec * 1000);
+
+                let pulseCount = 0;
+                const pulseTimer = setInterval(() => {
+                    pulseCount++;
+                    drawTopPointerSliceHighlight(nowDeg, pulseCount % 2 === 0 ? 1.2 : 0.35);
+                    if (pulseCount >= 4) {
+                        clearInterval(pulseTimer);
+                        renderStaticWheel();
+                        drawTopPointerSliceHighlight(nowDeg, 0.9);
+                        updateStatusUI();
+                    }
+                }, 160);
+
+                // 800ms 後彈出巨幅視窗，並從「開啟那一刻」才開始計算 1.2 秒防手抖鎖
+                setTimeout(() => {
+                    isSpinning = false;
+                    resultBadge.textContent = `🕯️ 題庫 ${currentSlot}・第 ${lastDrawnNum} 號真心話 🕯️`;
+                    modalQuestionText.textContent = lastDrawnText;
+                    applyResultTextSizing(lastDrawnText);
+                    resultModal.classList.add('show');
+
+                    modalSafeLockUntil = performance.now() + 1200;
+                    closeModalBtn.disabled = true;
+                    closeModalBtn.textContent = '🗝️ 封印此題並繼續 (保護中...)';
+                    safeLockTimerId = setTimeout(() => {
+                        closeModalBtn.disabled = false;
+                        closeModalBtn.textContent = '🗝️ 封印此題並繼續 (Space)';
+                        safeLockTimerId = null;
+                    }, 1200);
+
+                    if (questions.some(q => !q.drawn)) {
+                        spinBtn.disabled = false;
+                    }
+
+                    if (typeof flushPendingRemoteQuestions === 'function') {
+                        flushPendingRemoteQuestions();
+                    }
+                    if (typeof publishHostState === 'function') {
+                        publishHostState('result');
+                    }
+                }, 800);
+            }
+        }
+
+        requestAnimationFrame(stepAnimation);
+        return true;
+    }
+
+    spinBtn.addEventListener('click', () => startSpin());
+
+    // 手機滑動轉盤啟動
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.getElementById('wheelTouchArea').addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+
+    document.getElementById('wheelTouchArea').addEventListener('touchend', (e) => {
+        if (isSpinning || e.changedTouches.length === 0) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.hypot(dx, dy) > 45) {
+            startSpin();
+        }
+    }, { passive: true });
+
+    function confirmAndSealModal() {
+        if (performance.now() < modalSafeLockUntil) return;
+        stopSpeech();
+        resultModal.classList.remove('show');
+        if (typeof publishHostState === 'function') {
+            publishHostState('idle');
+        }
+    }
+    closeModalBtn.addEventListener('click', confirmAndSealModal);
+
+    unsealSkipBtn.addEventListener('click', () => {
+        stopSpeech();
+        const questions = getActiveQuestions();
+        if (lastWinningIndex >= 0 && questions[lastWinningIndex]) {
+            questions[lastWinningIndex].drawn = false;
+            delete questions[lastWinningIndex].drawnOrder;
+            saveState();
+            renderStaticWheel();
+            drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+            updateStatusUI();
+            spinBtn.disabled = false;
+            remoteCooldownUntil = 0;
+            showToast('↩️ 已將該題放回轉盤（未封印）');
+        }
+        resultModal.classList.remove('show');
+        if (typeof publishHostState === 'function') {
+            publishHostState('idle');
+        }
+    });
+
+    // ================= 7. 空白鍵 / 簡報筆 / 純淨待機快捷鍵 =================
+    function toggleStandbyMode() {
+        document.body.classList.toggle('standby-mode');
+        closeAllDrawers();
+    }
+    document.getElementById('standbyBtn').addEventListener('click', toggleStandbyMode);
+    document.getElementById('exitStandbyBtn').addEventListener('click', toggleStandbyMode);
+
+    window.addEventListener('keydown', (e) => {
+        if (IS_REMOTE_MODE) return;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+        if (e.code === 'KeyH') {
+            toggleStandbyMode();
+            return;
+        }
+        if (e.code === 'Escape') {
+            document.body.classList.remove('standby-mode');
+            closeAllDrawers();
+            document.getElementById('dialogModal').classList.remove('show');
+            document.getElementById('qrEnlargeModal').classList.remove('show');
+            return;
+        }
+
+        const isActionKey = (e.code === 'Space' || e.code === 'Enter' || e.code === 'PageDown');
+        if (!isActionKey) return;
+        if (document.getElementById('dialogModal').classList.contains('show')) return;
+        if (document.getElementById('qrEnlargeModal').classList.contains('show')) return;
+
+        e.preventDefault();
+        if (resultModal.classList.contains('show')) {
+            confirmAndSealModal();
+            return;
+        }
+        if (!isSpinning && !spinBtn.disabled) {
+            startSpin();
+        }
+    });
+
+    // ================= 8. 抽屜控制 ＆ 3 組題庫記憶槽切換 =================
+    const settingsDrawer = document.getElementById('settingsDrawer');
+    const historyDrawer = document.getElementById('historyDrawer');
+
+    function closeAllDrawers() {
+        settingsDrawer.classList.remove('open');
+        historyDrawer.classList.remove('open');
+        document.body.classList.remove('drawer-open');
+    }
+
+    document.getElementById('openSettingsBtn').addEventListener('click', () => {
+        if (isSpinning) { showToast('⏳ 轉盤轉動中，請待停止後再開啟設定'); return; }
+        const isOpen = settingsDrawer.classList.contains('open');
+        closeAllDrawers();
+        if (!isOpen) {
+            settingsDrawer.classList.add('open');
+            document.body.classList.add('drawer-open');
+        }
+    });
+
+    document.getElementById('openHistoryBtn').addEventListener('click', () => {
+        if (isSpinning) { showToast('⏳ 轉盤轉動中，請待停止後再管理題庫'); return; }
+        const isOpen = historyDrawer.classList.contains('open');
+        closeAllDrawers();
+        if (!isOpen) {
+            renderQuestionManagerList();
+            historyDrawer.classList.add('open');
+            document.body.classList.add('drawer-open');
+        }
+    });
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', closeAllDrawers);
+    document.getElementById('closeHistoryBtn').addEventListener('click', closeAllDrawers);
+
+    document.querySelectorAll('.slot-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (isSpinning) return;
+            currentSlot = btn.dataset.slot;
+            document.querySelectorAll('.slot-pill').forEach(b => b.classList.toggle('active', b.dataset.slot === currentSlot));
+            saveState();
+            updateStatusUI();
+            renderStaticWheel();
+            drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+            if (historyDrawer.classList.contains('open')) renderQuestionManagerList();
+            showToast(`🗂️ 已切換至「題庫 ${currentSlot}」`);
+        });
+    });
+
+    // ================= 9. 題庫管理抽屜 =================
+    function isQuestionAbnormal(qText, allQuestions) {
+        if (qText.trim().length <= 3) return true;
+        const count = allQuestions.filter(item => item.text.trim() === qText.trim()).length;
+        return count > 1;
+    }
+
+    function renderQuestionManagerList() {
+        const container = document.getElementById('questionListContainer');
+        const questions = getActiveQuestions();
+        const keyword = document.getElementById('searchQInput').value.trim().toLowerCase();
+
+        const unsealedTotal = questions.filter(q => !q.drawn).length;
+        const sealedTotal = questions.filter(q => q.drawn).length;
+        document.getElementById('unsealedCount').textContent = unsealedTotal;
+        document.getElementById('sealedCount').textContent = sealedTotal;
+
+        container.innerHTML = '';
+
+        let list = questions.map((q, idx) => ({ ...q, idx }));
+
+        if (currentHistoryTab === 'active') {
+            list = list.filter(item => !item.drawn);
+        } else {
+            list = list.filter(item => item.drawn).sort((a, b) => (b.drawnOrder || 0) - (a.drawnOrder || 0));
+        }
+
+        if (keyword) {
+            list = list.filter(item => item.text.toLowerCase().includes(keyword));
+        }
+
+        if (filterAbnormalOnly) {
+            list = list.filter(item => isQuestionAbnormal(item.text, questions));
+        }
+
+        if (list.length === 0) {
+            container.innerHTML = `<div style="color:#8c7a72; text-align:center; padding:24px 0;">${
+                filterAbnormalOnly ? '🎉 太棒了！沒有發現過短或重複的異常題目' : '目前此分類沒有題目'
+            }</div>`;
+            return;
+        }
+
+        list.forEach(item => {
+            const abnormal = isQuestionAbnormal(item.text, questions);
+            const row = document.createElement('div');
+            row.className = 'q-list-item' + (abnormal ? ' abnormal' : '');
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'q-list-text';
+            textDiv.title = '點擊可直接修改文字';
+            const badge = abnormal ? '⚠️ ' : `#${String(item.idx + 1).padStart(2, '0')} `;
+            textDiv.textContent = badge + item.text;
+
+            textDiv.onclick = () => {
+                if (isSpinning) return;
+                showDialog({
+                    title: '✏️ 修改題目內容',
+                    message: '編輯完成後按儲存，轉盤將即時更新：',
+                    inputValue: item.text,
+                    confirmText: '儲存修改',
+                    cancelText: '取消',
+                    onConfirm: (newText) => {
+                        if (newText && newText.trim() !== '') {
+                            questions[item.idx].text = newText.trim();
+                            saveState();
+                            renderStaticWheel();
+                            renderQuestionManagerList();
+                            showToast('✏️ 已更新題目文字');
+                        }
+                    }
+                });
+            };
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'q-action-btn';
+            toggleBtn.textContent = item.drawn ? '🔓 解除封印' : '🔒 封印';
+            toggleBtn.onclick = () => {
+                if (isSpinning) return;
+                questions[item.idx].drawn = !questions[item.idx].drawn;
+                saveState();
+                updateStatusUI();
+                renderStaticWheel();
+                drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+                renderQuestionManagerList();
+            };
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'q-action-btn del';
+            delBtn.textContent = '刪除';
+            delBtn.onclick = () => {
+                if (isSpinning) return;
+                questions.splice(item.idx, 1);
+                reassignColors(questions);
+                saveState();
+                updateStatusUI();
+                renderStaticWheel();
+                drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+                renderQuestionManagerList();
+            };
+
+            row.appendChild(textDiv);
+            row.appendChild(toggleBtn);
+            row.appendChild(delBtn);
+            container.appendChild(row);
+        });
+    }
+
+    document.getElementById('tabActiveBtn').addEventListener('click', (e) => {
+        currentHistoryTab = 'active';
+        e.currentTarget.classList.add('active');
+        document.getElementById('tabDrawnBtn').classList.remove('active');
+        renderQuestionManagerList();
+    });
+    document.getElementById('tabDrawnBtn').addEventListener('click', (e) => {
+        currentHistoryTab = 'drawn';
+        e.currentTarget.classList.add('active');
+        document.getElementById('tabActiveBtn').classList.remove('active');
+        renderQuestionManagerList();
+    });
+
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+        if (isSpinning) return;
+        const questions = getActiveQuestions();
+        if (questions.length < 2) {
+            showToast('⚠️ 題目少於 2 題，無需洗牌');
+            return;
+        }
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        reassignColors(questions);
+        saveState();
+        renderStaticWheel();
+        drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+        renderQuestionManagerList();
+        showToast('🔀 已隨機打亂轉盤順序');
+    });
+
+    document.getElementById('searchQInput').addEventListener('input', renderQuestionManagerList);
+    document.getElementById('smartCheckBtn').addEventListener('click', (e) => {
+        filterAbnormalOnly = !filterAbnormalOnly;
+        e.target.style.borderColor = filterAbnormalOnly ? '#ff6b6b' : '';
+        e.target.textContent = filterAbnormalOnly ? '🧹 顯示全部' : '🧹 檢查異常題';
+        renderQuestionManagerList();
+    });
+
+    function handleSingleAdd() {
+        const input = document.getElementById('manualAddInput');
+        const val = input.value.trim();
+        if (!val) return;
+        const questions = getActiveQuestions();
+        questions.push({ text: val, drawn: false, colorIndex: 0 });
+        reassignColors(questions);
+        input.value = '';
+        saveState();
+        updateStatusUI();
+        renderStaticWheel();
+        renderQuestionManagerList();
+        showToast('➕ 已新增 1 道題目');
+    }
+    document.getElementById('manualAddBtn').addEventListener('click', handleSingleAdd);
+    document.getElementById('manualAddInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleSingleAdd();
+    });
+
+    document.getElementById('batchPasteBtn').addEventListener('click', () => {
+        const textarea = document.getElementById('batchPasteInput');
+        const lines = textarea.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        if (lines.length === 0) return;
+        const questions = getActiveQuestions();
+        lines.forEach(line => questions.push({ text: line, drawn: false, colorIndex: 0 }));
+        reassignColors(questions);
+        textarea.value = '';
+        saveState();
+        updateStatusUI();
+        renderStaticWheel();
+        renderQuestionManagerList();
+        showToast(`📥 成功批次加入 ${lines.length} 道題目`);
+    });
+
+    document.getElementById('clearSlotBtn').addEventListener('click', () => {
+        showDialog({
+            title: `🗑️ 清空題庫 ${currentSlot}`,
+            message: `確定要清空「題庫 ${currentSlot}」內的所有題目嗎？`,
+            confirmText: '確定清空',
+            cancelText: '取消',
+            onConfirm: () => {
+                setActiveQuestions([]);
+                slotsData[currentSlot].drawCounter = 0;
+                saveState();
+                updateStatusUI();
+                renderStaticWheel();
+                hlCtx.clearRect(0, 0, hlCanvas.width, hlCanvas.height);
+                renderQuestionManagerList();
+                showToast(`🗑️ 已清空題庫 ${currentSlot}`);
+            }
+        });
+    });
+
+    // ================= 10. 設定面板即時預覽事件 & 匯入/匯出 CSV =================
+    document.getElementById('sliceLabelModeSelect').addEventListener('change', (e) => {
+        sliceLabelMode = e.target.value;
+        saveState();
+        renderStaticWheel();
+    });
+
+    document.getElementById('paletteSelect').addEventListener('change', (e) => {
+        currentPaletteKey = e.target.value;
+        applyPaletteCSS(currentPaletteKey);
+        saveState();
+        renderStaticWheel();
+    });
+
+    document.getElementById('rimSelect').addEventListener('change', (e) => {
+        rimStyle = e.target.value;
+        document.body.classList.toggle('rimless-mode', rimStyle === 'rimless');
+        saveState();
+    });
+
+    document.getElementById('fontSelect').addEventListener('change', (e) => {
+        currentFontKey = e.target.value;
+        document.documentElement.style.setProperty('--ui-font', FONTS[currentFontKey].family);
+        saveState();
+        renderStaticWheel();
+    });
+
+    document.getElementById('wheelScaleRange').addEventListener('input', (e) => {
+        wheelScale = Number(e.target.value);
+        document.documentElement.style.setProperty('--wheel-scale', `${wheelScale}vmin`);
+        saveState();
+    });
+
+    document.getElementById('soundToggleBtn').addEventListener('click', (e) => {
+        soundEnabled = !soundEnabled;
+        e.currentTarget.textContent = soundEnabled ? '🔊 音效：開啟' : '🔇 音效：靜音';
+        saveState();
+    });
+
+    document.getElementById('testBellBtn').addEventListener('click', () => {
+        if (!soundEnabled) {
+            showToast('🔇 目前總音效為靜音狀態，請先開啟音效');
+            return;
+        }
+        playHeavyBell();
+    });
+
+    document.getElementById('ttsToggleBtn').addEventListener('click', (e) => {
+        ttsEnabled = !ttsEnabled;
+        e.currentTarget.textContent = ttsEnabled ? '🎙️ 語音：開啟' : '🔇 語音：關閉';
+        if (!ttsEnabled) stopSpeech();
+        saveState();
+    });
+
+    document.getElementById('ttsVoiceSelect').addEventListener('change', (e) => {
+        ttsVoiceURI = e.target.value;
+        saveState();
+        if (ttsEnabled) speakText('夜晚真心話命運轉盤，語音測試完成。', 0);
+    });
+
+    document.getElementById('ttsRateRange').addEventListener('input', (e) => {
+        ttsRate = Number(e.target.value);
+        document.getElementById('ttsRateVal').textContent = `${ttsRate.toFixed(2)}x`;
+        saveState();
+    });
+
+    document.getElementById('ttsPrefixSelect').addEventListener('change', (e) => {
+        ttsPrefixMode = e.target.value;
+        saveState();
+    });
+
+    document.getElementById('testTtsBtn').addEventListener('click', () => {
+        if (!('speechSynthesis' in window)) {
+            showToast('⚠️ 此瀏覽器不支援語音朗讀功能');
+            return;
+        }
+        if (!ttsEnabled) {
+            showToast('🔇 請先開啟「抽中自動朗讀」開關');
+            return;
+        }
+        speakDrawnQuestion('說出你這局的真實角色，不能說謊。', 1, false, 0);
+    });
+
+    document.getElementById('replayTtsBtn').addEventListener('click', () => {
+        if (!lastDrawnText) return;
+        if (!ttsEnabled) {
+            showToast('🔇 語音播報已關閉，請於設定開啟');
+            return;
+        }
+        speakDrawnQuestion(lastDrawnText, lastDrawnNum, false, 0);
+    });
+
+    document.getElementById('audioUnlockBanner').addEventListener('click', () => {
+        unlockHostAudio();
+        showToast('🔊 已啟用電腦鐘聲與語音播報！');
+    });
+
+    document.getElementById('speedSelect').addEventListener('change', (e) => {
+        spinDuration = Number(e.target.value);
+        saveState();
+    });
+
+    function applyImportedCsv(rows, textColIdx, statusColIdx = -1) {
+        const newQuestions = [];
+        let sealedRestored = 0;
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const qText = (row[textColIdx] || '').trim();
+            if (qText) {
+                const isSealed = statusColIdx >= 0 && (row[statusColIdx] || '').trim() === '已封印';
+                if (isSealed) sealedRestored++;
+                newQuestions.push({
+                    text: qText,
+                    drawn: isSealed,
+                    drawnOrder: isSealed ? sealedRestored : undefined,
+                    colorIndex: 0
+                });
+            }
+        }
+
+        if (newQuestions.length === 0) {
+            showDialog({ title: '⚠️ 讀取失敗', message: '找不到任何有效的題目內容。' });
+            return;
+        }
+
+        setActiveQuestions(newQuestions);
+        slotsData[currentSlot].drawCounter = sealedRestored;
+        setWheelRotationGPU(0);
+        saveState();
+        updateStatusUI();
+        renderStaticWheel();
+        drawTopPointerSliceHighlight(0, 0.5);
+        tickerText.textContent = `已載入 ${newQuestions.length} 道題目至「題庫 ${currentSlot}」，可開始抽題！`;
+        const extraMsg = sealedRestored > 0 ? `（含還原 ${sealedRestored} 題已封印）` : '';
+        showToast(`🕯️ 成功載入 ${newQuestions.length} 題至題庫 ${currentSlot}${extraMsg}`);
+    }
+
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        e.target.value = '';
+        if (!file) return;
+        if (isSpinning) {
+            showToast('⏳ 轉盤轉動中，請待停止後再匯入 CSV');
+            return;
+        }
+
+        Papa.parse(file, {
+            header: false,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const rows = results.data;
+                if (rows.length <= 1) {
+                    showDialog({ title: '⚠️ 檔案格式錯誤', message: 'CSV 檔案內沒有找到有效的問卷問題。' });
+                    return;
+                }
+
+                const header = rows[0].map(c => (c || '').trim());
+                const colCount = header.length;
+
+                // 若為本程式匯出的備份 CSV，自動還原問題與已封印狀態
+                if (colCount >= 3 && header[1] === '真心話問題內容' && header[2] === '狀態') {
+                    applyImportedCsv(rows, 1, 2);
+                    return;
+                }
+
+                // 若為標準 1~2 欄 Google 表單 CSV，直接匯入
+                if (colCount <= 2) {
+                    applyImportedCsv(rows, colCount > 1 ? 1 : 0, -1);
+                    return;
+                }
+
+                // 若超過 2 欄，彈出預覽讓主持人點選哪一欄才是問題
+                const colWrap = document.createElement('div');
+                colWrap.style.display = 'flex';
+                colWrap.style.flexDirection = 'column';
+                colWrap.style.gap = '7px';
+
+                header.forEach((colName, idx) => {
+                    const sample = (rows[1][idx] || '').trim();
+                    const preview = sample.length > 26 ? sample.substring(0, 26) + '…' : (sample || '(空)');
+                    const btn = document.createElement('button');
+                    btn.className = 'csv-col-option';
+                    btn.textContent = `第 ${idx + 1} 欄【${colName || '未命名'}】範例：${preview}`;
+                    btn.onclick = () => {
+                        document.getElementById('dialogModal').classList.remove('show');
+                        applyImportedCsv(rows, idx, -1);
+                    };
+                    colWrap.appendChild(btn);
+                });
+
+                showDialog({
+                    title: '📂 偵測到多欄 CSV，請選擇題目欄位',
+                    message: '點擊下方要匯入成轉盤題目的那一欄：',
+                    customNode: colWrap,
+                    hideConfirm: true,
+                    cancelText: '取消'
+                });
+            }
+        });
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        const questions = getActiveQuestions();
+        if (questions.length === 0) {
+            showToast('⚠️ 當前題庫為空，無法匯出');
+            return;
+        }
+        const rows = [['時間戳記', '真心話問題內容', '狀態']];
+        questions.forEach((q, idx) => {
+            rows.push([`#${idx + 1}`, q.text, q.drawn ? '已封印' : '未抽取']);
+        });
+        const csvContent = '\uFEFF' + Papa.unparse(rows);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `血染真心話題庫_${currentSlot}_備份.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📤 已下載 CSV 備份檔案');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        if (isSpinning) return;
+        const questions = getActiveQuestions();
+        showDialog({
+            title: `🔄 解除「題庫 ${currentSlot}」所有封印`,
+            message: '確定要將此題庫內所有已抽過的題目恢復為「未抽取」狀態嗎？',
+            confirmText: '確定解封',
+            cancelText: '取消',
+            onConfirm: () => {
+                questions.forEach(q => {
+                    q.drawn = false;
+                    delete q.drawnOrder;
+                });
+                slotsData[currentSlot].drawCounter = 0;
+                saveState();
+                updateStatusUI();
+                renderStaticWheel();
+                showToast('✨ 所有題目已解除封印');
+            }
+        });
+    });
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    showToast('📱 手機瀏覽器已自動滿版顯示');
+                });
+            } else {
+                showToast('📱 手機瀏覽器已自動滿版顯示');
+            }
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    function updateStatusUI() {
+        const questions = getActiveQuestions();
+        const remaining = questions.filter(q => !q.drawn).length;
+        statusInfo.textContent = questions.length > 0 
+            ? `題庫 ${currentSlot}｜剩 ${remaining}/${questions.length}` 
+            : `題庫 ${currentSlot}｜空`;
+        spinBtn.disabled = (remaining === 0);
+        spinBtn.innerHTML = remaining === 0 && questions.length > 0
+            ? '<span>已抽完</span>'
+            : '<span>開始</span><span style="font-size:11px; opacity:0.8;">抽題</span>';
+            if (!IS_REMOTE_MODE && !isSpinning && typeof publishHostState === 'function') {
+            publishHostState();
+        }
+    }
+
+    function showToast(msg) {
+        const stack = document.getElementById('toastStack');
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        el.textContent = msg;
+        stack.appendChild(el);
+        setTimeout(() => {
+            el.style.opacity = '0';
+            el.style.transition = '0.25s';
+            setTimeout(() => el.remove(), 250);
+        }, 2200);
+    }
+
+    function showDialog({ title, message, confirmText = '確定', cancelText = null, inputValue = undefined, customNode = null, hideConfirm = false, onConfirm }) {
+        const modal = document.getElementById('dialogModal');
+        document.getElementById('dialogTitle').textContent = title;
+        document.getElementById('dialogMsg').textContent = message;
+
+        const extra = document.getElementById('dialogExtra');
+        extra.innerHTML = '';
+        extra.classList.remove('show');
+
+        let inputEl = null;
+        if (inputValue !== undefined) {
+            inputEl = document.createElement('textarea');
+            inputEl.className = 'dialog-textarea';
+            inputEl.value = inputValue;
+            extra.appendChild(inputEl);
+            extra.classList.add('show');
+        } else if (customNode) {
+            extra.appendChild(customNode);
+            extra.classList.add('show');
+        }
+
+        const actions = document.getElementById('dialogActions');
+        actions.innerHTML = '';
+
+        if (cancelText) {
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'ui-btn';
+            cancelBtn.textContent = cancelText;
+            cancelBtn.onclick = () => modal.classList.remove('show');
+            actions.appendChild(cancelBtn);
+        }
+
+        if (!hideConfirm) {
+            const okBtn = document.createElement('button');
+            okBtn.className = 'ui-btn gold-btn';
+            okBtn.textContent = confirmText;
+            okBtn.onclick = () => {
+                const val = inputEl ? inputEl.value : undefined;
+                modal.classList.remove('show');
+                if (onConfirm) onConfirm(val);
+            };
+            actions.appendChild(okBtn);
+        }
+
+        modal.classList.add('show');
+        if (inputEl) {
+            setTimeout(() => {
+                inputEl.focus();
+                inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+            }, 60);
+        }
+    }
+    // ================= 11. 防休眠鎖 (Wake Lock) ＆ Firebase 主機端同步核心 =================
+    let wakeLockSentinel = null;
+    async function requestWakeLock() {
+        if (IS_REMOTE_MODE || !('wakeLock' in navigator)) return;
+        try {
+            wakeLockSentinel = await navigator.wakeLock.request('screen');
+        } catch (e) {}
+    }
+    if (!IS_REMOTE_MODE) {
+        requestWakeLock();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') requestWakeLock();
+        });
+    }
+
+    let fbApp = null;
+    let fbAppSeq = 0;
+    let fbDb = null;
+    let fbConnected = false;
+    let serverTimeOffset = 0;
+    let hostRoomRef = null;
+    let hostCmdRef = null;
+    let hostSubRef = null;
+    let hostConnRef = null;
+    let hostOffsetRef = null;
+    let lastPublishedStatus = 'idle';
+    let hostSessionStartMs = 0;
+
+    function normalizeFirebaseUrl(raw) {
+        if (!raw) return '';
+        const text = String(raw).trim();
+        // 防呆：就算使用者貼了整段 Firebase config JSON，也能自動抓出 databaseURL
+        const match = text.match(/https:\/\/[a-zA-Z0-9._-]+(?:firebaseio\.com|firebasedatabase\.app)/i);
+        if (match) return match[0].replace(/\/+$/, '');
+        if (/^https?:\/\//i.test(text)) return text.replace(/\/+$/, '');
+        return '';
+    }
+
+    function detachHostFirebaseListeners() {
+        try { if (hostCmdRef) hostCmdRef.off(); } catch (e) {}
+        try { if (hostSubRef) hostSubRef.off(); } catch (e) {}
+        try { if (hostConnRef) hostConnRef.off(); } catch (e) {}
+        try { if (hostOffsetRef) hostOffsetRef.off(); } catch (e) {}
+        hostRoomRef = hostCmdRef = hostSubRef = hostConnRef = hostOffsetRef = null;
+        fbConnected = false;
+    }
+
+    function initFirebaseConnection(dbUrl) {
+        const cleanUrl = normalizeFirebaseUrl(dbUrl);
+        if (!cleanUrl || typeof firebase === 'undefined') return null;
+        try {
+            fbAppSeq++;
+            fbApp = firebase.initializeApp({ databaseURL: cleanUrl }, 'botc_app_' + fbAppSeq);
+            fbDb = fbApp.database();
+            return fbDb;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function buildRemoteShareUrl() {
+        const base = window.location.origin === 'null'
+            ? window.location.href.split('?')[0]
+            : (window.location.origin + window.location.pathname);
+        const params = new URLSearchParams();
+        params.set('room', sanitizeRoomCode(roomCode));
+        const cleanDb = normalizeFirebaseUrl(firebaseDbUrl);
+        if (cleanDb && cleanDb !== normalizeFirebaseUrl(DEFAULT_FIREBASE_DB_URL)) {
+            params.set('db', cleanDb);
+        }
+        return `${base}?${params.toString()}`;
+    }
+
+    function updateQrWidgets() {
+        if (IS_REMOTE_MODE) return;
+        const cornerWidget = document.getElementById('qrCornerWidget');
+        const miniEl = document.getElementById('qrMiniCanvas');
+        const bigEl = document.getElementById('qrBigCanvas');
+        const roomTextEl = document.getElementById('qrRoomText');
+        const cleanDb = normalizeFirebaseUrl(firebaseDbUrl);
+
+        if (!cleanDb || !remoteEnabled) {
+            cornerWidget.classList.remove('show');
+            return;
+        }
+
+        const shareUrl = buildRemoteShareUrl();
+        const isLocalFile = window.location.protocol === 'file:';
+        roomTextEl.textContent = isLocalFile
+            ? '⚠️ 目前為本機檔案 (file://)，請依第 7 段教學上傳至 GitHub Pages 後即可讓手機掃碼連線！'
+            : shareUrl;
+
+        if (typeof QRCode !== 'undefined') {
+            miniEl.innerHTML = '';
+            bigEl.innerHTML = '';
+            new QRCode(miniEl, { text: shareUrl, width: 72, height: 72, correctLevel: QRCode.CorrectLevel.M });
+            new QRCode(bigEl, { text: shareUrl, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
+        }
+
+        cornerWidget.classList.toggle('show', showCornerQr && remoteEnabled && Boolean(cleanDb));
+    }
+
+    function updateHostRemoteBadge() {
+        if (IS_REMOTE_MODE) return;
+        const badge = document.getElementById('remoteHostBadge');
+        const banner = document.getElementById('audioUnlockBanner');
+        const cleanDb = normalizeFirebaseUrl(firebaseDbUrl);
+
+        if (!cleanDb) {
+            badge.style.display = 'none';
+            banner.classList.remove('show');
+            return;
+        }
+
+        badge.style.display = 'inline-block';
+        if (!remoteEnabled) {
+            badge.textContent = '🔒 遠端暫停';
+            badge.classList.add('offline');
+            banner.classList.remove('show');
+        } else if (fbConnected) {
+            badge.textContent = `📡 遠端連線 (${roomCode})`;
+            badge.classList.remove('offline');
+            banner.classList.toggle('show', !audioUnlocked);
+        } else {
+            badge.textContent = '📡 遠端重連中';
+            badge.classList.add('offline');
+            banner.classList.remove('show');
+        }
+    }
+
+    function publishHostState(statusOverride) {
+        if (IS_REMOTE_MODE || !hostRoomRef || !fbConnected) return;
+        if (statusOverride) lastPublishedStatus = statusOverride;
+
+        const questions = getActiveQuestions();
+        const remaining = questions.filter(q => !q.drawn).length;
+        const serverNow = Date.now() + serverTimeOffset;
+        const cooldownLeftMs = Math.max(0, remoteCooldownUntil - Date.now());
+
+        const statePayload = {
+            hostOnline: true,
+            status: isSpinning ? 'spinning' : (resultModal.classList.contains('show') ? 'result' : lastPublishedStatus),
+            remoteEnabled: remoteEnabled,
+            allowAdd: remoteAllowAdd,
+            remaining: remaining,
+            total: questions.length,
+            slot: currentSlot,
+            lastQuestion: lastDrawnText || '',
+            lastNum: lastDrawnNum || 0,
+            cooldownUntilServer: cooldownLeftMs > 0 ? (serverNow + cooldownLeftMs) : 0,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        hostRoomRef.child('state').set(statePayload).catch(() => {});
+    }
+
+    // 匿名投稿安全入庫（絕不在轉動期間改動題庫陣列）
+    function insertAnonymousQuestion(rawText) {
+        const clean = String(rawText || '').replace(/\r?\n/g, ' ').trim();
+        if (clean.length < 2 || clean.length > 120) return false;
+
+        const questions = getActiveQuestions();
+        const exists = questions.some(q => q.text.trim() === clean) || pendingRemoteQuestions.includes(clean);
+        if (exists) return false;
+
+        if (isSpinning) {
+            pendingRemoteQuestions.push(clean);
+            showToast('📥 收到匿名加碼題目，轉盤停止後將自動加入');
+            return true;
+        }
+
+        questions.push({ text: clean, drawn: false, colorIndex: 0 });
+        reassignColors(questions);
+        saveState();
+        updateStatusUI();
+        renderStaticWheel();
+        drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+        if (historyDrawer.classList.contains('open')) {
+            renderQuestionManagerList();
+        }
+        showToast(`✍️ 收到 1 題匿名加碼！目前共 ${questions.length} 題`);
+        return true;
+    }
+
+    function flushPendingRemoteQuestions() {
+        if (isSpinning || pendingRemoteQuestions.length === 0) return;
+        const batch = pendingRemoteQuestions.splice(0, pendingRemoteQuestions.length);
+        const questions = getActiveQuestions();
+        let added = 0;
+        batch.forEach(text => {
+            if (!questions.some(q => q.text.trim() === text)) {
+                questions.push({ text, drawn: false, colorIndex: 0 });
+                added++;
+            }
+        });
+        if (added > 0) {
+            reassignColors(questions);
+            saveState();
+            updateStatusUI();
+            renderStaticWheel();
+            drawTopPointerSliceHighlight(currentRotationDeg, 0.5);
+            if (historyDrawer.classList.contains('open')) renderQuestionManagerList();
+            showToast(`✍️ 已將 ${added} 題匿名加碼加入轉盤！`);
+        }
+    }
+
+    function initHostRemote() {
+        if (IS_REMOTE_MODE) return;
+        detachHostFirebaseListeners();
+        updateQrWidgets();
+
+        const cleanDb = normalizeFirebaseUrl(firebaseDbUrl);
+        if (!cleanDb) {
+            updateHostRemoteBadge();
+            return;
+        }
+
+        const db = initFirebaseConnection(cleanDb);
+        if (!db) {
+            updateHostRemoteBadge();
+            showToast('⚠️ Firebase 無法連線（可能為離線狀態），已切換為單機模式');
+            return;
+        }
+
+        roomCode = sanitizeRoomCode(roomCode);
+        hostRoomRef = db.ref(`rooms/${roomCode}`);
+        hostCmdRef = hostRoomRef.child('commands');
+        hostSubRef = hostRoomRef.child('submissions');
+        hostOffsetRef = db.ref('.info/serverTimeOffset');
+        hostConnRef = db.ref('.info/connected');
+
+        hostOffsetRef.on('value', (snap) => {
+            serverTimeOffset = snap.val() || 0;
+        });
+
+        hostConnRef.on('value', (snap) => {
+            fbConnected = Boolean(snap.val());
+            updateHostRemoteBadge();
+            if (fbConnected) {
+                hostSessionStartMs = Date.now() + serverTimeOffset;
+                // 主機離線時自動標記 hostOnline: false，讓手機立刻知道主畫面已關閉
+                hostRoomRef.child('state/hostOnline').onDisconnect().set(false);
+                // 清除舊指令避免重整誤觸
+                hostCmdRef.remove().catch(() => {});
+                publishHostState();
+            }
+        });
+
+        // 監聽手機遙控指令（開轉、重唸語音）
+        hostCmdRef.on('child_added', (snap) => {
+            const cmd = snap.val();
+            snap.ref.remove().catch(() => {});
+            if (!cmd || !remoteEnabled) return;
+
+            const serverNow = Date.now() + serverTimeOffset;
+            if (cmd.ts && cmd.ts < hostSessionStartMs - 2500) return;
+
+            if (cmd.type === 'spin') {
+                if (isSpinning) return;
+                if (Date.now() < remoteCooldownUntil) return;
+                startSpin({ fromRemote: true });
+            } else if (cmd.type === 'replayTts') {
+                if (lastDrawnText && !isSpinning) {
+                    speakDrawnQuestion(lastDrawnText, lastDrawnNum, false, 0);
+                }
+            }
+        });
+
+        // 監聽手機匿名加碼出題
+        hostSubRef.on('child_added', (snap) => {
+            const sub = snap.val();
+            snap.ref.remove().catch(() => {});
+            if (!sub || !remoteAllowAdd) return;
+
+            const serverNow = Date.now() + serverTimeOffset;
+            if (sub.ts && sub.ts < serverNow - 300000) return; // 丟棄超過 5 分鐘前的過期舊投稿
+            insertAnonymousQuestion(sub.text);
+        });
+
+        updateHostRemoteBadge();
+    }
+
+    // 主機端設定面板：遠端遙控控制項事件
+    document.getElementById('remoteModeToggleBtn').addEventListener('click', (e) => {
+        remoteEnabled = !remoteEnabled;
+        e.currentTarget.textContent = remoteEnabled ? '📡 遠端：開啟' : '🔒 遠端：暫停';
+        saveState();
+        updateHostRemoteBadge();
+        updateQrWidgets();
+        publishHostState();
+    });
+
+    document.getElementById('remoteAllowAddToggleBtn').addEventListener('click', (e) => {
+        remoteAllowAdd = !remoteAllowAdd;
+        e.currentTarget.textContent = remoteAllowAdd ? '✍️ 加碼：允許' : '🚫 加碼：關閉';
+        saveState();
+        publishHostState();
+    });
+
+    document.getElementById('remoteCooldownSelect').addEventListener('change', (e) => {
+        remoteCooldownSec = Number(e.target.value);
+        saveState();
+    });
+
+    document.getElementById('roomCodeInput').addEventListener('change', (e) => {
+        roomCode = sanitizeRoomCode(e.target.value);
+        e.target.value = roomCode;
+        saveState();
+        initHostRemote();
+        showToast(`🏠 房間代碼已切換為：${roomCode}`);
+    });
+
+    document.getElementById('saveFirebaseBtn').addEventListener('click', () => {
+        const raw = document.getElementById('firebaseDbUrlInput').value;
+        const clean = normalizeFirebaseUrl(raw);
+        if (raw.trim() && !clean) {
+            showToast('⚠️ 網址格式不正確，請貼上 Firebase Realtime Database 網址');
+            return;
+        }
+        firebaseDbUrl = clean;
+        document.getElementById('firebaseDbUrlInput').value = clean;
+        saveState();
+        initHostRemote();
+        showToast(clean ? '💾 已儲存並嘗試連線 Firebase' : '🔌 已清除連線設定（單機模式）');
+    });
+
+    document.getElementById('toggleCornerQrBtn').addEventListener('click', (e) => {
+        showCornerQr = !showCornerQr;
+        e.currentTarget.textContent = showCornerQr ? '📌 角落掃碼：開' : '📌 角落掃碼：關';
+        saveState();
+        updateQrWidgets();
+    });
+
+    function openQrModal() {
+        if (!normalizeFirebaseUrl(firebaseDbUrl)) {
+            showDialog({
+                title: '🔧 尚未設定 Firebase 資料庫',
+                message: '請先在「⚙️ 設定 → 📱 手機玩家自助遙控」貼上你的 Firebase Realtime Database 網址，即可產生給玩家掃描的遙控 QR Code。'
+            });
+            return;
+        }
+        updateQrWidgets();
+        document.getElementById('qrEnlargeModal').classList.add('show');
+    }
+    document.getElementById('showQrBtn').addEventListener('click', openQrModal);
+    document.getElementById('qrCornerWidget').addEventListener('click', openQrModal);
+    document.getElementById('closeQrModalBtn').addEventListener('click', () => {
+        document.getElementById('qrEnlargeModal').classList.remove('show');
+    });
+    document.getElementById('copyRemoteLinkBtn').addEventListener('click', () => {
+        const link = buildRemoteShareUrl();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link)
+                .then(() => showToast('📋 已複製玩家遙控連結！'))
+                .catch(() => showToast('⚠️ 複製失敗，請手動複製下方網址'));
+        } else {
+            showToast('請手動複製下方網址');
+        }
+    });
+    // ================= 12. 手機玩家端自助遙控介面邏輯 =================
+    function initRemoteClient() {
+        const remoteRoom = sanitizeRoomCode(urlParams.get('room'));
+        const remoteDbUrl = normalizeFirebaseUrl(urlParams.get('db') || DEFAULT_FIREBASE_DB_URL || firebaseDbUrl);
+
+        const connBadge = document.getElementById('remoteConnBadge');
+        const remainBadge = document.getElementById('remoteRemainBadge');
+        const holdBtn = document.getElementById('remoteHoldBtn');
+        const holdRing = document.getElementById('holdRingProgress');
+        const btnMain = document.getElementById('remoteBtnMain');
+        const btnSub = document.getElementById('remoteBtnSub');
+        const statusMsg = document.getElementById('remoteStatusMsg');
+        const resultMeta = document.getElementById('remoteResultMeta');
+        const resultText = document.getElementById('remoteResultText');
+        const replayBtn = document.getElementById('remoteReplayTtsBtn');
+        const addSection = document.getElementById('remoteAddSection');
+        const addInput = document.getElementById('remoteAddInput');
+        const addSubmitBtn = document.getElementById('remoteAddSubmitBtn');
+        const addFeedback = document.getElementById('remoteAddFeedback');
+
+        const RING_CIRCUMFERENCE = 603;
+        const HOLD_DURATION_MS = 1000;
+
+        let remoteConnected = false;
+        let hostState = null;
+        let localSpinLockUntil = 0;
+        let localReplayLockUntil = 0;
+        let localAddLockUntil = 0;
+        let isHolding = false;
+        let holdStartTime = 0;
+        let holdRafId = null;
+        let feedbackTimer = null;
+
+        if (!remoteDbUrl) {
+            connBadge.textContent = '⚠️ 未設定連線';
+            remainBadge.textContent = `房間：${remoteRoom}`;
+            btnMain.textContent = '無法連線';
+            btnSub.textContent = '缺少資料庫網址';
+            statusMsg.textContent = '請由主畫面設定 Firebase 後重新掃描 QR Code';
+            addSection.style.display = 'none';
+            return;
+        }
+
+        const db = initFirebaseConnection(remoteDbUrl);
+        if (!db) {
+            connBadge.textContent = '⚠️ 連線失敗';
+            statusMsg.textContent = '請檢查網路連線並重新整理此頁';
+            return;
+        }
+
+        const roomRef = db.ref(`rooms/${remoteRoom}`);
+        const stateRef = roomRef.child('state');
+        const cmdRef = roomRef.child('commands');
+        const subRef = roomRef.child('submissions');
+
+        db.ref('.info/serverTimeOffset').on('value', (snap) => {
+            serverTimeOffset = snap.val() || 0;
+        });
+
+        db.ref('.info/connected').on('value', (snap) => {
+            remoteConnected = Boolean(snap.val());
+            renderRemoteUi();
+        });
+
+        stateRef.on('value', (snap) => {
+            hostState = snap.val();
+            renderRemoteUi();
+        });
+
+        function cancelHold(showHint = false) {
+            if (!isHolding) return;
+            isHolding = false;
+            holdBtn.classList.remove('holding');
+            if (holdRafId) {
+                cancelAnimationFrame(holdRafId);
+                holdRafId = null;
+            }
+            holdRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE);
+            if (showHint && !holdBtn.disabled) {
+                statusMsg.textContent = '💡 請按住紅寶石滿 1 秒才會啟動（防誤觸）';
+            }
+        }
+
+        function canRemoteSpinNow() {
+            if (!remoteConnected || !hostState || hostState.hostOnline === false) return false;
+            if (!hostState.remoteEnabled) return false;
+            if (hostState.status === 'spinning') return false;
+            if ((hostState.remaining || 0) <= 0) return false;
+            if (Date.now() < localSpinLockUntil) return false;
+            const serverNow = Date.now() + serverTimeOffset;
+            if ((hostState.cooldownUntilServer || 0) > serverNow) return false;
+            return true;
+        }
+
+        function renderRemoteUi() {
+            connBadge.textContent = remoteConnected ? `📡 已連線 (${remoteRoom})` : '📡 連線中...';
+
+            if (!remoteConnected) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = '連線中';
+                btnSub.textContent = '請稍候';
+                statusMsg.textContent = '正在連線至主畫面...';
+                return;
+            }
+
+            if (!hostState || hostState.hostOnline === false) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                remainBadge.textContent = '等待主畫面';
+                btnMain.textContent = '主機離線';
+                btnSub.textContent = '等待開啟';
+                statusMsg.textContent = '請確認投影主畫面已開啟相同房間代碼';
+                addSection.style.display = 'none';
+                return;
+            }
+
+            const rem = hostState.remaining || 0;
+            const tot = hostState.total || 0;
+            remainBadge.textContent = `題庫 ${hostState.slot || 'A'}｜剩 ${rem}/${tot}`;
+
+            // 同步顯示大螢幕抽中的題目與重唸按鈕
+            if (hostState.lastQuestion) {
+                resultMeta.textContent = `🕯️ 目前大螢幕題目 (#${String(hostState.lastNum || 0).padStart(2, '0')})`;
+                resultText.textContent = hostState.lastQuestion;
+                replayBtn.style.display = (hostState.status === 'spinning') ? 'none' : 'inline-block';
+            } else {
+                resultMeta.textContent = '🕯️ 目前大螢幕題目';
+                resultText.textContent = '尚未開始抽題，輪到你時請長按上方紅寶石！';
+                replayBtn.style.display = 'none';
+            }
+
+            // 同步是否允許手機匿名加碼出題
+            addSection.style.display = hostState.allowAdd ? 'flex' : 'none';
+
+            // 計算按鈕可用狀態
+            const serverNow = Date.now() + serverTimeOffset;
+            const cooldownLeftSec = Math.ceil(((hostState.cooldownUntilServer || 0) - serverNow) / 1000);
+
+            if (!hostState.remoteEnabled) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = '已鎖定';
+                btnSub.textContent = '主持人專控中';
+                statusMsg.textContent = '🔒 主持人暫時關閉手機遠端啟動';
+            } else if (hostState.status === 'spinning') {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = '轉動中';
+                btnSub.textContent = '請看大螢幕';
+                statusMsg.textContent = '🕯️ 命運轉盤流轉中，請注視大螢幕！';
+            } else if (Date.now() < localSpinLockUntil) {
+                holdBtn.disabled = true;
+                btnMain.textContent = '已送出';
+                btnSub.textContent = '啟動中...';
+                statusMsg.textContent = '✨ 已通知主畫面啟動轉盤！';
+            } else if (rem <= 0) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = '已抽完';
+                btnSub.textContent = '題庫全封印';
+                statusMsg.textContent = '🕯️ 題庫已全數抽完，可於下方匿名加碼新題目！';
+            } else if (cooldownLeftSec > 0) {
+                cancelHold(false);
+                holdBtn.disabled = true;
+                btnMain.textContent = `${cooldownLeftSec} 秒`;
+                btnSub.textContent = '防誤觸保護中';
+                statusMsg.textContent = `⏳ 讓大家先看題目，${cooldownLeftSec} 秒後下一位可開轉`;
+            } else {
+                holdBtn.disabled = false;
+                if (!isHolding) {
+                    btnMain.textContent = '長按啟動';
+                    btnSub.textContent = '按住 1 秒開轉';
+                    statusMsg.textContent = hostState.status === 'result'
+                        ? '🩸 上一題回答完後，下一位長按紅寶石即可開轉'
+                        : '🩸 輪到你時，長按上方紅寶石 1 秒啟動轉盤';
+                }
+            }
+        }
+
+        // 每 250ms 刷新一次倒數冷卻，確保時間一到立即解鎖按鈕
+        setInterval(renderRemoteUi, 250);
+
+        // 長按 1 秒蓄力啟動互動（支援手機觸控與滑鼠，防誤觸）
+        holdBtn.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        holdBtn.addEventListener('pointerdown', (e) => {
+            if (!canRemoteSpinNow() || isHolding) return;
+            e.preventDefault();
+            isHolding = true;
+            holdStartTime = performance.now();
+            holdBtn.classList.add('holding');
+            btnMain.textContent = '蓄力中…';
+            btnSub.textContent = '請勿放開';
+            if (navigator.vibrate) navigator.vibrate(15);
+
+            function tickHold(now) {
+                if (!isHolding || !canRemoteSpinNow()) {
+                    cancelHold(false);
+                    return;
+                }
+                const progress = Math.min((now - holdStartTime) / HOLD_DURATION_MS, 1);
+                holdRing.style.strokeDashoffset = String((RING_CIRCUMFERENCE * (1 - progress)).toFixed(1));
+
+                if (progress >= 1) {
+                    isHolding = false;
+                    holdBtn.classList.remove('holding');
+                    holdRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE);
+                    localSpinLockUntil = Date.now() + 2600;
+                    if (navigator.vibrate) navigator.vibrate([40, 30, 80]);
+
+                    cmdRef.push({
+                        type: 'spin',
+                        ts: firebase.database.ServerValue.TIMESTAMP
+                    }).catch(() => {
+                        localSpinLockUntil = 0;
+                        statusMsg.textContent = '⚠️ 發送失敗，請再試一次';
+                    });
+                    renderRemoteUi();
+                } else {
+                    holdRafId = requestAnimationFrame(tickHold);
+                }
+            }
+            holdRafId = requestAnimationFrame(tickHold);
+        });
+
+        ['pointerup', 'pointerleave', 'pointercancel'].forEach(evt => {
+            holdBtn.addEventListener(evt, () => cancelHold(true));
+        });
+
+        // 遠端讓主機重唸一次語音（3 秒防連點）
+        replayBtn.addEventListener('click', () => {
+            if (!remoteConnected || Date.now() < localReplayLockUntil) return;
+            localReplayLockUntil = Date.now() + 3000;
+            cmdRef.push({
+                type: 'replayTts',
+                ts: firebase.database.ServerValue.TIMESTAMP
+            }).catch(() => {});
+            replayBtn.textContent = '🔊 已通知主機';
+            setTimeout(() => { replayBtn.textContent = '🔊 主機重唸'; }, 2500);
+        });
+
+        // 手機匿名加碼出題（送出後直接進大螢幕轉盤，5 秒防連發）
+        function submitAnonymousQuestion() {
+            if (!remoteConnected || !hostState || !hostState.allowAdd) return;
+            if (Date.now() < localAddLockUntil) {
+                showAddFeedback('⏳ 送出太快了，請等 5 秒後再投稿下一題', '#fca5a5');
+                return;
+            }
+            const text = addInput.value.replace(/\r?\n/g, ' ').trim();
+            if (text.length < 2) {
+                showAddFeedback('⚠️ 題目至少需要輸入 2 個字喔！', '#fca5a5');
+                return;
+            }
+            if (text.length > 120) {
+                showAddFeedback('⚠️ 題目請控制在 120 字以內', '#fca5a5');
+                return;
+            }
+
+            localAddLockUntil = Date.now() + 5000;
+            addSubmitBtn.disabled = true;
+            subRef.push({
+                text: text,
+                ts: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                addInput.value = '';
+                showAddFeedback('✅ 已匿名送出，直接加入大螢幕轉盤！', '#a7f3d0');
+                if (navigator.vibrate) navigator.vibrate(25);
+            }).catch(() => {
+                localAddLockUntil = 0;
+                showAddFeedback('⚠️ 送出失敗，請檢查網路後重試', '#fca5a5');
+            }).finally(() => {
+                setTimeout(() => { addSubmitBtn.disabled = false; }, 1200);
+            });
+        }
+
+        function showAddFeedback(msg, color) {
+            addFeedback.textContent = msg;
+            addFeedback.style.color = color;
+            if (feedbackTimer) clearTimeout(feedbackTimer);
+            feedbackTimer = setTimeout(() => { addFeedback.textContent = ''; }, 3600);
+        }
+
+        addSubmitBtn.addEventListener('click', submitAnonymousQuestion);
+        addInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitAnonymousQuestion();
+        });
+    }
+</script>
+
+</body>
+</html>
