@@ -1492,6 +1492,95 @@
             stroke-width: 1.2;
             stroke-linejoin: round;
         }
+        /* ================= 11. 手機／主機全元件主題同步 ＋ 5 款全新指針 (V9) ================= */
+        /* 手機端頂部氛圍主光暈（切換藍／綠／紫／琥珀／玫瑰金時整支手機超有感！） */
+        body.is-remote-mode::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 100% 52% at 50% 0%, var(--bg-glow) 0%, transparent 72%);
+            pointer-events: none;
+            z-index: 0;
+            transition: background 0.45s ease;
+        }
+
+        /* 全面解除原本寫死的暗紅色，改由 6 款主題變數即時驅動 */
+        .remain-badge {
+            background: var(--badge-bg, rgba(25, 8, 14, 0.85));
+            transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease;
+        }
+        .remote-title {
+            text-shadow: 0 2px 18px var(--bg-glow);
+        }
+        .remote-card-box,
+        .top-preview-bar {
+            background: linear-gradient(180deg, var(--card-top, rgba(28, 12, 18, 0.9)) 0%, var(--card-bot, rgba(13, 5, 9, 0.94)) 100%);
+            transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        .side-drawer {
+            background: var(--drawer-bg, rgba(20, 7, 12, 0.95));
+        }
+        .icon-btn {
+            background: linear-gradient(180deg, var(--card-top, rgba(36, 16, 24, 0.78)) 0%, var(--card-bot, rgba(16, 6, 10, 0.88)) 100%);
+        }
+        .icon-btn:hover {
+            background: linear-gradient(180deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
+        }
+        .ui-btn.gold-btn,
+        .slot-pill.active {
+            background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
+            border-color: var(--gold-accent);
+            box-shadow: 0 2px 10px var(--bg-glow);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
+            border-color: var(--gold-accent);
+        }
+        .ui-select option {
+            background: var(--bg-deep, #080205);
+            color: var(--gold-primary);
+        }
+        .remote-hold-btn.holding {
+            box-shadow: 0 0 44px var(--bg-glow), 0 0 22px var(--gold-accent), inset 0 0 18px rgba(255, 245, 225, 0.4);
+            border-color: var(--gold-primary);
+        }
+        .remote-hold-btn:disabled {
+            background: radial-gradient(circle at 35% 28%, var(--card-top, #24171a), var(--bg-deep, #080205));
+            border-color: var(--panel-border);
+            color: var(--gold-accent);
+            opacity: 0.72;
+        }
+        .dialog-box {
+            background: linear-gradient(160deg, var(--bg-mid, #1f0710) 0%, var(--bg-deep, #080205) 100%);
+        }
+        .toast-item,
+        .reaction-bubble,
+        .qr-corner-widget {
+            background: var(--card-bot, rgba(20, 8, 13, 0.9));
+        }
+
+        /* 5 款全新精品指針顯示切換與線條變數 */
+        body[data-pointer="moon"] .ptr-moon,
+        body[data-pointer="teardrop"] .ptr-teardrop,
+        body[data-pointer="chevron"] .ptr-chevron,
+        body[data-pointer="key"] .ptr-key,
+        body[data-pointer="crown"] .ptr-crown {
+            display: block;
+        }
+        .ptr-wire {
+            fill: none;
+            stroke: var(--gold-primary);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .ptr-wire-mid {
+            fill: none;
+            stroke: var(--gold-accent);
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
     </style>
 </head>
 <body>
@@ -1583,31 +1672,51 @@
 
             <div class="wheel-vignette"></div>
 
-            <!-- 正上方 12 點鐘固定精品指針（3 款可即時切換） -->
+            <!-- 正上方 12 點鐘固定精品指針（5 款全新樣式可即時切換） -->
             <div class="top-pointer-assembly" id="pointerEl">
-                <!-- A. 纖細金矛針 -->
-                <svg class="ptr-svg ptr-spear" viewBox="0 0 44 84">
-                    <polygon points="22,82 14,22 22,14" class="ptr-light"/>
-                    <polygon points="22,82 30,22 22,14" class="ptr-mid"/>
-                    <polygon points="22,46 18.5,25 22,20 25.5,25" class="ptr-gem"/>
-                    <circle cx="22" cy="14" r="7.5" class="ptr-dark ptr-stroke"/>
-                    <circle cx="22" cy="14" r="3" class="ptr-light"/>
+                <!-- 1. 新月彎鉤針 -->
+                <svg class="ptr-svg ptr-moon" viewBox="0 0 44 84">
+                    <polygon points="22,78 18.5,25.5 22,27" class="ptr-light"/>
+                    <polygon points="22,78 25.5,25.5 22,27" class="ptr-mid"/>
+                    <path d="M9,12 C9,31 35,31 35,12 C31,24 13,24 9,12 Z" class="ptr-light"/>
+                    <circle cx="22" cy="14" r="4.4" class="ptr-gem ptr-stroke"/>
+                    <circle cx="22" cy="14" r="1.5" class="ptr-light"/>
                 </svg>
-                <!-- B. 稜鏡菱形針 -->
-                <svg class="ptr-svg ptr-prism" viewBox="0 0 44 84">
-                    <polygon points="22,6 10,22 22,22" class="ptr-light"/>
-                    <polygon points="22,6 34,22 22,22" class="ptr-mid"/>
-                    <polygon points="22,82 10,22 22,22" class="ptr-light" opacity="0.9"/>
-                    <polygon points="22,82 34,22 22,22" class="ptr-mid" opacity="0.88"/>
-                    <polygon points="22,42 17.5,22 22,14 26.5,22" class="ptr-dark" opacity="0.55"/>
-                    <polygon points="22,6 34,22 22,82 10,22" fill="none" class="ptr-stroke"/>
+                <!-- 2. 水滴寶石吊墜 -->
+                <svg class="ptr-svg ptr-teardrop" viewBox="0 0 44 84">
+                    <circle cx="22" cy="10" r="4.2" class="ptr-wire"/>
+                    <path d="M22,78 C11,52 9,34 12,24 C14.5,16 29.5,16 32,24 C35,34 33,52 22,78 Z" class="ptr-dark ptr-stroke"/>
+                    <path d="M22,68 C15,48 13.5,35 15.5,27.5 C17,22 27,22 28.5,27.5 C30.5,35 29,48 22,68 Z" class="ptr-gem"/>
+                    <path d="M22,64 C17,47 16,35 17.5,29 L22,24 Z" class="ptr-light" opacity="0.28"/>
+                    <circle cx="22" cy="18" r="2.2" class="ptr-light"/>
                 </svg>
-                <!-- C. 星芒垂墜針 -->
-                <svg class="ptr-svg ptr-star" viewBox="0 0 44 84">
-                    <polygon points="22,82 17.5,25 22,21" class="ptr-light"/>
-                    <polygon points="22,82 26.5,25 22,21" class="ptr-mid"/>
-                    <path d="M22,2 L25.5,12.5 L36,16 L25.5,19.5 L22,30 L18.5,19.5 L8,16 L18.5,12.5 Z" class="ptr-light"/>
-                    <polygon points="22,11 25,16 22,21 19,16" class="ptr-gem"/>
+                <!-- 3. 極簡懸浮倒 V -->
+                <svg class="ptr-svg ptr-chevron" viewBox="0 0 44 84">
+                    <polyline points="9,14 22,30 35,14" class="ptr-wire-mid" opacity="0.78"/>
+                    <polygon points="8,24 22,42 22,35 11.5,22" class="ptr-light"/>
+                    <polygon points="36,24 22,42 22,35 32.5,22" class="ptr-mid"/>
+                    <polygon points="22,45 24.8,49.5 22,54 19.2,49.5" class="ptr-light"/>
+                </svg>
+                <!-- 4. 古董鏤空鑰匙尖 -->
+                <svg class="ptr-svg ptr-key" viewBox="0 0 44 84">
+                    <circle cx="22" cy="11" r="6.5" class="ptr-wire"/>
+                    <circle cx="14" cy="18" r="4.6" class="ptr-wire-mid"/>
+                    <circle cx="30" cy="18" r="4.6" class="ptr-wire-mid"/>
+                    <circle cx="22" cy="17.5" r="3.4" class="ptr-gem ptr-stroke"/>
+                    <line x1="15.5" y1="26" x2="28.5" y2="26" class="ptr-wire"/>
+                    <polygon points="22,80 19,27 22,27" class="ptr-light"/>
+                    <polygon points="22,80 25,27 22,27" class="ptr-mid"/>
+                    <line x1="15" y1="43" x2="29" y2="43" class="ptr-wire-mid"/>
+                    <line x1="17" y1="48" x2="27" y2="48" class="ptr-wire-mid"/>
+                </svg>
+                <!-- 5. 微雕哥德尖冠 -->
+                <svg class="ptr-svg ptr-crown" viewBox="0 0 44 84">
+                    <polygon points="22,5 22,78 16.5,28 9,13 16.5,20" class="ptr-light"/>
+                    <polygon points="22,5 22,78 27.5,28 35,13 27.5,20" class="ptr-mid"/>
+                    <polygon points="22,17 25.5,25 22,33 18.5,25" class="ptr-gem ptr-stroke"/>
+                    <circle cx="22" cy="4.5" r="2" class="ptr-light"/>
+                    <circle cx="9" cy="12.5" r="1.6" class="ptr-light"/>
+                    <circle cx="35" cy="12.5" r="1.6" class="ptr-light"/>
                 </svg>
             </div>
 
@@ -1680,11 +1789,13 @@
                     </select>
                 </div>
                 <div class="setting-row">
-                    <span>轉盤指針風格 (3款)</span>
+                    <span>轉盤指針風格 (5款)</span>
                     <select class="ui-select" id="pointerSelect">
-                        <option value="spear">🗡️ 纖細金矛針</option>
-                        <option value="prism">💎 稜鏡菱形針</option>
-                        <option value="star">✦ 星芒垂墜針</option>
+                        <option value="moon">🌙 新月彎鉤針</option>
+                        <option value="teardrop">🔮 水滴寶石吊墜</option>
+                        <option value="chevron">⌄ 極簡懸浮倒 V</option>
+                        <option value="key">🗝️ 古董鏤空鑰匙尖</option>
+                        <option value="crown">👑 微雕哥德尖冠</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -1998,10 +2109,15 @@
             lineColor: 'rgba(214, 167, 96, 0.34)',
             pegColor: '#d6a760',
             bgDeep: '#080205',
-            bgMid: '#1f0710',
-            bgGlow: 'rgba(185, 20, 48, 0.34)',
+            bgMid: '#240813',
+            bgGlow: 'rgba(195, 24, 54, 0.42)',
             hubTop: '#851328',
-            hubMid: '#400611'
+            hubMid: '#400611',
+            cardTop: 'rgba(38, 11, 20, 0.90)',
+            cardBot: 'rgba(16, 4, 9, 0.95)',
+            drawerBg: 'rgba(22, 7, 13, 0.95)',
+            badgeBg: 'rgba(32, 9, 17, 0.88)',
+            emberColors: ['#e8bd72', '#df3b4e']
         },
         prussian: {
             slices: [
@@ -2013,14 +2129,19 @@
             highlightRgb: '186, 214, 255',
             textColor: '#edf2fa',
             accentColor: '#a8bedb',
-            panelBorder: 'rgba(168, 190, 219, 0.32)',
+            panelBorder: 'rgba(168, 190, 219, 0.35)',
             lineColor: 'rgba(168, 190, 219, 0.3)',
             pegColor: '#c4d5ec',
-            bgDeep: '#040812',
-            bgMid: '#0c182e',
-            bgGlow: 'rgba(65, 128, 220, 0.3)',
-            hubTop: '#1f4478',
-            hubMid: '#0d1f3a'
+            bgDeep: '#040914',
+            bgMid: '#0e2040',
+            bgGlow: 'rgba(65, 136, 235, 0.42)',
+            hubTop: '#1f4b87',
+            hubMid: '#0d2242',
+            cardTop: 'rgba(15, 33, 62, 0.90)',
+            cardBot: 'rgba(6, 14, 30, 0.95)',
+            drawerBg: 'rgba(9, 19, 38, 0.95)',
+            badgeBg: 'rgba(13, 28, 54, 0.88)',
+            emberColors: ['#cce0fa', '#559cf5']
         },
         emerald: {
             slices: [
@@ -2032,14 +2153,19 @@
             highlightRgb: '225, 202, 130',
             textColor: '#f0e4c6',
             accentColor: '#caa562',
-            panelBorder: 'rgba(202, 165, 98, 0.33)',
+            panelBorder: 'rgba(202, 165, 98, 0.35)',
             lineColor: 'rgba(202, 165, 98, 0.32)',
             pegColor: '#d4b16e',
-            bgDeep: '#040c09',
-            bgMid: '#0a1f16',
-            bgGlow: 'rgba(28, 140, 98, 0.3)',
-            hubTop: '#16573f',
-            hubMid: '#0a291d'
+            bgDeep: '#040d09',
+            bgMid: '#0c291d',
+            bgGlow: 'rgba(30, 158, 108, 0.40)',
+            hubTop: '#176145',
+            hubMid: '#0a2e20',
+            cardTop: 'rgba(13, 40, 29, 0.90)',
+            cardBot: 'rgba(6, 19, 14, 0.95)',
+            drawerBg: 'rgba(8, 25, 18, 0.95)',
+            badgeBg: 'rgba(11, 34, 24, 0.88)',
+            emberColors: ['#e5c683', '#32bd85']
         },
         obsidian: {
             slices: [
@@ -2051,14 +2177,19 @@
             highlightRgb: '235, 185, 170',
             textColor: '#f5e0d9',
             accentColor: '#d49a89',
-            panelBorder: 'rgba(212, 154, 137, 0.34)',
+            panelBorder: 'rgba(212, 154, 137, 0.36)',
             lineColor: 'rgba(212, 154, 137, 0.32)',
             pegColor: '#dfa999',
-            bgDeep: '#060506',
-            bgMid: '#181315',
-            bgGlow: 'rgba(212, 140, 125, 0.25)',
-            hubTop: '#632e38',
-            hubMid: '#2b1217'
+            bgDeep: '#070607',
+            bgMid: '#1f181b',
+            bgGlow: 'rgba(218, 148, 132, 0.34)',
+            hubTop: '#6b333d',
+            hubMid: '#2e1419',
+            cardTop: 'rgba(34, 26, 29, 0.90)',
+            cardBot: 'rgba(14, 11, 13, 0.95)',
+            drawerBg: 'rgba(21, 17, 19, 0.95)',
+            badgeBg: 'rgba(28, 22, 25, 0.88)',
+            emberColors: ['#f3d6cc', '#cf847a']
         },
         amethyst: {
             slices: [
@@ -2070,14 +2201,19 @@
             highlightRgb: '214, 186, 255',
             textColor: '#f2eaff',
             accentColor: '#c5a8f0',
-            panelBorder: 'rgba(197, 168, 240, 0.32)',
+            panelBorder: 'rgba(197, 168, 240, 0.35)',
             lineColor: 'rgba(197, 168, 240, 0.3)',
             pegColor: '#d4bdf5',
-            bgDeep: '#07040d',
-            bgMid: '#190a29',
-            bgGlow: 'rgba(148, 82, 230, 0.3)',
-            hubTop: '#541e78',
-            hubMid: '#240b38'
+            bgDeep: '#080410',
+            bgMid: '#210d38',
+            bgGlow: 'rgba(158, 86, 242, 0.42)',
+            hubTop: '#5e2288',
+            hubMid: '#290d40',
+            cardTop: 'rgba(34, 15, 56, 0.90)',
+            cardBot: 'rgba(14, 6, 26, 0.95)',
+            drawerBg: 'rgba(21, 9, 36, 0.95)',
+            badgeBg: 'rgba(29, 13, 48, 0.88)',
+            emberColors: ['#e3d0ff', '#b064f7']
         },
         amber: {
             slices: [
@@ -2089,14 +2225,19 @@
             highlightRgb: '248, 204, 118',
             textColor: '#fae8be',
             accentColor: '#deaa54',
-            panelBorder: 'rgba(222, 170, 84, 0.35)',
+            panelBorder: 'rgba(222, 170, 84, 0.36)',
             lineColor: 'rgba(222, 170, 84, 0.34)',
             pegColor: '#e8ba68',
-            bgDeep: '#090603',
-            bgMid: '#1f140a',
-            bgGlow: 'rgba(216, 146, 48, 0.28)',
-            hubTop: '#734416',
-            hubMid: '#331c08'
+            bgDeep: '#0a0703',
+            bgMid: '#26180b',
+            bgGlow: 'rgba(226, 154, 48, 0.38)',
+            hubTop: '#7d4b18',
+            hubMid: '#381f08',
+            cardTop: 'rgba(42, 26, 12, 0.90)',
+            cardBot: 'rgba(18, 11, 5, 0.95)',
+            drawerBg: 'rgba(26, 17, 8, 0.95)',
+            badgeBg: 'rgba(36, 23, 11, 0.88)',
+            emberColors: ['#fce2a2', '#eb9e2a']
         }
     };
 
@@ -2142,7 +2283,7 @@
     let currentFontKey = 'mincho';
     let sliceLabelMode = 'text';
     let rimStyle = 'double_gold';
-    let pointerStyle = 'spear';
+    let pointerStyle = 'moon';
     let wheelScale = 74;
     let spinDuration = 7200;
     let soundEnabled = true;
@@ -2224,7 +2365,8 @@
     }
 
     const VALID_RIMS = ['double_gold', 'starlight'];
-    const VALID_POINTERS = ['spear', 'prism', 'star'];
+    const VALID_POINTERS = ['moon', 'teardrop', 'chevron', 'key', 'crown'];
+    let currentEmberColors = ['#e8bd72', '#df3b4e'];
 
     function applyPaletteCSS(key) {
         const safeKey = PALETTES[key] ? key : 'opera';
@@ -2239,6 +2381,11 @@
         root.setProperty('--bg-glow', p.bgGlow);
         root.setProperty('--hub-top', p.hubTop);
         root.setProperty('--hub-mid', p.hubMid);
+        root.setProperty('--card-top', p.cardTop);
+        root.setProperty('--card-bot', p.cardBot);
+        root.setProperty('--drawer-bg', p.drawerBg);
+        root.setProperty('--badge-bg', p.badgeBg);
+        if (p.emberColors) currentEmberColors = p.emberColors;
     }
 
     function applyRimStyle(style) {
@@ -2249,7 +2396,7 @@
     }
 
     function applyPointerStyle(style) {
-        const safe = VALID_POINTERS.includes(style) ? style : 'spear';
+        const safe = VALID_POINTERS.includes(style) ? style : 'moon';
         pointerStyle = safe;
         document.body.dataset.pointer = safe;
     }
@@ -2437,7 +2584,7 @@
             }
             eCtx.beginPath();
             eCtx.arc(p.x, p.y, isBursting ? p.r * 1.45 : p.r, 0, Math.PI * 2);
-            eCtx.fillStyle = isBursting ? '#ffe89e' : p.color;
+            eCtx.fillStyle = isBursting ? currentEmberColors[0] : (i % 3 === 0 ? currentEmberColors[1] : currentEmberColors[0]);
             eCtx.globalAlpha = Math.min(1, p.alpha * (isBursting ? 1.5 : (0.65 + 0.35 * Math.sin(p.swayOffset * 2))));
             eCtx.fill();
         }
@@ -4663,7 +4810,7 @@
                     btnSub.textContent = '按住 0.75 秒開轉';
                     statusMsg.textContent = hostState.status === 'result'
                         ? '✦ 上一題回答完後，下一位長按寶石即可開轉'
-                        : '✦ 輪到你時，長按上方寶石 1 秒啟動轉盤';
+                        : '✦ 輪到你時，長按上方寶石 0.75 秒啟動轉盤';
                 }
             }
         }
