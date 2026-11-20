@@ -272,10 +272,7 @@
             background: #0a0306;
             border: 1px solid rgba(222, 176, 104, 0.3);
         }
-        body.rimless-mode .antique-bronze-rim {
-            background: transparent;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
-        }
+        
 
         #wheelCanvas {
             position: absolute;
@@ -1071,17 +1068,7 @@
             background: rgba(222, 176, 104, 0.18);
         }
 
-        /* 轉盤背後微光古天文星盤刻度環 */
-        .astrolabe-halo {
-            position: absolute;
-            inset: -44px;
-            width: calc(100% + 88px);
-            height: calc(100% + 88px);
-            pointer-events: none;
-            z-index: 0;
-            color: var(--gold-accent);
-            opacity: 0.32;
-        }
+        
 
         /* 中央啟動鈕與手機長按鈕支援 4 款暗黑主題色同步 */
         .center-hub,
@@ -1191,12 +1178,11 @@
             margin-right: 6px;
             font-size: 12px;
         }
-        /* ================= 9. 羊皮紙主題、5 款外框、金光掃過與應援氣泡 (V8) ================= */
-        /* 頂部 A / B / C 題庫一鍵快速切換 */
+        /* ================= 9. 快切鈕、2 款精品外框、金光掃過與 5 款新指針 (V10 精簡正式版) ================= */
         .mini-slot-group {
             display: inline-flex;
             align-items: center;
-            background: rgba(18, 8, 12, 0.85);
+            background: var(--badge-bg, rgba(18, 8, 12, 0.85));
             border: 1px solid var(--panel-border);
             border-radius: 18px;
             padding: 2px;
@@ -1220,24 +1206,16 @@
             box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
         }
 
-        /* 5 款全新轉盤外框樣式（透過 body[data-rim] 切換，完全無鐘錶感） */
-        .frame-beads-svg,
+        /* 2 款精選外框：極簡雙細金框 (double_gold) ＆ 四角星芒極簡框 (starlight) */
         .frame-stars-decor {
             position: absolute;
+            inset: -26px;
+            width: calc(100% + 52px);
+            height: calc(100% + 52px);
             pointer-events: none;
             z-index: 5;
             display: none;
             color: var(--gold-accent);
-        }
-        .frame-beads-svg {
-            inset: -14px;
-            width: calc(100% + 28px);
-            height: calc(100% + 28px);
-        }
-        .frame-stars-decor {
-            inset: -26px;
-            width: calc(100% + 52px);
-            height: calc(100% + 52px);
         }
         .frame-star-pt {
             position: absolute;
@@ -1251,7 +1229,6 @@
         .frame-star-pt.bl { bottom: 11%; left: 11%; }
         .frame-star-pt.br { bottom: 11%; right: 11%; }
 
-        /* 樣式 1：極簡雙細金框 (預設) */
         body[data-rim="double_gold"] .antique-bronze-rim {
             inset: -11px;
             padding: 0;
@@ -1268,35 +1245,6 @@
             border: 1px solid var(--gold-accent);
             opacity: 0.78;
         }
-
-        /* 樣式 2：絲絨浮雕光暈框 */
-        body[data-rim="velvet"] .antique-bronze-rim {
-            inset: -14px;
-            padding: 6px;
-            background: radial-gradient(circle at 30% 25%, rgba(255, 240, 215, 0.14), rgba(14, 7, 10, 0.96) 65%);
-            border: 1px solid rgba(255, 240, 215, 0.12);
-            box-shadow: 0 24px 68px rgba(0, 0, 0, 0.95), 0 0 38px var(--bg-glow), inset 0 2px 10px rgba(255, 242, 220, 0.14);
-        }
-        body[data-rim="velvet"] .antique-bronze-inner {
-            background: rgba(6, 3, 5, 0.85);
-            border: 1px solid rgba(255, 240, 215, 0.08);
-        }
-
-        /* 樣式 3：星點珠飾框（古董珠寶微光金珠環） */
-        body[data-rim="beaded"] .antique-bronze-rim {
-            inset: -10px;
-            padding: 0;
-            background: rgba(12, 6, 8, 0.75);
-            border: 1px solid var(--panel-border);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.94), 0 0 25px var(--bg-glow);
-        }
-        body[data-rim="beaded"] .antique-bronze-inner {
-            background: transparent;
-            border: none;
-        }
-        body[data-rim="beaded"] .frame-beads-svg { display: block; }
-
-        /* 樣式 4：四角星芒極簡框 */
         body[data-rim="starlight"] .antique-bronze-rim {
             inset: -9px;
             padding: 0;
@@ -1311,18 +1259,7 @@
         }
         body[data-rim="starlight"] .frame-stars-decor { display: block; }
 
-        /* 樣式 5：極致純淨無邊框 */
-        body[data-rim="rimless"] .antique-bronze-rim {
-            background: transparent;
-            border: none;
-            box-shadow: 0 22px 65px rgba(0, 0, 0, 0.92);
-        }
-        body[data-rim="rimless"] .antique-bronze-inner {
-            background: transparent;
-            border: none;
-        }
-
-        /* 開獎卡片燙金流光掃過特效 (Gold Shimmer Sweep) */
+        /* 開獎卡片燙金流光掃過特效 */
         .card-shimmer-wrap {
             position: absolute;
             inset: 0;
@@ -1349,56 +1286,45 @@
             100% { left: 135%; opacity: 0; }
         }
 
-        /* 復古羊皮魔典主題（風格 A：暗夜書桌背景 × 溫潤羊皮紙卷軸與轉盤） */
-        body[data-theme="parchment"] .wheel-vignette {
-            background: radial-gradient(circle at 50% 50%, transparent 66%, rgba(58, 34, 14, 0.28) 100%);
-            border-color: rgba(140, 96, 48, 0.55);
+        /* 5 款精品纖細指針（自動隨 6 款主題變色） */
+        .top-pointer-assembly {
+            top: -22px;
+            width: 40px;
+            height: 76px;
+            margin-left: -20px;
+            transform-origin: 20px 14px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 10px var(--bg-glow));
         }
-        body[data-theme="parchment"] .result-card {
-            background: radial-gradient(circle at 50% 20%, #f7edd6 0%, #ead8b2 65%, #d6bc8d 100%);
-            border-color: #9e743c;
-            box-shadow: inset 0 0 36px rgba(105, 68, 28, 0.24), 0 32px 96px rgba(0, 0, 0, 0.94), 0 0 55px rgba(214, 166, 98, 0.28);
-        }
-        body[data-theme="parchment"] .result-card::before {
-            border-color: rgba(122, 82, 36, 0.38);
-        }
-        body[data-theme="parchment"] .result-card::after {
-            color: #8c2d2d;
-        }
-        body[data-theme="parchment"] .result-subtitle {
-            color: #7a2323;
-            border-bottom-color: rgba(122, 82, 36, 0.38);
-        }
-        body[data-theme="parchment"] .result-main-text {
-            color: #24160c;
-            text-shadow: 0 1px 0 rgba(255, 250, 238, 0.75);
-        }
-        body[data-theme="parchment"] .result-card .skip-btn {
-            background: rgba(74, 46, 20, 0.08);
-            color: #4a311a;
-            border-color: rgba(122, 82, 36, 0.42);
-        }
-        body[data-theme="parchment"] .result-card .skip-btn:hover {
-            background: rgba(74, 46, 20, 0.16);
-        }
-        body[data-theme="parchment"] #remoteResultCard {
-            background: linear-gradient(180deg, #f3e5c6 0%, #e1cb9e 100%);
-            border-color: #a67c46;
-            box-shadow: inset 0 0 18px rgba(110, 72, 30, 0.18), 0 12px 28px rgba(0, 0, 0, 0.72);
-        }
-        body[data-theme="parchment"] #remoteResultCard .remote-card-label {
-            color: #7a2323;
-        }
-        body[data-theme="parchment"] #remoteResultCard .remote-result-text {
-            color: #24160c;
-        }
-        body[data-theme="parchment"] #remoteResultCard .q-action-btn {
-            background: rgba(122, 35, 35, 0.1);
-            border-color: rgba(122, 35, 35, 0.38);
-            color: #6b1d1d;
-        }
+        .ptr-svg { display: none; width: 100%; height: 100%; }
+        body[data-pointer="moon"] .ptr-moon,
+        body[data-pointer="teardrop"] .ptr-teardrop,
+        body[data-pointer="chevron"] .ptr-chevron,
+        body[data-pointer="key"] .ptr-key,
+        body[data-pointer="crown"] .ptr-crown { display: block; }
+        .ptr-light { fill: var(--gold-primary); }
+        .ptr-mid { fill: var(--gold-accent); }
+        .ptr-gem { fill: var(--hub-top, #851328); }
+        .ptr-dark { fill: var(--bg-deep, #080205); }
+        .ptr-stroke { stroke: var(--gold-primary); stroke-width: 1.2; stroke-linejoin: round; }
+        .ptr-wire { fill: none; stroke: var(--gold-primary); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .ptr-wire-mid { fill: none; stroke: var(--gold-accent); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* 手機端極細晚會進度條 ＋ 低調應援按鈕列 */
+        /* 手機端進度條、低調應援鈕、新版更新條與主畫面飄浮層 */
+        .remote-update-banner {
+            display: none;
+            width: 100%;
+            background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 9px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 6px 20px var(--bg-glow);
+        }
+        .remote-update-banner.show { display: block; }
         .remote-progress-wrap {
             width: 100%;
             height: 4px;
@@ -1414,11 +1340,7 @@
             border-radius: 4px;
             transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .remote-react-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-        }
+        .remote-react-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .react-btn {
             background: rgba(255, 245, 230, 0.05);
             border: 1px solid var(--panel-border);
@@ -1431,8 +1353,6 @@
         }
         .react-btn:active { transform: scale(0.93); background: rgba(222, 176, 104, 0.2); }
         .react-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-        /* 主畫面角落低調應援氣泡飄浮層（絕不遮擋中央題目） */
         .reaction-stage {
             position: fixed;
             bottom: 24px;
@@ -1447,7 +1367,7 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            background: rgba(20, 8, 13, 0.78);
+            background: var(--card-bot, rgba(20, 8, 13, 0.85));
             border: 1px solid var(--panel-border);
             color: var(--gold-primary);
             padding: 6px 15px;
@@ -1464,36 +1384,8 @@
             80% { opacity: 0.85; transform: translate(calc(var(--rx, 0px) + var(--sway, 12px)), -260px) scale(1); }
             100% { opacity: 0; transform: translate(calc(var(--rx, 0px) - var(--sway, 10px)), -330px) scale(0.95); }
         }
-        /* ================= 10. 3 款全新精品纖細指針（自動隨主題配色同步） ================= */
-        .top-pointer-assembly {
-            top: -22px;
-            width: 40px;
-            height: 76px;
-            margin-left: -20px;
-            transform-origin: 20px 14px;
-            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 10px var(--bg-glow));
-        }
-        .ptr-svg {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        body[data-pointer="spear"] .ptr-spear,
-        body[data-pointer="prism"] .ptr-prism,
-        body[data-pointer="star"] .ptr-star {
-            display: block;
-        }
-        .ptr-light { fill: var(--gold-primary); }
-        .ptr-mid { fill: var(--gold-accent); }
-        .ptr-gem { fill: var(--hub-top, #851328); }
-        .ptr-dark { fill: var(--bg-deep, #080205); }
-        .ptr-stroke {
-            stroke: var(--gold-primary);
-            stroke-width: 1.2;
-            stroke-linejoin: round;
-        }
-        /* ================= 11. 手機／主機全元件主題同步 ＋ 5 款全新指針 (V9) ================= */
-        /* 手機端頂部氛圍主光暈（切換藍／綠／紫／琥珀／玫瑰金時整支手機超有感！） */
+
+        /* 全元件 6 款主題色即時連動（主機＋手機） */
         body.is-remote-mode::before {
             content: "";
             position: fixed;
@@ -1503,23 +1395,17 @@
             z-index: 0;
             transition: background 0.45s ease;
         }
-
-        /* 全面解除原本寫死的暗紅色，改由 6 款主題變數即時驅動 */
         .remain-badge {
             background: var(--badge-bg, rgba(25, 8, 14, 0.85));
             transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease;
         }
-        .remote-title {
-            text-shadow: 0 2px 18px var(--bg-glow);
-        }
+        .remote-title { text-shadow: 0 2px 18px var(--bg-glow); }
         .remote-card-box,
         .top-preview-bar {
             background: linear-gradient(180deg, var(--card-top, rgba(28, 12, 18, 0.9)) 0%, var(--card-bot, rgba(13, 5, 9, 0.94)) 100%);
             transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
         }
-        .side-drawer {
-            background: var(--drawer-bg, rgba(20, 7, 12, 0.95));
-        }
+        .side-drawer { background: var(--drawer-bg, rgba(20, 7, 12, 0.95)); }
         .icon-btn {
             background: linear-gradient(180deg, var(--card-top, rgba(36, 16, 24, 0.78)) 0%, var(--card-bot, rgba(16, 6, 10, 0.88)) 100%);
         }
@@ -1527,19 +1413,13 @@
             background: linear-gradient(180deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
         }
         .ui-btn.gold-btn,
-        .slot-pill.active {
+        .slot-pill.active,
+        .tab-btn.active {
             background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
             border-color: var(--gold-accent);
             box-shadow: 0 2px 10px var(--bg-glow);
         }
-        .tab-btn.active {
-            background: linear-gradient(135deg, var(--hub-top, #851328) 0%, var(--hub-mid, #400611) 100%);
-            border-color: var(--gold-accent);
-        }
-        .ui-select option {
-            background: var(--bg-deep, #080205);
-            color: var(--gold-primary);
-        }
+        .ui-select option { background: var(--bg-deep, #080205); color: var(--gold-primary); }
         .remote-hold-btn.holding {
             box-shadow: 0 0 44px var(--bg-glow), 0 0 22px var(--gold-accent), inset 0 0 18px rgba(255, 245, 225, 0.4);
             border-color: var(--gold-primary);
@@ -1550,37 +1430,8 @@
             color: var(--gold-accent);
             opacity: 0.72;
         }
-        .dialog-box {
-            background: linear-gradient(160deg, var(--bg-mid, #1f0710) 0%, var(--bg-deep, #080205) 100%);
-        }
-        .toast-item,
-        .reaction-bubble,
-        .qr-corner-widget {
-            background: var(--card-bot, rgba(20, 8, 13, 0.9));
-        }
-
-        /* 5 款全新精品指針顯示切換與線條變數 */
-        body[data-pointer="moon"] .ptr-moon,
-        body[data-pointer="teardrop"] .ptr-teardrop,
-        body[data-pointer="chevron"] .ptr-chevron,
-        body[data-pointer="key"] .ptr-key,
-        body[data-pointer="crown"] .ptr-crown {
-            display: block;
-        }
-        .ptr-wire {
-            fill: none;
-            stroke: var(--gold-primary);
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        .ptr-wire-mid {
-            fill: none;
-            stroke: var(--gold-accent);
-            stroke-width: 1.4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+        .dialog-box { background: linear-gradient(160deg, var(--bg-mid, #1f0710) 0%, var(--bg-deep, #080205) 100%); }
+        .toast-item, .qr-corner-widget { background: var(--card-bot, rgba(20, 8, 13, 0.9)); }
     </style>
 </head>
 <body>
@@ -1759,7 +1610,7 @@
                 </div>
             </div>
 
-            <!-- 視覺與扇形文字模式 (擴充為 8 款配色 + 7 款纖細字體) -->
+            <!-- 視覺與扇形文字模式 (6 款暗黑配色 + 2 款外框 + 5 款指針 + 3 款字體) -->
             <div class="setting-group">
                 <div class="setting-group-title">🎨 轉盤視覺與文字模式（即時預覽）</div>
                 <div class="setting-row">
@@ -2019,6 +1870,7 @@
 
     <!-- 手機玩家自助遙控專屬介面（網址帶 ?room= 時自動切換顯示） -->
     <section id="remoteView">
+        <button class="remote-update-banner" id="remoteUpdateBanner">✦ 偵測到新版遙控介面，點此立即同步更新</button>
         <div class="remote-header">
             <div class="remote-title">✦ 血染戰鬥營・命運遙控 ✦</div>
             <div class="remote-badges">
@@ -2030,7 +1882,7 @@
             </div>
         </div>
 
-        <!-- 長按 1 秒寶石蓄力啟動鈕 ＋ 旋轉星盤流光 -->
+        <!-- 長按 0.75 秒寶石蓄力啟動鈕 ＋ 旋轉星盤流光 -->
         <div class="remote-hold-stage" id="remoteHoldStage">
             <svg class="remote-orbit-svg" viewBox="0 0 240 240" aria-hidden="true">
                 <circle cx="120" cy="120" r="115" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="4 8"></circle>
@@ -2093,7 +1945,8 @@
     </section>
 
 <script>
-    // ================= 1. 精選 4 款全暗黑精品配色 ＋ 3 款纖細字體 =================
+    // ================= 1. 精選 6 款全暗黑精品配色 ＋ 3 款纖細字體 (V10) =================
+    const APP_VERSION = '10';
     const PALETTES = {
         opera: {
             slices: [
@@ -2392,7 +2245,6 @@
         const safe = VALID_RIMS.includes(style) ? style : 'double_gold';
         rimStyle = safe;
         document.body.dataset.rim = safe;
-        document.body.classList.remove('rimless-mode');
     }
 
     function applyPointerStyle(style) {
@@ -2552,8 +2404,7 @@
             vx: (Math.random() - 0.5) * 0.3,
             swaySpeed: 0.01 + Math.random() * 0.02,
             swayOffset: Math.random() * Math.PI * 2,
-            alpha: 0.18 + Math.random() * 0.55,
-            color: Math.random() > 0.35 ? '#e6b86e' : '#d9384a'
+            alpha: 0.18 + Math.random() * 0.55
         });
     }
 
@@ -3036,9 +2887,8 @@
 
             const grad = ctx.createRadialGradient(centerX, centerY, 90, centerX, centerY, radius);
             if (q.drawn) {
-                const dPair = palette.drawnSlices || ['#070305', '#0e0609'];
-                grad.addColorStop(0, dPair[0]);
-                grad.addColorStop(1, dPair[1]);
+                grad.addColorStop(0, '#070305');
+                grad.addColorStop(1, '#0e0609');
             } else {
                 const pair = palette.slices[q.colorIndex];
                 grad.addColorStop(0, pair[0]);
@@ -3064,11 +2914,7 @@
                 displayText = displayText.substring(0, maxChars) + '…';
             }
 
-            if (q.drawn) {
-                ctx.fillStyle = palette.drawnTextColor || '#3a272c';
-            } else {
-                ctx.fillStyle = palette.wheelTextColor || palette.textColor;
-            }
+            ctx.fillStyle = q.drawn ? '#3a272c' : palette.textColor;
 
             ctx.fillText(displayText, radius - 30, 0);
             ctx.restore();
@@ -3395,6 +3241,26 @@
 
         if (e.code === 'KeyH') {
             toggleStandbyMode();
+            return;
+        }
+        if (e.code === 'KeyQ') {
+            const qrModal = document.getElementById('qrEnlargeModal');
+            if (qrModal.classList.contains('show')) qrModal.classList.remove('show');
+            else openQrModal();
+            return;
+        }
+        if (e.code === 'KeyR') {
+            if (lastDrawnText && !isSpinning) {
+                if (!ttsEnabled) showToast('🔇 語音播報已關閉，請於設定開啟');
+                else speakDrawnQuestion(lastDrawnText, lastDrawnNum, false, 0);
+            }
+            return;
+        }
+        if (e.code === 'KeyM') {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊 音效：開啟' : '🔇 音效：靜音';
+            saveState();
+            showToast(soundEnabled ? '🔊 總音效已開啟 (M)' : '🔇 總音效已靜音 (M)');
             return;
         }
         if (e.code === 'Escape') {
@@ -3940,7 +3806,7 @@
     document.getElementById('exportJsonBtn').addEventListener('click', () => {
         const backup = {
             app: 'botc_truth_wheel',
-            version: 7,
+            version: 10,
             exportedAt: new Date().toISOString(),
             currentSlot,
             slotsData,
@@ -4168,13 +4034,14 @@
     let hostConnRef = null;
     let hostOffsetRef = null;
     let hostReactRef = null;
+    let hostPresenceRef = null;
+    let onlinePlayerCount = 0;
     let lastPublishedStatus = 'idle';
     let hostSessionStartMs = 0;
 
     function normalizeFirebaseUrl(raw) {
         if (!raw) return '';
         const text = String(raw).trim();
-        // 防呆：就算使用者貼了整段 Firebase config JSON，也能自動抓出 databaseURL
         const match = text.match(/https:\/\/[a-zA-Z0-9._-]+(?:firebaseio\.com|firebasedatabase\.app)/i);
         if (match) return match[0].replace(/\/+$/, '');
         if (/^https?:\/\//i.test(text)) return text.replace(/\/+$/, '');
@@ -4185,16 +4052,23 @@
         try { if (hostCmdRef) hostCmdRef.off(); } catch (e) {}
         try { if (hostSubRef) hostSubRef.off(); } catch (e) {}
         try { if (hostReactRef) hostReactRef.off(); } catch (e) {}
+        try { if (hostPresenceRef) hostPresenceRef.off(); } catch (e) {}
         try { if (hostConnRef) hostConnRef.off(); } catch (e) {}
         try { if (hostOffsetRef) hostOffsetRef.off(); } catch (e) {}
-        hostRoomRef = hostCmdRef = hostSubRef = hostReactRef = hostConnRef = hostOffsetRef = null;
+        hostRoomRef = hostCmdRef = hostSubRef = hostReactRef = hostPresenceRef = hostConnRef = hostOffsetRef = null;
         fbConnected = false;
+        onlinePlayerCount = 0;
     }
 
     function initFirebaseConnection(dbUrl) {
         const cleanUrl = normalizeFirebaseUrl(dbUrl);
         if (!cleanUrl || typeof firebase === 'undefined') return null;
         try {
+            if (fbApp) {
+                const oldApp = fbApp;
+                fbApp = null;
+                try { oldApp.delete().catch(() => {}); } catch (e) {}
+            }
             fbAppSeq++;
             fbApp = firebase.initializeApp({ databaseURL: cleanUrl }, 'botc_app_' + fbAppSeq);
             fbDb = fbApp.database();
@@ -4210,6 +4084,7 @@
             : (window.location.origin + window.location.pathname);
         const params = new URLSearchParams();
         params.set('room', sanitizeRoomCode(roomCode));
+        params.set('v', APP_VERSION);
         const cleanDb = normalizeFirebaseUrl(firebaseDbUrl);
         if (cleanDb && cleanDb !== normalizeFirebaseUrl(DEFAULT_FIREBASE_DB_URL)) {
             params.set('db', cleanDb);
@@ -4264,7 +4139,8 @@
             badge.classList.add('offline');
             banner.classList.remove('show');
         } else if (fbConnected) {
-            badge.textContent = `📡 遠端連線 (${roomCode})`;
+            const countTxt = onlinePlayerCount > 0 ? `・${onlinePlayerCount} 人在線` : '';
+            badge.textContent = `📡 遠端連線 (${roomCode}${countTxt})`;
             badge.classList.remove('offline');
             banner.classList.toggle('show', !audioUnlocked);
         } else {
@@ -4293,6 +4169,7 @@
 
         const statePayload = {
             hostOnline: true,
+            appVersion: APP_VERSION,
             status: isSpinning ? 'spinning' : (resultModal.classList.contains('show') ? 'result' : lastPublishedStatus),
             palette: currentPaletteKey,
             spinSeq: lastSpinSeq,
@@ -4411,6 +4288,11 @@
         hostCmdRef = hostRoomRef.child('commands');
         hostSubRef = hostRoomRef.child('submissions');
         hostReactRef = hostRoomRef.child('reactions');
+        hostPresenceRef = hostRoomRef.child('presence');
+        hostPresenceRef.on('value', (snap) => {
+            onlinePlayerCount = snap.numChildren();
+            updateHostRemoteBadge();
+        });
         hostOffsetRef = db.ref('.info/serverTimeOffset');
         hostConnRef = db.ref('.info/connected');
 
@@ -4564,9 +4446,16 @@
             showToast('請手動複製下方網址');
         }
     });
-    // ================= 12. 手機玩家端自助遙控介面邏輯 (V7 精品同步版) =================
+    // ================= 12. 手機玩家端自助遙控介面邏輯 (V10 精簡正式版) =================
     function initRemoteClient() {
         const remoteRoom = sanitizeRoomCode(urlParams.get('room'));
+        const updateBanner = document.getElementById('remoteUpdateBanner');
+        updateBanner.addEventListener('click', () => {
+            const nextParams = new URLSearchParams(window.location.search);
+            nextParams.set('v', String((hostState && hostState.appVersion) || APP_VERSION));
+            nextParams.set('t', String(Date.now()));
+            window.location.replace(`${window.location.pathname}?${nextParams.toString()}`);
+        });
         const remoteDbUrl = normalizeFirebaseUrl(urlParams.get('db') || DEFAULT_FIREBASE_DB_URL || firebaseDbUrl);
 
         const connBadge = document.getElementById('remoteConnBadge');
@@ -4631,6 +4520,8 @@
         const cmdRef = roomRef.child('commands');
         const subRef = roomRef.child('submissions');
         const reactRef = roomRef.child('reactions');
+        const clientPresenceId = 'p_' + Math.random().toString(36).slice(2, 10);
+        const myPresenceRef = roomRef.child(`presence/${clientPresenceId}`);
 
         db.ref('.info/serverTimeOffset').on('value', (snap) => {
             serverTimeOffset = snap.val() || 0;
@@ -4638,6 +4529,10 @@
 
         db.ref('.info/connected').on('value', (snap) => {
             remoteConnected = Boolean(snap.val());
+            if (remoteConnected) {
+                myPresenceRef.onDisconnect().remove();
+                myPresenceRef.set(firebase.database.ServerValue.TIMESTAMP).catch(() => {});
+            }
             renderRemoteUi();
         });
 
@@ -4645,6 +4540,10 @@
             hostState = snap.val();
 
             if (hostState) {
+                // 0. 偵測主機版號是否更新，提醒舊快取手機 1 秒強制更新
+                const needUpdate = Boolean(hostState.appVersion && String(hostState.appVersion) !== String(APP_VERSION));
+                updateBanner.classList.toggle('show', needUpdate);
+
                 // 1. 即時同步主機暗黑精品配色
                 if (hostState.palette && PALETTES[hostState.palette] && hostState.palette !== appliedPalette) {
                     appliedPalette = hostState.palette;
