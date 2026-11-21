@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" id="metaThemeColor" content="#080205">
-    <title>🗝️ 血染戰鬥營 — 夜晚真心話命運轉盤</title>
+    <title>🗝️ 血染聖誕劫 — 夜晚真心話命運轉盤</title>
     <!-- 引入 3 款精選高質感纖細字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1606,23 +1606,58 @@
             opacity: 1;
         }
 
-        /* ================= 11. iOS Safari 徹底防跑版、底部安全區與金光波紋 (V12) ================= */
+        /* ================= 11. 安卓/iOS 雙棲原生流暢捲動、底部安全區與金光波紋 (V13) ================= */
         html {
-            overflow-x: hidden;
+            overflow-x: clip;
         }
         body.is-remote-mode {
+            display: block;
             width: 100%;
-            max-width: 100vw;
+            max-width: 100%;
             height: auto;
             min-height: 100dvh;
-            overflow-x: hidden;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: visible;
+            overflow-x: clip;
+            overscroll-behavior: auto;
             padding: max(18px, env(safe-area-inset-top)) 14px calc(115px + env(safe-area-inset-bottom));
         }
         #remoteView {
+            position: relative;
             min-width: 0;
-            overflow-x: clip;
+            overflow: visible;
+        }
+        /* 移除底部已抽紀錄巢狀小捲軸，直接隨整頁自然滑動，杜絕安卓觸控鎖死 */
+        .remote-history-list {
+            max-height: none;
+            overflow-y: visible;
+        }
+        .remote-history-details summary {
+            gap: 8px;
+        }
+        .remote-history-details summary > span:last-child {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        /* 手機頂部迷你重整小圓鈕 */
+        .remote-reload-btn {
+            background: var(--badge-bg, rgba(25, 8, 14, 0.85));
+            border: 1px solid var(--panel-border);
+            color: var(--gold-accent);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: transform 0.25s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .remote-reload-btn:active {
+            transform: rotate(180deg) scale(0.92);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
         }
         .remote-card-box {
             min-width: 0;
@@ -1710,7 +1745,7 @@
                     <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"></path>
                     <path d="M12 7l1.8 3.2L17 12l-3.2 1.8L12 17l-1.8-3.2L7 12l3.2-1.8z"></path>
                 </svg>
-                <span class="brand-title">血染戰鬥營・真心話</span>
+                <span class="brand-title">血染聖誕劫・真心話</span>
             </div>
             <span class="remain-badge" id="statusInfo">載入中</span>
             <span class="remain-badge host-remote-badge" id="remoteHostBadge">◈ 遠端待命</span>
@@ -1752,7 +1787,7 @@
                 <circle cx="32" cy="32" r="4" fill="currentColor" opacity="0.85"></circle>
             </svg>
         </div>
-        <h1 class="standby-title">血染戰鬥營・夜晚真心話</h1>
+        <h1 class="standby-title">血染聖誕劫・夜晚真心話</h1>
         <div class="standby-divider"></div>
         <div class="standby-subtitle" id="standbySubtitleDisplay">✦ 命運封存中・掃碼搶先匿名投稿 ✦</div>
         <div class="standby-count-pill" id="standbyCountPill">
@@ -1946,6 +1981,14 @@
                         <option value="mincho">✒️ 古典雕版明朝</option>
                         <option value="klee">🖋️ 秘密信箋手寫</option>
                         <option value="gothic">💎 美術館極簡細黑</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <span>背景氛圍粒子</span>
+                    <select class="ui-select" id="particleModeSelect">
+                        <option value="snow">❄️ 聖誕夜雪（飄落細雪）</option>
+                        <option value="ember">🔥 營火餘燼（上升火星）</option>
+                        <option value="off">🌑 靜態純淨（關閉粒子）</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -2178,10 +2221,11 @@
     <section id="remoteView">
         <button class="remote-update-banner" id="remoteUpdateBanner">✦ 偵測到新版遙控介面，點此立即同步更新</button>
         <div class="remote-header">
-            <div class="remote-title">✦ 血染戰鬥營・命運遙控 ✦</div>
+            <div class="remote-title">✦ 血染聖誕劫・命運遙控 ✦</div>
             <div class="remote-badges">
                 <span class="remain-badge" id="remoteConnBadge">◈ 連線中...</span>
                 <span class="remain-badge" id="remoteRemainBadge">載入題庫中</span>
+                <button class="remote-reload-btn" id="remoteReloadBtn" title="重新連線／重新整理">↻</button>
             </div>
             <div class="remote-progress-wrap" title="本場抽題進度">
                 <div class="remote-progress-bar" id="remoteProgressBar"></div>
@@ -2233,7 +2277,7 @@
                 <span>◈ 匿名加碼出題（直接加入轉盤）</span>
             </div>
             <div class="remote-add-row">
-                <input type="text" class="ui-input" id="remoteAddInput" maxlength="120" enterkeyhint="send" placeholder="輸入真心話題目，匿名丟進轉盤..." style="flex:1;">
+                <input type="text" class="ui-input" id="remoteAddInput" maxlength="120" enterkeyhint="send" placeholder="匿名輸入真心話題目..." style="flex:1;">
                 <button class="ui-btn gold-btn" id="remoteAddSubmitBtn">送出</button>
             </div>
             <div class="remote-add-feedback" id="remoteAddFeedback"></div>
@@ -2242,8 +2286,8 @@
         <!-- 可收合：本場最近已抽過題目清單 -->
         <details class="remote-card-box remote-history-details" id="remoteHistoryDetails">
             <summary>
-                <span>◈ 查看本場已抽過題目（最新 <span id="remoteHistoryCount">0</span> 題）</span>
-                <span style="font-size:11px; opacity:0.75;">點擊展開 ▾</span>
+                <span>◈ 本場已抽紀錄 (<span id="remoteHistoryCount">0</span>)</span>
+                <span style="font-size:11.5px; opacity:0.78;">展開 ▾</span>
             </summary>
             <div class="remote-history-list" id="remoteHistoryList">
                 <div style="font-size:13px; color:#8c7a72; text-align:center; padding:8px 0;">尚無已抽紀錄</div>
@@ -2253,7 +2297,7 @@
 
 <script>
     // ================= 1. 精選 6 款全暗黑精品配色 ＋ 3 款纖細字體 (V10) =================
-    const APP_VERSION = '12';
+    const APP_VERSION = '13';
     const PALETTES = {
         opera: {
             slices: [
@@ -2409,7 +2453,7 @@
 
     const DEFAULT_DEMO_QUESTIONS = [
         "收過什麼最印象深刻的聖誕禮物？",
-        "為什麼想要參加血染營？對此活動有什麼期許？",
+        "為什麼想要參加血染聖誕劫？對此活動有什麼期許？",
         "說出你這局的真實角色，不能說謊",
         "曾經為了取悅別人改變過自己嗎？會後悔嗎？",
         "愛情和友情中，哪個讓你更難放棄？",
@@ -2444,6 +2488,7 @@
     let sliceLabelMode = 'text';
     let rimStyle = 'double_gold';
     let pointerStyle = 'moon';
+    let particleMode = 'snow';
     let wheelScale = 74;
     let spinDuration = 7200;
     let soundEnabled = true;
@@ -2579,6 +2624,7 @@
                 sliceLabelMode,
                 rimStyle,
                 pointerStyle,
+                particleMode,
                 wheelScale,
                 spinDuration,
                 soundEnabled,
@@ -2620,6 +2666,7 @@
                 if (data.sliceLabelMode) sliceLabelMode = data.sliceLabelMode;
                 if (data.rimStyle) rimStyle = data.rimStyle;
                 if (data.pointerStyle) pointerStyle = data.pointerStyle;
+                if (data.particleMode && ['snow', 'ember', 'off'].includes(data.particleMode)) particleMode = data.particleMode;
                 if (data.wheelScale) wheelScale = Number(data.wheelScale);
                 if (data.spinDuration) spinDuration = Number(data.spinDuration);
                 if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
@@ -2669,6 +2716,7 @@
         document.getElementById('rimSelect').value = rimStyle;
         applyPointerStyle(pointerStyle);
         document.getElementById('pointerSelect').value = pointerStyle;
+        document.getElementById('particleModeSelect').value = particleMode;
         document.getElementById('wheelScaleRange').value = String(wheelScale);
         document.documentElement.style.setProperty('--wheel-scale', `${wheelScale}vmin`);
 
@@ -2740,23 +2788,46 @@
         const dt = Math.min((timestamp - lastEmberTime) / 16.667, 3);
         lastEmberTime = timestamp;
 
-        const isBursting = timestamp < emberBurstUntil;
-        const speedMul = isBursting ? 3.2 : 1;
-
         eCtx.clearRect(0, 0, emberCanvas.width, emberCanvas.height);
+        if (particleMode === 'off') {
+            requestAnimationFrame(animateEmbers);
+            return;
+        }
+
+        const isSnow = (particleMode === 'snow');
+        const isBursting = timestamp < emberBurstUntil;
+        const speedMul = isBursting ? (isSnow ? 2.1 : 3.2) : 1;
+
         for (let i = 0; i < embers.length; i++) {
             const p = embers[i];
-            p.swayOffset += p.swaySpeed * dt * speedMul;
-            p.x += (p.vx + Math.sin(p.swayOffset) * 0.22) * dt;
-            p.y += p.vy * dt * speedMul;
-            if (p.y < -10) {
-                p.y = emberCanvas.height + 10;
-                p.x = Math.random() * emberCanvas.width;
+            p.swayOffset += p.swaySpeed * dt * (isSnow ? 1.15 : speedMul);
+            if (isSnow) {
+                p.x += (p.vx * 0.6 + Math.sin(p.swayOffset) * 0.42) * dt;
+                p.y += Math.abs(p.vy) * 1.15 * dt * speedMul;
+                if (p.y > emberCanvas.height + 10) {
+                    p.y = -10;
+                    p.x = Math.random() * emberCanvas.width;
+                }
+            } else {
+                p.x += (p.vx + Math.sin(p.swayOffset) * 0.22) * dt;
+                p.y += p.vy * dt * speedMul;
+                if (p.y < -10) {
+                    p.y = emberCanvas.height + 10;
+                    p.x = Math.random() * emberCanvas.width;
+                }
             }
+            if (p.x < -12) p.x = emberCanvas.width + 12;
+            else if (p.x > emberCanvas.width + 12) p.x = -12;
+
             eCtx.beginPath();
-            eCtx.arc(p.x, p.y, isBursting ? p.r * 1.45 : p.r, 0, Math.PI * 2);
-            eCtx.fillStyle = isBursting ? currentEmberColors[0] : (i % 3 === 0 ? currentEmberColors[1] : currentEmberColors[0]);
-            eCtx.globalAlpha = Math.min(1, p.alpha * (isBursting ? 1.5 : (0.65 + 0.35 * Math.sin(p.swayOffset * 2))));
+            const radius = isSnow
+                ? (isBursting ? p.r * 1.35 : p.r * 1.15)
+                : (isBursting ? p.r * 1.45 : p.r);
+            eCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            eCtx.fillStyle = isSnow
+                ? (isBursting ? currentEmberColors[0] : (i % 4 === 0 ? currentEmberColors[0] : '#f7f4ee'))
+                : (isBursting ? currentEmberColors[0] : (i % 3 === 0 ? currentEmberColors[1] : currentEmberColors[0]));
+            eCtx.globalAlpha = Math.min(1, p.alpha * (isBursting ? 1.45 : (isSnow ? 0.82 : (0.65 + 0.35 * Math.sin(p.swayOffset * 2)))));
             eCtx.fill();
         }
         eCtx.globalAlpha = 1;
@@ -3988,6 +4059,12 @@ if (document.body.classList.contains('standby-mode')) {
         saveState();
     });
 
+    document.getElementById('particleModeSelect').addEventListener('change', (e) => {
+        particleMode = e.target.value;
+        saveState();
+        if (typeof publishHostState === 'function') publishHostState();
+    });
+
     document.getElementById('fontSelect').addEventListener('change', (e) => {
         currentFontKey = e.target.value;
         document.documentElement.style.setProperty('--ui-font', FONTS[currentFontKey].family);
@@ -4217,7 +4294,7 @@ if (document.body.classList.contains('standby-mode')) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `血染真心話題庫_${currentSlot}_備份.csv`;
+        a.download = `血染聖誕劫題庫_${currentSlot}_備份.csv`;
         a.click();
         URL.revokeObjectURL(url);
         showToast('📤 已下載 CSV 備份檔案');
@@ -4232,7 +4309,7 @@ if (document.body.classList.contains('standby-mode')) {
             currentSlot,
             slotsData,
             settings: {
-                currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, pointerStyle, wheelScale,
+                currentPaletteKey, currentFontKey, sliceLabelMode, rimStyle, pointerStyle, particleMode, wheelScale,
                 spinDuration, soundEnabled, ttsEnabled, ttsVoiceURI, ttsRate, ttsPrefixMode,
                 ttsPitchMode, remoteEnabled, remoteAllowAdd, remoteAllowReact, standbyAllowSpin, standbyShowClock, standbySubtitle, remoteCooldownSec,
                 roomCode, showCornerQr, firebaseDbUrl
@@ -4279,6 +4356,7 @@ if (document.body.classList.contains('standby-mode')) {
                         if (s.sliceLabelMode) sliceLabelMode = s.sliceLabelMode;
                         if (s.rimStyle) rimStyle = s.rimStyle;
                         if (s.pointerStyle) pointerStyle = s.pointerStyle;
+                        if (s.particleMode && ['snow', 'ember', 'off'].includes(s.particleMode)) particleMode = s.particleMode;
                         if (s.wheelScale) wheelScale = Number(s.wheelScale);
                         if (s.spinDuration) spinDuration = Number(s.spinDuration);
                         if (typeof s.soundEnabled === 'boolean') soundEnabled = s.soundEnabled;
@@ -4360,8 +4438,12 @@ if (document.body.classList.contains('standby-mode')) {
             : `題庫 ${currentSlot}｜空`;
         spinBtn.disabled = (remaining === 0);
         spinBtn.innerHTML = remaining === 0 && questions.length > 0
-            ? '<span>已抽完</span>'
+            ? '<span>圓滿</span><span style="font-size:11px; opacity:0.8;">落幕</span>'
             : '<span>開始</span><span style="font-size:11px; opacity:0.8;">抽題</span>';
+        if (remaining === 0 && questions.length > 0 && !isSpinning) {
+            tickerLabel.textContent = '✦ 血染聖誕劫 ✦';
+            tickerText.textContent = '今晚所有真心話已全數揭曉，聖誕快樂！';
+        }
             if (!IS_REMOTE_MODE && typeof syncStandbyUi === 'function') syncStandbyUi(false);
             if (!IS_REMOTE_MODE && !isSpinning && typeof publishHostState === 'function') {
             publishHostState();
@@ -4444,7 +4526,10 @@ if (document.body.classList.contains('standby-mode')) {
     if (!IS_REMOTE_MODE) {
         requestWakeLock();
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') requestWakeLock();
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+                if (typeof publishHostState === 'function') publishHostState();
+            }
         });
     }
 
@@ -4613,6 +4698,7 @@ if (document.body.classList.contains('standby-mode')) {
             appVersion: APP_VERSION,
             status: isSpinning ? 'spinning' : (resultModal.classList.contains('show') ? 'result' : lastPublishedStatus),
             palette: currentPaletteKey,
+            particleMode: particleMode,
             spinSeq: lastSpinSeq,
             remoteEnabled: remoteEnabled,
             isStandby: document.body.classList.contains('standby-mode'),
@@ -4906,6 +4992,15 @@ if (document.body.classList.contains('standby-mode')) {
             nextParams.set('t', String(Date.now()));
             window.location.replace(`${window.location.pathname}?${nextParams.toString()}`);
         });
+        const reloadBtn = document.getElementById('remoteReloadBtn');
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', () => {
+                const nextParams = new URLSearchParams(window.location.search);
+                nextParams.set('v', String((hostState && hostState.appVersion) || APP_VERSION));
+                nextParams.set('t', String(Date.now()));
+                window.location.replace(`${window.location.pathname}?${nextParams.toString()}`);
+            });
+        }
         const remoteDbUrl = normalizeFirebaseUrl(urlParams.get('db') || DEFAULT_FIREBASE_DB_URL || firebaseDbUrl);
 
         const connBadge = document.getElementById('remoteConnBadge');
@@ -4995,10 +5090,13 @@ if (document.body.classList.contains('standby-mode')) {
                 const needUpdate = Boolean(hostState.appVersion && String(hostState.appVersion) !== String(APP_VERSION));
                 updateBanner.classList.toggle('show', needUpdate);
 
-                // 1. 即時同步主機暗黑精品配色
+                // 1. 即時同步主機暗黑精品配色與背景氛圍粒子
                 if (hostState.palette && PALETTES[hostState.palette] && hostState.palette !== appliedPalette) {
                     appliedPalette = hostState.palette;
                     applyPaletteCSS(appliedPalette);
+                }
+                if (hostState.particleMode && ['snow', 'ember', 'off'].includes(hostState.particleMode)) {
+                    particleMode = hostState.particleMode;
                 }
 
                 // 2. 偵測新一輪開獎完成 → 手機震動＋題目卡片閃金邊
@@ -5153,9 +5251,9 @@ if (document.body.classList.contains('standby-mode')) {
             } else if (rem <= 0) {
                 cancelHold(false);
                 holdBtn.disabled = true;
-                btnMain.textContent = '已抽完';
-                btnSub.textContent = '題庫全封印';
-                statusMsg.textContent = '✦ 題庫已全數抽完，可於下方匿名加碼新題目！';
+                btnMain.textContent = '圓滿落幕';
+                btnSub.textContent = '聖誕快樂';
+                statusMsg.textContent = '✦ 血染聖誕劫・真心話全數揭曉，可於下方匿名加碼新題！';
             } else if (cooldownLeftSec > 0) {
                 cancelHold(false);
                 holdBtn.disabled = true;
